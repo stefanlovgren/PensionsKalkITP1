@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <title>Pension Allocation Breakdown</title>
+    <title>Pensionsfördelning</title>
     <style>
         body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; font-size: 14px; }
         .container { max-width: 1000px; margin: auto; }
@@ -46,11 +46,11 @@
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 id="mainTitle">Pension Allocation Breakdown (Where does the money go?)</h2>
+            <h2 id="mainTitle">Pensionsfördelning (Vart tar pengarna vägen?)</h2>
             <div>
-                <button type="button" class="btn-danger" onclick="clearAll()">Clear</button>
-                <button type="button" class="btn-success" onclick="exportSettings()">Export</button>
-                <button type="button" class="btn-secondary" onclick="triggerImport()">Import</button>
+                <button type="button" class="btn-danger" onclick="clearAll()">Rensa</button>
+                <button type="button" class="btn-success" onclick="exportSettings()">Exportera</button>
+                <button type="button" class="btn-secondary" onclick="triggerImport()">Importera</button>
                 <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importSettings(event)">
             </div>
         </div>
@@ -58,37 +58,37 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;">
             <div style="flex: 1 1 600px; background: #252525; padding: 15px; border-radius: 8px; border: 1px solid #333;">
                 <div class="input-group">
-                    <label for="calcYear">Income Year</label>
+                    <label for="calcYear">Inkomstår</label>
                     <select id="calcYear" onchange="calculateAllocation()">
                         <option value="2024">2024</option>
                         <option value="2025">2025</option>
-                        <option value="2026" selected>2026 (Est.)</option>
+                        <option value="2026" selected>2026 (Uppskattat)</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="salary">Monthly Gross Salary (SEK)</label>
+                    <label for="salary">Månatlig bruttolön (SEK)</label>
                     <input type="number" id="salary" placeholder="50000" value="50000" oninput="calculateAllocation()">
                 </div>
                 <div class="input-group">
-                    <label for="lonevaxling">Löneväxling (SEK/mo)</label>
+                    <label for="lonevaxling">Löneväxling (SEK/mån)</label>
                     <input type="number" id="lonevaxling" placeholder="0" value="0" oninput="calculateAllocation()">
                 </div>
                 <div class="input-group">
-                    <label for="lvxBonus">Lvx Bonus (%)</label>
+                    <label for="lvxBonus">Bonus Löneväxling (%)</label>
                     <input type="number" id="lvxBonus" placeholder="6" value="6" step="0.1" oninput="calculateAllocation()">
                 </div>
                 <div class="input-group" id="lvxCompGroup" style="display: none; vertical-align: middle; padding-bottom: 8px;">
                     <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer;">
                         <input type="checkbox" id="lvxCompensate" onchange="calculateAllocation()" style="vertical-align: middle; margin-right: 4px; width: auto;">
-                        Show actual deposits (ITP1 reduced & compensated)
+                        Visa faktiska insättningar (ITP1 reducerad & kompenserad)
                     </label>
                 </div>
             </div>
             
             <div style="flex: 1 1 250px; background: #1b5e20; padding: 20px; border-radius: 8px; border: 1px solid #2e7d32; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                <h3 style="margin: 0 0 10px 0; color: #e8f5e9; font-weight: normal;">Total Pension Funding</h3>
+                <h3 style="margin: 0 0 10px 0; color: #e8f5e9; font-weight: normal;">Total pensionsavsättning</h3>
                 <div id="card-total" style="font-size: 2.5em; font-weight: bold; color: #fff; margin-bottom: 5px;">0 kr</div>
-                <div id="card-total-pct" style="font-size: 1.1em; color: #b2ff59;">0% of gross salary</div>
+                <div id="card-total-pct" style="font-size: 1.1em; color: #b2ff59;">0% av bruttolönen</div>
             </div>
         </div>
 
@@ -96,32 +96,32 @@
             <div class="summary-card" style="border-top: 4px solid #4fc3f7;">
                 <h4>Allmän Pension (Inkomst)</h4>
                 <div class="value" id="card-inkomst">0 kr</div>
-                <div class="sub-value">16% of PGI (Pensionable Income)</div>
+                <div class="sub-value">16% av PGI (Pensionsgrundande inkomst)</div>
             </div>
             <div class="summary-card" style="border-top: 4px solid #ffd54f;">
                 <h4>Premiepension (PPM)</h4>
                 <div class="value" id="card-ppm">0 kr</div>
-                <div class="sub-value">2.5% of PGI</div>
+                <div class="sub-value">2.5% av PGI</div>
             </div>
             <div class="summary-card" style="border-top: 4px solid #ce93d8;">
                 <h4>Tjänstepension (ITP1)</h4>
                 <div class="value" id="card-tjp">0 kr</div>
-                <div class="sub-value">Base + Top + Flex</div>
+                <div class="sub-value">Bas + Topp + Flex</div>
             </div>
             <div class="summary-card" id="summary-card-lvx" style="border-top: 4px solid #ffcc80; display: none;">
                 <h4>Löneväxling</h4>
                 <div class="value" id="card-lvx">0 kr</div>
-                <div class="sub-value">Salary Exchange + Bonus</div>
+                <div class="sub-value">Löneväxling + Bonus</div>
             </div>
         </div>
         
         <table id="allocationTable">
             <thead>
                 <tr class="group-header">
-                    <th style="text-align: left;">Category & Flow</th>
-                    <th>Calculation Rule</th>
-                    <th class="val-col">Monthly (SEK)</th>
-                    <th class="val-col">Yearly (SEK)</th>
+                    <th style="text-align: left;">Kategori & Flöde</th>
+                    <th>Beräkningsregel</th>
+                    <th class="val-col">Månad (SEK)</th>
+                    <th class="val-col">År (SEK)</th>
                 </tr>
             </thead>
             <tbody>
@@ -224,18 +224,18 @@
             const totalPct = yearlySalary > 0 ? ((totalPensionYearly / yearlySalary) * 100).toFixed(1) : 0;
 
             // Update Summary Cards
-            document.getElementById('card-inkomst').innerText = formatCurrency(inkomstMonthly) + "/mo";
-            document.getElementById('card-ppm').innerText = formatCurrency(ppmMonthly) + "/mo";
-            document.getElementById('card-tjp').innerText = formatCurrency(tjpTotalMonthly) + "/mo";
-            document.getElementById('card-lvx').innerText = formatCurrency(finalLvxMonthly) + "/mo";
+            document.getElementById('card-inkomst').innerText = formatCurrency(inkomstMonthly) + "/mån";
+            document.getElementById('card-ppm').innerText = formatCurrency(ppmMonthly) + "/mån";
+            document.getElementById('card-tjp').innerText = formatCurrency(tjpTotalMonthly) + "/mån";
+            document.getElementById('card-lvx').innerText = formatCurrency(finalLvxMonthly) + "/mån";
 
             if (monthlyLvx > 0) {
                 document.getElementById('summary-card-lvx').style.display = 'block';
             } else {
                 document.getElementById('summary-card-lvx').style.display = 'none';
             }
-            document.getElementById('card-total').innerText = formatCurrency(totalPensionMonthly) + "/mo";
-            document.getElementById('card-total-pct').innerText = `Equals ${totalPct}% of your gross salary`;
+            document.getElementById('card-total').innerText = formatCurrency(totalPensionMonthly) + "/mån";
+            document.getElementById('card-total-pct').innerText = `Motsvarar ${totalPct}% av din bruttolön`;
 
             // Update Table
             const tbody = document.querySelector('#allocationTable tbody');
@@ -255,33 +255,33 @@
             }
 
             // --- Allmän Pension ---
-            addRow('tag-allman', '▼ ALLMÄN PENSION', 'State Pension (Funded via employer fees)', allmanTotalMonthly, allmanTotalYearly, true);
-            addRow('', '└ Inkomstpension', `16% of PGI (Max PGI ${formatCurrency(MAX_PGI)}/yr)`, inkomstMonthly, inkomstYearly);
-            addRow('tag-ppm', '└ Premiepension (PPM)', `2.5% of PGI (Max PGI ${formatCurrency(MAX_PGI)}/yr)`, ppmMonthly, ppmYearly);
+            addRow('tag-allman', '▼ ALLMÄN PENSION', 'Statlig pension (Finansieras via arbetsgivaravgifter)', allmanTotalMonthly, allmanTotalYearly, true);
+            addRow('', '└ Inkomstpension', `16% av PGI (Max PGI ${formatCurrency(MAX_PGI)}/år)`, inkomstMonthly, inkomstYearly);
+            addRow('tag-ppm', '└ Premiepension (PPM)', `2.5% av PGI (Max PGI ${formatCurrency(MAX_PGI)}/år)`, ppmMonthly, ppmYearly);
 
             // --- Tjänstepension ---
-            const salTypeStr = (compensateITP1 && monthlyLvx > 0) ? 'reduced salary' : 'original salary';
-            addRow('tag-tjp', '▼ TJÄNSTEPENSION (ITP1)', 'Occupational Pension (Contractual)', tjpTotalMonthly, tjpTotalYearly, true);
-            addRow('', '└ ITP1 Base Tier', `4.5% on ${salTypeStr} up to ${formatCurrency(TJP_CEILING)}/yr`, tjpBottomYearly/12, tjpBottomYearly);
+            const salTypeStr = (compensateITP1 && monthlyLvx > 0) ? 'reducerad lön' : 'ursprunglig lön';
+            addRow('tag-tjp', '▼ TJÄNSTEPENSION (ITP1)', 'Avtalspension', tjpTotalMonthly, tjpTotalYearly, true);
+            addRow('', '└ ITP1 Bas', `4.5% på ${salTypeStr} upp till ${formatCurrency(TJP_CEILING)}/år`, tjpBottomYearly/12, tjpBottomYearly);
             
             if (tjpTopYearly > 0) {
-                addRow('', '└ ITP1 Top Tier', `30% on ${salTypeStr} above ${formatCurrency(TJP_CEILING)}/yr`, tjpTopYearly/12, tjpTopYearly);
+                addRow('', '└ ITP1 Topp', `30% på ${salTypeStr} över ${formatCurrency(TJP_CEILING)}/år`, tjpTopYearly/12, tjpTopYearly);
             } else {
-                addRow('', '└ ITP1 Top Tier', `30% on ${salTypeStr} above ${formatCurrency(TJP_CEILING)}/yr`, 0, 0);
+                addRow('', '└ ITP1 Topp', `30% på ${salTypeStr} över ${formatCurrency(TJP_CEILING)}/år`, 0, 0);
             }
             
-            addRow('', '└ ITP1 Flexpension', `1.7% extra on the entire ${salTypeStr}`, tjpFlexYearly/12, tjpFlexYearly);
+            addRow('', '└ ITP1 Flexpension', `1.7% extra på hela ${salTypeStr}`, tjpFlexYearly/12, tjpFlexYearly);
 
             // --- Löneväxling ---
             if (monthlyLvx > 0) {
-                addRow('tag-lvx', '▼ LÖNEVÄXLING', 'Salary Exchange (Voluntary)', finalLvxMonthly, finalLvxYearly, true);
-                addRow('', '└ Base Sacrificed', 'Deducted from gross salary', monthlyLvx, yearlyLvx);
+                addRow('tag-lvx', '▼ LÖNEVÄXLING', 'Frivilligt löneavdrag', finalLvxMonthly, finalLvxYearly, true);
+                addRow('', '└ Basbelopp avstått', 'Dras från bruttolönen', monthlyLvx, yearlyLvx);
                 if (lvxBonusPct > 0) {
                     const pureBonusYearly = yearlyLvx * (lvxBonusPct / 100);
-                    addRow('', '└ Employer Tax Bonus', `${lvxBonusPct}% extra added by employer`, pureBonusYearly / 12, pureBonusYearly);
+                    addRow('', '└ Arbetsgivarbonus (skatt)', `${lvxBonusPct}% extra tillägg från arbetsgivaren`, pureBonusYearly / 12, pureBonusYearly);
                 }
                 if (tjpCompensationYearly > 0) {
-                    addRow('', '└ ITP1 Compensation', 'Reimbursed for reduced ITP1 deposit', tjpCompensationYearly / 12, tjpCompensationYearly);
+                    addRow('', '└ ITP1-kompensation', 'Kompensation för minskad ITP1-avsättning', tjpCompensationYearly / 12, tjpCompensationYearly);
                 }
                 
                 // Notice warning if exchanging under the cap
@@ -289,7 +289,7 @@
                     const warningTr = document.createElement('tr');
                     warningTr.innerHTML = `
                         <td colspan="4" style="color: #ff5252; text-align: center; background: #3e2723;">
-                            ⚠️ <b>Warning:</b> Exchanging salary brings your gross (${formatCurrency(grossAfterLvx)}) below the Allmän Pension ceiling (${formatCurrency(MAX_GROSS_FOR_PGI)}). You are actively losing public pension value!
+                            ⚠️ <b>Varning:</b> Löneväxling sänker din bruttolön (${formatCurrency(grossAfterLvx)}) under taket för allmän pension (${formatCurrency(MAX_GROSS_FOR_PGI)}). Du förlorar värde på din allmänna pension!
                         </td>
                     `;
                     tbody.appendChild(warningTr);
@@ -300,7 +300,7 @@
             const trTotal = document.createElement('tr');
             trTotal.className = 'total-row';
             trTotal.innerHTML = `
-                <td>TOTAL PENSION FUNDING</td>
+                <td>TOTAL PENSIONSAVSÄTTNING</td>
                 <td></td>
                 <td class="val-col">${formatCurrency(totalPensionMonthly)}</td>
                 <td class="val-col">${formatCurrency(totalPensionYearly)}</td>
@@ -355,12 +355,12 @@
                     if (data.pension_allocation_settings) {
                         localStorage.setItem('pension_allocation_settings', JSON.stringify(data.pension_allocation_settings));
                         loadSettings();
-                        alert("Settings imported successfully.");
+                        alert("Inställningarna har importerats.");
                     } else {
-                        alert("No valid settings found in the file.");
+                        alert("Inga giltiga inställningar hittades i filen.");
                     }
                 } catch (err) {
-                    alert("Failed to parse the imported file. Please make sure it's a valid JSON.");
+                    alert("Kunde inte läsa filen. Se till att det är en giltig JSON-fil.");
                 }
             };
             reader.readAsText(file);
@@ -368,7 +368,7 @@
         }
 
         function clearAll() {
-            if (!confirm("Are you sure you want to clear all inputs?")) return;
+            if (!confirm("Är du säker på att du vill rensa alla fält?")) return;
             localStorage.removeItem('pension_allocation_settings');
             document.getElementById('calcYear').value = '2026';
             document.getElementById('salary').value = '50000';

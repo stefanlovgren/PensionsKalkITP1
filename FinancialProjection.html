@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <title>Independent Milestone Tracker</title>
+    <title>Milstolpar & Ekonomisk Prognos</title>
     <style>
         body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; font-size: 14px; }
         .container { max-width: 1400px; margin: auto; }
@@ -58,94 +58,94 @@
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 id="mainTitle">Financial Projection to 70</h2>
+            <h2 id="mainTitle">Ekonomisk prognos till 70</h2>
             <div>
-                <button class="btn-primary" onclick="calculate()">Calculate & Save</button>
-                <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
-                <button type="button" class="btn-success" onclick="exportSettings()">Export</button>
-                <button type="button" class="btn-secondary" onclick="triggerImport()">Import</button>
-                <button type="button" class="btn-info" onclick="document.getElementById('helpModal').showModal()">Help & Info</button>
+                <button class="btn-primary" onclick="calculate()">Beräkna & Spara</button>
+                <button type="button" class="btn-danger" onclick="clearAll()">Rensa allt</button>
+                <button type="button" class="btn-success" onclick="exportSettings()">Exportera</button>
+                <button type="button" class="btn-secondary" onclick="triggerImport()">Importera</button>
+                <button type="button" class="btn-info" onclick="document.getElementById('helpModal').showModal()">Hjälp & Info</button>
                 <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importSettings(event)">
             </div>
         </div>
         <div class="input-group">
-            <label for="dob">Birth Date</label>
-            <input type="text" id="dob" placeholder="YYYY-MM-DD" title="Your Date of Birth (Swedish format YYYY-MM-DD or Personnummer)">
+            <label for="dob">Födelsedatum</label>
+            <input type="text" id="dob" placeholder="ÅÅÅÅ-MM-DD" title="Ditt födelsedatum (Svenskt format ÅÅÅÅ-MM-DD eller Personnummer)">
         </div>
         <div class="input-group">
             <label for="budget">
-                Daily Cost (SEK)
-                <button type="button" class="btn-small btn-accent" onclick="document.getElementById('budgetModal').showModal()" title="Calculate from monthly budget">🖩 Calc</button>
+                Daglig kostnad (SEK)
+                <button type="button" class="btn-small btn-accent" onclick="document.getElementById('budgetModal').showModal()" title="Beräkna från månadsbudget">🖩 Beräkna</button>
             </label>
-            <input type="number" id="budget" placeholder="0" title="Daily cash required to live">
+            <input type="number" id="budget" placeholder="0" title="Daglig kassa som krävs för att leva">
         </div>
         <div class="input-group">
-            <label for="salary">Gross Salary (SEK/mo)</label>
-            <input type="number" id="salary" placeholder="0" title="Your gross monthly salary for public pension calculation">
+            <label for="salary">Bruttolön (SEK/mån)</label>
+            <input type="number" id="salary" placeholder="0" title="Din bruttolön per månad för beräkning av allmän pension">
         </div>
         <div class="input-group">
-            <label for="lonevaxling">Löneväxling (SEK/mo)</label>
-            <input type="number" id="lonevaxling" placeholder="0" title="Monthly salary exchange/sacrifice">
+            <label for="lonevaxling">Löneväxling (SEK/mån)</label>
+            <input type="number" id="lonevaxling" placeholder="0" title="Månatlig löneväxling/avstått belopp">
         </div>
         <div class="input-group">
-            <label for="severance">Severance (Months)</label>
-            <input type="number" id="severance" placeholder="0" title="Months of severance pay if sacked today (calculated as Net)">
+            <label for="severance">Avgångsvederlag (Månader)</label>
+            <input type="number" id="severance" placeholder="0" title="Månader med avgångsvederlag vid uppsägning idag (beräknas som netto)">
         </div>
         <div class="input-group">
-            <label for="sevStepMonths">Sev. Track Step (mo)</label>
-            <input type="number" id="sevStepMonths" placeholder="1" value="1" title="Months step interval for severance milestones">
+            <label for="sevStepMonths">Milstolpe Avgångsvederlag (mån)</label>
+            <input type="number" id="sevStepMonths" placeholder="1" value="1" title="Månadsintervall för milstolpar kring avgångsvederlag">
         </div>
         <div class="input-group">
-            <label for="targetCostAge">Cost Target Age</label>
-            <input type="number" id="targetCostAge" placeholder="64" value="64" title="Age to project remaining costs towards">
+            <label for="targetCostAge">Målder för kostnad</label>
+            <input type="number" id="targetCostAge" placeholder="64" value="64" title="Ålder att projicera återstående kostnader fram till">
         </div>
         <div class="input-group">
-            <label for="projectionEndAge">Projection End Age</label>
-            <input type="number" id="projectionEndAge" placeholder="70" value="70" title="Age to end the financial projection">
+            <label for="projectionEndAge">Slutålder för prognos</label>
+            <input type="number" id="projectionEndAge" placeholder="70" value="70" title="Ålder då den ekonomiska prognosen slutar">
         </div>
         <div class="input-group">
-            <label for="costInterval">Cost Interval (SEK)</label>
-            <input type="number" id="costInterval" placeholder="50000" value="50000" title="Interval for remaining cost milestones">
+            <label for="costInterval">Kostnadsintervall (SEK)</label>
+            <input type="number" id="costInterval" placeholder="50000" value="50000" title="Intervall för milstolpar för återstående kostnad">
         </div>
         <div class="input-group">
-            <label>Timeline Options</label>
+            <label>Tidslinjealternativ</label>
             <div style="display: inline-block; padding: 7px 5px;">
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer;"><input type="checkbox" id="showCost" checked style="vertical-align: middle; margin-right: 4px;">Cost</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showSev" checked style="vertical-align: middle; margin-right: 4px;">Sev.</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showBD" checked style="vertical-align: middle; margin-right: 4px;">Birthdays</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showNY" checked style="vertical-align: middle; margin-right: 4px;">New Year</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1Y" checked style="vertical-align: middle; margin-right: 4px;">1 Year</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1M" checked style="vertical-align: middle; margin-right: 4px;">1 Month</label>
-                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showCustom" checked style="vertical-align: middle; margin-right: 4px;">Custom</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer;"><input type="checkbox" id="showCost" checked style="vertical-align: middle; margin-right: 4px;">Kostnad</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showSev" checked style="vertical-align: middle; margin-right: 4px;">Avgångsv.</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showBD" checked style="vertical-align: middle; margin-right: 4px;">Födelsedagar</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showNY" checked style="vertical-align: middle; margin-right: 4px;">Nyår</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1Y" checked style="vertical-align: middle; margin-right: 4px;">1 År</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1M" checked style="vertical-align: middle; margin-right: 4px;">1 Månad</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showCustom" checked style="vertical-align: middle; margin-right: 4px;">Anpassad</label>
             </div>
         </div>
         <div class="input-group">
-            <label>Custom Events</label>
-            <button type="button" class="btn-secondary" onclick="openCustomEventsModal()" title="Edit custom events" style="padding: 6px 15px; margin-top: 2px;">✎ Edit Events</button>
+            <label>Anpassade händelser</label>
+            <button type="button" class="btn-secondary" onclick="openCustomEventsModal()" title="Redigera händelser" style="padding: 6px 15px; margin-top: 2px;">✎ Redigera händelser</button>
             <input type="hidden" id="customEvents">
         </div>
         
         <table id="resultTable">
             <thead>
                 <tr class="group-header">
-                    <th colspan="3" title="Chronological progress and life milestones">Timeline</th>
-                    <th colspan="2" title="Accumulated earnings from salary over time">Income</th>
-                    <th colspan="3" title="Accumulated living expenses over time">Costs</th>
-                    <th colspan="4" title="Accumulated pension contributions over time">Pensions</th>
+                    <th colspan="3" title="Kronologiska framsteg och milstolpar i livet">Tidslinje</th>
+                    <th colspan="2" title="Ackumulerade inkomster från lön över tid">Inkomst</th>
+                    <th colspan="3" title="Ackumulerade levnadskostnader över tid">Kostnader</th>
+                    <th colspan="4" title="Ackumulerade pensionsavsättningar över tid">Pensioner</th>
                 </tr>
                 <tr>
-                    <th title="The exact date of the milestone">Date</th>
-                    <th title="Event occurring on this date (e.g., Birthday, New Year)">Milestone</th>
-                    <th title="Time remaining until this milestone is reached">Time from Now</th>
-                    <th title="Total gross salary earned up to this date">Accumulated Income (Gross)</th>
-                    <th title="Total net salary earned after estimated tax">Accumulated Income (Net)</th>
-                    <th title="Total living expenses accumulated up to this date">Accumulated Cost (Net)</th>
-                    <th title="Accumulated costs minus your total net severance pay (shows when severance runs out)">Cost after Severance (Net)</th>
-                    <th id="th-remaining-cost" title="Projected remaining living expenses from this date until the target age">Remaining Cost to Target (Net)</th>
-                    <th title="Accumulated public pension (Inkomstpension) based on 18.5% of pensionable income">Pension (Public) (Gross)</th>
-                    <th title="Accumulated occupational pension (Tjänstepension), e.g., ITP1">Pension (Occupational) (Gross)</th>
-                    <th title="Accumulated salary exchange contributions">Löneväxling (Gross)</th>
-                    <th title="Sum of Public, Occupational, and Löneväxling pensions">Total Pension</th>
+                    <th title="Exakt datum för milstolpen">Datum</th>
+                    <th title="Händelse som inträffar detta datum (t.ex. födelsedag, nyår)">Milstolpe</th>
+                    <th title="Återstående tid tills denna milstolpe nås">Tid från nu</th>
+                    <th title="Total bruttolön intjänad fram till detta datum">Ackumulerad inkomst (Brutto)</th>
+                    <th title="Total nettolön intjänad efter uppskattad skatt">Ackumulerad inkomst (Netto)</th>
+                    <th title="Totala levnadskostnader ackumulerade fram till detta datum">Ackumulerad kostnad (Netto)</th>
+                    <th title="Ackumulerade kostnader minus totalt nettoavgångsvederlag (visar när avgångsvederlaget tar slut)">Kostnad efter avgångsvederlag (Netto)</th>
+                    <th id="th-remaining-cost" title="Projicerade återstående levnadskostnader från detta datum fram till måldatumet">Återstående kostnad till mål (Netto)</th>
+                    <th title="Ackumulerad allmän pension (Inkomstpension) baserad på 18.5% av pensionsgrundande inkomst">Pension (Allmän) (Brutto)</th>
+                    <th title="Ackumulerad tjänstepension, t.ex. ITP1">Pension (Tjänstepension) (Brutto)</th>
+                    <th title="Ackumulerade löneväxlingsavsättningar">Löneväxling (Brutto)</th>
+                    <th title="Summan av allmän pension, tjänstepension och löneväxling">Total pension</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -154,94 +154,94 @@
 
     <!-- Budget Calculator Modal -->
     <dialog id="budgetModal">
-        <h3 style="margin-top: 0;">Monthly Budget Calculator</h3>
+        <h3 style="margin-top: 0;">Kalkylator för månadsbudget</h3>
         <div style="margin-bottom: 15px;">
-            <label style="font-size: 0.9em; color: #bbb;" title="Choose a standard profile to auto-fill expenses">Load Preset:</label>
-            <select id="budgetPreset" onchange="loadBudgetPreset()" style="margin: 4px 0 0 0; width: 100%; box-sizing: border-box;" title="Choose a standard profile to auto-fill expenses">
-                <option value="">-- Select a Preset --</option>
-                <option value="minimal">Minimal / Frugal (~12k SEK)</option>
-                <option value="average_single">Average Single (~21k SEK)</option>
-                <option value="average_family">Average Family (~37k SEK)</option>
-                <option value="luxury">Comfortable / Luxury (~55k SEK)</option>
+            <label style="font-size: 0.9em; color: #bbb;" title="Välj en standardprofil för att fylla i utgifter automatiskt">Läs in profil:</label>
+            <select id="budgetPreset" onchange="loadBudgetPreset()" style="margin: 4px 0 0 0; width: 100%; box-sizing: border-box;" title="Välj en standardprofil för att fylla i utgifter automatiskt">
+                <option value="">-- Välj en profil --</option>
+                <option value="minimal">Minimal / Sparsam (~12k SEK)</option>
+                <option value="average_single">Genomsnitt Singel (~21k SEK)</option>
+                <option value="average_family">Genomsnitt Familj (~37k SEK)</option>
+                <option value="luxury">Bekvämt / Lyx (~55k SEK)</option>
             </select>
         </div>
         <div class="modal-grid">
-            <label title="Rent, mortgage, avgift, property tax, etc.">Housing <input type="number" id="b_housing" value="0"></label>
-            <label title="Groceries, eating out, snacks">Food <input type="number" id="b_food" value="0"></label>
-            <label title="Car loan, gas, insurance, public transit">Transport <input type="number" id="b_transport" value="0"></label>
-            <label title="Electricity, water, heating, internet, trash">Utilities <input type="number" id="b_utilities" value="0"></label>
-            <label title="Home, life, health, pet insurance (excluding car)">Insurance <input type="number" id="b_insurance" value="0"></label>
-            <label title="Streaming, gym, magazines, software">Subscriptions <input type="number" id="b_subs" value="0"></label>
-            <label title="Hobbies, movies, events, fun money">Entertainment <input type="number" id="b_fun" value="0"></label>
-            <label title="Miscellaneous expenses, clothing, savings buffer">Other <input type="number" id="b_other" value="0"></label>
+            <label title="Hyra, bolån, avgift, fastighetsskatt, etc.">Boende <input type="number" id="b_housing" value="0"></label>
+            <label title="Matvaror, äta ute, snacks">Mat <input type="number" id="b_food" value="0"></label>
+            <label title="Billån, bensin, försäkring, kollektivtrafik">Transport <input type="number" id="b_transport" value="0"></label>
+            <label title="El, vatten, värme, internet, sophämtning">El/Vatten/Bredband <input type="number" id="b_utilities" value="0"></label>
+            <label title="Hem, liv, hälsa, husdjursförsäkring (exklusive bil)">Försäkringar <input type="number" id="b_insurance" value="0"></label>
+            <label title="Streaming, gym, tidskrifter, programvara">Abonnemang <input type="number" id="b_subs" value="0"></label>
+            <label title="Hobbyer, filmer, evenemang, nöjespengar">Nöje <input type="number" id="b_fun" value="0"></label>
+            <label title="Övriga utgifter, kläder, sparbuffert">Övrigt <input type="number" id="b_other" value="0"></label>
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn-success" onclick="saveCustomPreset()" style="float: left;">Save as Preset</button>
-            <button type="button" onclick="document.getElementById('budgetModal').close()">Cancel</button>
-            <button type="button" class="btn-primary" onclick="applyBudget()">Apply to Daily Cost</button>
+            <button type="button" class="btn-success" onclick="saveCustomPreset()" style="float: left;">Spara som profil</button>
+            <button type="button" onclick="document.getElementById('budgetModal').close()">Avbryt</button>
+            <button type="button" class="btn-primary" onclick="applyBudget()">Tillämpa på daglig kostnad</button>
         </div>
     </dialog>
 
     <!-- Help & Info Modal -->
     <dialog id="helpModal" style="width: 1000px; max-width: 90vw;">
-        <h3 style="margin-top: 0;">How Calculations Work</h3>
+        <h3 style="margin-top: 0;">Hur beräkningarna fungerar</h3>
         <div class="help-content">
-            <h4>Overall Purpose</h4>
+            <h4>Övergripande syfte</h4>
             <ul>
-                <li><strong>Financial Projection:</strong> This tool helps you visualize your financial timeline leading up to your chosen <strong>Projection End Age</strong>. It projects accumulated income, net living costs, and the growth of your pensions across key life milestones.</li>
-                <li><strong>Runway Analysis:</strong> By comparing your accumulated costs against a potential net severance payout, you can see exactly when your severance money might run out.</li>
+                <li><strong>Ekonomisk prognos:</strong> Detta verktyg hjälper dig att visualisera din ekonomiska tidslinje fram till din valda <strong>Slutålder för prognos</strong>. Det projicerar ackumulerad inkomst, nettokostnader för uppehälle och tillväxten av dina pensioner över viktiga milstolpar i livet.</li>
+                <li><strong>Analys av uthållighet:</strong> Genom att jämföra dina ackumulerade kostnader mot en potentiell nettoutbetalning av avgångsvederlag kan du se exakt när dina avgångspengar kan ta slut.</li>
             </ul>
-            <h4>Budget Calculator</h4>
+            <h4>Kalkylator för budget</h4>
             <ul>
-                <li><strong>Daily Cost Estimation:</strong> Click the calculator icon (🖩) next to "Daily Cost" to break down your monthly expenses. The tool will convert this into a daily burn rate.</li>
-                <li><strong>Presets & Customization:</strong> You can load standard Swedish budget profiles, tweak the numbers, and save your own custom presets directly to your browser for future use.</li>
+                <li><strong>Uppskattning av daglig kostnad:</strong> Klicka på kalkylatorikonen (🖩) bredvid "Daglig kostnad" för att bryta ner dina månatliga utgifter. Verktyget omvandlar detta till en daglig förbrukningshastighet.</li>
+                <li><strong>Profiler & Anpassning:</strong> Du kan ladda svenska standardbudgetprofiler, justera siffrorna och spara dina egna anpassade profiler direkt i din webbläsare för framtida bruk.</li>
             </ul>
-            <h4>Timeline & Milestones</h4>
+            <h4>Tidslinje & Milstolpar</h4>
             <ul>
-                <li><strong>Cost Target Age:</strong> The age you want to project your remaining living expenses towards. If the timeline extends past this age, the remaining cost will count upwards with a <code>+</code>.</li>
-                <li><strong>Cost Interval (SEK):</strong> Sets a recurring financial milestone. A highlighted row is added to the timeline exactly when your projected remaining costs hit a multiple of this amount.</li>
-                <li><strong>Toggle Milestones:</strong> Use the checkboxes under "Timeline Options" to optionally hide or show specific chronological events (Birthdays, New Year, 1 Year, 1 Month) and recurring financial milestones (Cost, Severance).</li>
-                <li><strong>Custom Events:</strong> Click the "✎ Edit Events" button to open the event manager and add specific dates/events to your timeline.</li>
+                <li><strong>Målder för kostnad:</strong> Den ålder du vill projicera dina återstående levnadskostnader fram till. Om tidslinjen sträcker sig förbi denna ålder kommer den återstående kostnaden att räknas uppåt med ett <code>+</code>.</li>
+                <li><strong>Kostnadsintervall (SEK):</strong> Anger en återkommande ekonomisk milstolpe. En markerad rad läggs till i tidslinjen exakt när dina projicerade återstående kostnader når en multipel av detta belopp.</li>
+                <li><strong>Växla milstolpar:</strong> Använd kryssrutorna under "Tidslinjealternativ" för att valfritt dölja eller visa specifika kronologiska händelser (Födelsedagar, Nyår, 1 År, 1 Månad) och återkommande ekonomiska milstolpar (Kostnad, Avgångsvederlag).</li>
+                <li><strong>Anpassade händelser:</strong> Klicka på knappen "✎ Redigera händelser" för att öppna händelsehanteraren och lägga till specifika datum/händelser i din tidslinje.</li>
             </ul>
-            <h4>Export & Import</h4>
+            <h4>Exportera & Importera</h4>
             <ul>
-                <li><strong>Backup Settings:</strong> Use the green <strong>Export</strong> button to download all your inputs, budget presets, and custom events as a JSON file. Use the purple <strong>Import</strong> button to restore them later.</li>
+                <li><strong>Säkerhetskopiera inställningar:</strong> Använd den gröna knappen <strong>Exportera</strong> för att ladda ner alla dina inmatningar, budgetprofiler och anpassade händelser som en JSON-fil. Använd den lila knappen <strong>Importera</strong> för att återställa dem senare.</li>
             </ul>
-            <h4>Tax Rules (Gothenburg 2026 rules)</h4>
+            <h4>Skatteregler (Göteborg 2026)</h4>
             <ul>
-                <li><strong>Municipal Tax:</strong> 33.20% (Göteborg).</li>
-                <li><strong>State Tax:</strong> 20% on taxable income above 625,600 SEK.</li>
-                <li><strong>Deductions:</strong> Automatically calculates Basic Deduction (Grundavdrag) and Earned Income Tax Credit (Jobbskatteavdrag) using 2026 baselines (Prisbasbelopp = 58,800 SEK).</li>
+                <li><strong>Kommunalskatt:</strong> 33.20% (Göteborg).</li>
+                <li><strong>Statlig skatt:</strong> 20% på beskattningsbar inkomst över 625 600 SEK.</li>
+                <li><strong>Avdrag:</strong> Beräknar automatiskt grundavdrag och jobbskatteavdrag med 2026 års baslinjer (Prisbasbelopp = 58 800 SEK).</li>
             </ul>
-            <h4>Pension Rules (Standard 2024)</h4>
+            <h4>Pensionsregler (Standard 2024)</h4>
             <ul>
-                <li><strong>Public Pension (Allmän pension):</strong> 18.5% of pensionable income, capped at an income ceiling of 614,934 SEK/year.</li>
-                <li><strong>Occupational Pension (Tjänstepension - ITP1):</strong> 4.5% on salary up to 571,500 SEK/year, 30% on salary above that ceiling, plus 1.7% flexpension on the entire gross amount.</li>
-                <li><strong>Löneväxling (Salary Exchange):</strong> Extra pension contribution deducted from your gross salary <em>before</em> income tax calculation, effectively lowering your accumulated net income and taxes while boosting your pension.</li>
+                <li><strong>Allmän pension:</strong> 18.5% av pensionsgrundande inkomst, maximerat till ett inkomsttak på 614 934 SEK/år.</li>
+                <li><strong>Tjänstepension (ITP1):</strong> 4.5% på lön upp till 571 500 SEK/år, 30% på lön därutöver, plus 1.7% flexpension på hela bruttobeloppet.</li>
+                <li><strong>Löneväxling:</strong> Extra pensionsavsättning som dras från din bruttolön <em>före</em> inkomstskatt, vilket sänker din ackumulerade nettoinkomst och skatt samtidigt som det ökar din pension.</li>
             </ul>
-            <h4>Severance</h4>
+            <h4>Avgångsvederlag</h4>
             <ul>
-                <li><strong>Severance:</strong> Calculated as a net lump sum payout based on your base monthly gross salary (ignoring löneväxling). It is subtracted from your accumulated costs to show when the money runs out.</li>
+                <li><strong>Avgångsvederlag:</strong> Beräknas som en nettoutbetalning (engångssumma) baserat på din grundläggande månatliga bruttolön (exklusive löneväxling). Detta subtraheras från dina ackumulerade kostnader för att visa när pengarna tar slut.</li>
             </ul>
         </div>
         <div class="modal-actions" style="margin-top: 20px;">
-            <button type="button" class="btn-primary" onclick="document.getElementById('helpModal').close()">Close</button>
+            <button type="button" class="btn-primary" onclick="document.getElementById('helpModal').close()">Stäng</button>
         </div>
     </dialog>
 
     <!-- Custom Events Modal -->
     <dialog id="customEventsModal" style="width: 450px;">
-        <h3 style="margin-top: 0;">Edit Custom Events</h3>
-        <p style="font-size: 0.9em; color: #bbb; margin-top: -10px;">Add your own dates and events to the timeline.</p>
+        <h3 style="margin-top: 0;">Redigera anpassade händelser</h3>
+        <p style="font-size: 0.9em; color: #bbb; margin-top: -10px;">Lägg till dina egna datum och händelser på tidslinjen.</p>
         <div id="customEventsContainer" style="margin-bottom: 15px; max-height: 300px; overflow-y: auto; padding-right: 5px;">
             <!-- Rows go here -->
         </div>
         <div style="margin-bottom: 15px;">
-            <button type="button" class="btn-success" onclick="addCustomEventRow()">+ Add Event</button>
+            <button type="button" class="btn-success" onclick="addCustomEventRow()">+ Lägg till händelse</button>
         </div>
         <div class="modal-actions">
-            <button type="button" onclick="document.getElementById('customEventsModal').close()">Cancel</button>
-            <button type="button" class="btn-primary" onclick="applyCustomEvents()">Apply to Timeline</button>
+            <button type="button" onclick="document.getElementById('customEventsModal').close()">Avbryt</button>
+            <button type="button" class="btn-primary" onclick="applyCustomEvents()">Tillämpa på tidslinje</button>
         </div>
     </dialog>
 
@@ -268,7 +268,7 @@
         }
 
         function saveCustomPreset() {
-            const presetName = prompt("Enter a name for this custom preset:");
+            const presetName = prompt("Ange ett namn för denna anpassade profil:");
             if (!presetName || !presetName.trim()) return;
 
             const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
@@ -280,7 +280,7 @@
             localStorage.setItem('fin_custom_presets', JSON.stringify(customPresets));
 
             budgetPresets[presetName.trim()] = breakdown;
-            addPresetToDropdown(presetName.trim(), presetName.trim() + " (Custom)");
+            addPresetToDropdown(presetName.trim(), presetName.trim() + " (Anpassad)");
             document.getElementById('budgetPreset').value = presetName.trim();
         }
 
@@ -346,8 +346,8 @@
             div.style.marginBottom = '10px';
             const safeName = name.replace(/"/g, '&quot;');
             div.innerHTML = `
-                <input type="text" placeholder="Event Name (e.g. Buy Boat)" value="${safeName}" style="flex: 2;">
-                <input type="date" placeholder="YYYY-MM-DD" value="${date}" style="flex: 1;">
+                <input type="text" placeholder="Händelsenamn (t.ex. Köpa båt)" value="${safeName}" style="flex: 2;">
+                <input type="date" placeholder="ÅÅÅÅ-MM-DD" value="${date}" style="flex: 1;">
                 <button type="button" onclick="this.parentElement.remove()" style="padding: 4px 10px; background: #c62828; border-color: #b71c1c; border-radius: 4px; color: white; cursor: pointer;">X</button>
             `;
             container.appendChild(div);
@@ -390,11 +390,11 @@
             }
 
             let parts = [];
-            if (years > 0) parts.push(years + (years === 1 ? ' year' : ' years'));
-            if (months > 0) parts.push(months + (months === 1 ? ' month' : ' months'));
-            if (days > 0) parts.push(days + (days === 1 ? ' day' : ' days'));
+            if (years > 0) parts.push(years + (years === 1 ? ' år' : ' år'));
+            if (months > 0) parts.push(months + (months === 1 ? ' månad' : ' månader'));
+            if (days > 0) parts.push(days + (days === 1 ? ' dag' : ' dagar'));
             
-            return parts.length > 0 ? parts.join(', ') : 'Today';
+            return parts.length > 0 ? parts.join(', ') : 'Idag';
         }
 
         function formatDateLocal(date) {
@@ -486,7 +486,7 @@
                 for (let item of items) {
                     item = item.trim();
                     if (!item) continue;
-                    let name = 'Custom Event';
+                    let name = 'Anpassad händelse';
                     let dateStr = item;
                     if (item.includes(':')) {
                         const parts = item.split(':');
@@ -508,7 +508,7 @@
             customMilestones.sort((a, b) => a.date - b.date);
 
             if (!dob.valueOf()) {
-                alert("Please enter a valid date of birth.");
+                alert("Vänligen ange ett giltigt födelsedatum.");
                 return;
             }
 
@@ -534,8 +534,8 @@
             }));
 
             // Update dynamic table header
-            document.getElementById('th-remaining-cost').innerText = `Remaining Cost to Age ${targetCostAge} (Net)`;
-            document.getElementById('mainTitle').innerText = `Financial Projection to ${projectionEndAge}`;
+            document.getElementById('th-remaining-cost').innerText = `Återstående kostnad till ålder ${targetCostAge} (Netto)`;
+            document.getElementById('mainTitle').innerText = `Ekonomisk prognos till ${projectionEndAge}`;
 
             // Pension Calculation (Swedish Public Pension rules for ~2024)
             const yearlySalary = monthlySalary * 12;
@@ -594,8 +594,8 @@
             // Add "Today" row
             const todayRow = tbody.insertRow();
             todayRow.insertCell(0).innerText = formatDateLocal(currentDate);
-            todayRow.insertCell(1).innerText = 'Today';
-            todayRow.insertCell(2).innerText = 'Today';
+            todayRow.insertCell(1).innerText = 'Idag';
+            todayRow.insertCell(2).innerText = 'Idag';
             todayRow.insertCell(3).innerText = accumulatedIncomeGross.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(4).innerText = accumulatedIncomeNet.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(5).innerText = accumulatedCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
@@ -700,7 +700,7 @@
                 let type = '';
                 if (showBD && nextMilestone.getTime() === nextBD.getTime()) {
                     const age = nextBD.getFullYear() - dob.getFullYear();
-                    type = `Birthday (Age ${age})`;
+                    type = `Födelsedag (Ålder ${age})`;
                     if (age === 64) {
                         type += " - Tidigaste uttag (Allmän pension)";
                         row.className = 'milestone-special';
@@ -714,51 +714,51 @@
                         row.className = 'milestone-bd';
                     }
                     if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
-                        type += " (1 Year from Today)";
+                        type += " (1 år från idag)";
                     }
                     if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
-                        type += " (1 Month from Today)";
+                        type += " (1 månad från idag)";
                     }
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
-                    type = '1 Year from Today';
+                    type = '1 år från idag';
                     row.className = 'milestone-1y';
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
-                    type = '1 Month from Today';
+                    type = '1 månad från idag';
                     row.className = 'milestone-1m';
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (showNY && nextMilestone.getTime() === nextNY.getTime()) {
-                    type = 'New Year';
+                    type = 'Nyår';
                     row.className = 'milestone-ny';
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (isSevMilestone) {
-                    type = `${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    type = `${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                     row.className = 'milestone-sev';
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                 } else if (isCustomMilestone) {
                     type = `★ ${customName}`;
                     row.className = 'milestone-custom';
-                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                 } else if (isCostMilestone) {
-                    type = `Remaining Cost Milestone (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    type = `Milstolpe för återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                     row.className = 'milestone-cost';
                 } else if (nextMilestone.getTime() === targetCostDate.getTime()) {
-                    type = `Cost Target Age (${targetCostAge})`;
+                    type = `Målder för kostnad (${targetCostAge})`;
                     row.className = 'milestone-target-cost';
-                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
-                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else {
-                    type = `Projection End (Age ${projectionEndAge})`;
+                    type = `Prognosens slut (Ålder ${projectionEndAge})`;
                     row.className = 'milestone-target-end';
                 }
                 
@@ -813,10 +813,10 @@
                     if (data.fin_settings) localStorage.setItem('fin_settings', JSON.stringify(data.fin_settings));
                     if (data.fin_custom_presets) localStorage.setItem('fin_custom_presets', JSON.stringify(data.fin_custom_presets));
                     if (data.fin_budget_breakdown) localStorage.setItem('fin_budget_breakdown', JSON.stringify(data.fin_budget_breakdown));
-                    alert("Settings imported successfully. The page will now reload.");
+                    alert("Inställningarna har importerats. Sidan kommer nu att laddas om.");
                     location.reload();
                 } catch (err) {
-                    alert("Failed to parse the imported file. Please make sure it's a valid settings JSON.");
+                    alert("Kunde inte läsa filen. Se till att det är en giltig JSON-fil med inställningar.");
                 }
             };
             reader.readAsText(file);
@@ -824,7 +824,7 @@
         }
 
         function clearAll() {
-            if (!confirm("Are you sure you want to clear all inputs and reset settings?")) return;
+            if (!confirm("Är du säker på att du vill rensa alla fält och återställa inställningarna?")) return;
             
             localStorage.removeItem('fin_settings');
             localStorage.removeItem('fin_budget_breakdown');
@@ -854,8 +854,8 @@
             fields.forEach(id => { document.getElementById(id).value = '0'; });
             
             document.querySelector('#resultTable tbody').innerHTML = '';
-            document.getElementById('th-remaining-cost').innerText = 'Remaining Cost to Target (Net)';
-            document.getElementById('mainTitle').innerText = 'Financial Projection to 70';
+            document.getElementById('th-remaining-cost').innerText = 'Återstående kostnad till mål (Netto)';
+            document.getElementById('mainTitle').innerText = 'Ekonomisk prognos till 70';
         }
 
         // Auto-load on startup
@@ -865,7 +865,7 @@
             if (customPresets) {
                 for (const [name, vals] of Object.entries(customPresets)) {
                     budgetPresets[name] = vals;
-                    addPresetToDropdown(name, name + " (Custom)");
+                    addPresetToDropdown(name, name + " (Anpassad)");
                 }
             }
 
