@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Independent Milestone Tracker</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; font-size: 14px; }
+        .container { max-width: 1400px; margin: auto; }
+        input, select, textarea { padding: 8px; margin: 5px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; font-family: inherit; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: left; }
+        th { background: #2c2c2c; }
+        /* Group Separators */
+        tbody td:nth-child(4), thead tr:not(.group-header) th:nth-child(4),
+        tbody td:nth-child(6), thead tr:not(.group-header) th:nth-child(6),
+        tbody td:nth-child(9), thead tr:not(.group-header) th:nth-child(9),
+        .group-header th:not(:first-child) { border-left: 2px solid #888; }
+        .group-header th { text-align: center; background: #222; color: #ccc; border-bottom: 2px solid #888; }
+        tbody td:first-child { white-space: nowrap; }
+        .milestone-ny { color: #4fc3f7; font-weight: bold; background-color: #013e5a; }
+        .milestone-bd { color: #81c784; font-weight: bold; background-color: #1e3b20; }
+        .milestone-cost { color: #ce93d8; font-weight: bold; background-color: #311b3b; }
+        .milestone-custom { color: #b2ff59; font-weight: bold; background-color: #1b5e20; }
+        .milestone-sev { color: #ffcc80; font-weight: bold; background-color: #4e342e; }
+        .milestone-special { color: #ffd54f; font-weight: bold; background-color: #3e2723; }
+        .milestone-1y { color: #f48fb1; font-weight: bold; background-color: #310b45; }
+        .milestone-1m { color: #ff8a65; font-weight: bold; background-color: #3e1503; }
+        .milestone-target-cost { color: #84ffff; font-weight: bold; background-color: #004d40; }
+        .milestone-target-end { color: #b0bec5; font-weight: bold; background-color: #263238; }
+        .input-group { display: inline-block; margin: 5px; vertical-align: bottom; }
+        .input-group label { display: block; font-size: 0.85em; color: #bbb; margin-bottom: 2px; margin-left: 2px; }
+        .input-group input { margin: 0; }
+        button { padding: 9px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #444; background: #2c2c2c; color: #fff; }
+        button:hover { background: #444; }
+        .btn-small { padding: 2px 6px; font-size: 0.85em; margin-left: 4px; vertical-align: middle; border-radius: 3px; }
+        dialog { background: #2c2c2c; color: #e0e0e0; border: 1px solid #555; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 400px; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.7); }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; margin-top: 10px; }
+        .modal-grid label { display: flex; flex-direction: column; font-size: 0.9em; color: #bbb; }
+        .modal-grid input { margin: 4px 0 0 0; width: 100%; box-sizing: border-box; }
+        .modal-actions { text-align: right; }
+        .btn-primary { background: #1976d2; border-color: #1565c0; font-weight: bold; }
+        .btn-primary:hover { background: #1e88e5; }
+        .btn-info { background: #00838f; border-color: #006064; font-weight: bold; }
+        .btn-info:hover { background: #0097a7; }
+        .btn-accent { background: #e65100; border-color: #ef6c00; font-weight: bold; }
+        .btn-accent:hover { background: #f57c00; }
+        .btn-success { background: #2e7d32; border-color: #1b5e20; font-weight: bold; }
+        .btn-success:hover { background: #388e3c; }
+        .btn-secondary { background: #6a1b9a; border-color: #4a148c; font-weight: bold; }
+        .btn-secondary:hover { background: #7b1fa2; }
+        .btn-danger { background: #c62828; border-color: #b71c1c; font-weight: bold; }
+        .btn-danger:hover { background: #d32f2f; }
+        .help-content h4 { color: #4fc3f7; margin-bottom: 5px; }
+        .help-content ul { margin-top: 0; padding-left: 20px; line-height: 1.4; color: #ccc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 id="mainTitle">Financial Projection to 70</h2>
+            <div>
+                <button class="btn-primary" onclick="calculate()">Calculate & Save</button>
+                <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
+                <button type="button" class="btn-success" onclick="exportSettings()">Export</button>
+                <button type="button" class="btn-secondary" onclick="triggerImport()">Import</button>
+                <button type="button" class="btn-info" onclick="document.getElementById('helpModal').showModal()">Help & Info</button>
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importSettings(event)">
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="dob">Birth Date</label>
+            <input type="text" id="dob" placeholder="YYYY-MM-DD" title="Your Date of Birth (Swedish format YYYY-MM-DD or Personnummer)">
+        </div>
+        <div class="input-group">
+            <label for="budget">
+                Daily Cost (SEK)
+                <button type="button" class="btn-small btn-accent" onclick="document.getElementById('budgetModal').showModal()" title="Calculate from monthly budget">🖩 Calc</button>
+            </label>
+            <input type="number" id="budget" placeholder="0" title="Daily cash required to live">
+        </div>
+        <div class="input-group">
+            <label for="salary">Gross Salary (SEK/mo)</label>
+            <input type="number" id="salary" placeholder="0" title="Your gross monthly salary for public pension calculation">
+        </div>
+        <div class="input-group">
+            <label for="lonevaxling">Löneväxling (SEK/mo)</label>
+            <input type="number" id="lonevaxling" placeholder="0" title="Monthly salary exchange/sacrifice">
+        </div>
+        <div class="input-group">
+            <label for="severance">Severance (Months)</label>
+            <input type="number" id="severance" placeholder="0" title="Months of severance pay if sacked today (calculated as Net)">
+        </div>
+        <div class="input-group">
+            <label for="sevStepMonths">Sev. Track Step (mo)</label>
+            <input type="number" id="sevStepMonths" placeholder="1" value="1" title="Months step interval for severance milestones">
+        </div>
+        <div class="input-group">
+            <label for="targetCostAge">Cost Target Age</label>
+            <input type="number" id="targetCostAge" placeholder="64" value="64" title="Age to project remaining costs towards">
+        </div>
+        <div class="input-group">
+            <label for="projectionEndAge">Projection End Age</label>
+            <input type="number" id="projectionEndAge" placeholder="70" value="70" title="Age to end the financial projection">
+        </div>
+        <div class="input-group">
+            <label for="costInterval">Cost Interval (SEK)</label>
+            <input type="number" id="costInterval" placeholder="50000" value="50000" title="Interval for remaining cost milestones">
+        </div>
+        <div class="input-group">
+            <label>Timeline Options</label>
+            <div style="display: inline-block; padding: 7px 5px;">
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer;"><input type="checkbox" id="showCost" checked style="vertical-align: middle; margin-right: 4px;">Cost</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showSev" checked style="vertical-align: middle; margin-right: 4px;">Sev.</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showBD" checked style="vertical-align: middle; margin-right: 4px;">Birthdays</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showNY" checked style="vertical-align: middle; margin-right: 4px;">New Year</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1Y" checked style="vertical-align: middle; margin-right: 4px;">1 Year</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1M" checked style="vertical-align: middle; margin-right: 4px;">1 Month</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showCustom" checked style="vertical-align: middle; margin-right: 4px;">Custom</label>
+            </div>
+        </div>
+        <div class="input-group">
+            <label>Custom Events</label>
+            <button type="button" class="btn-secondary" onclick="openCustomEventsModal()" title="Edit custom events" style="padding: 6px 15px; margin-top: 2px;">✎ Edit Events</button>
+            <input type="hidden" id="customEvents">
+        </div>
+        
+        <table id="resultTable">
+            <thead>
+                <tr class="group-header">
+                    <th colspan="3" title="Chronological progress and life milestones">Timeline</th>
+                    <th colspan="2" title="Accumulated earnings from salary over time">Income</th>
+                    <th colspan="3" title="Accumulated living expenses over time">Costs</th>
+                    <th colspan="4" title="Accumulated pension contributions over time">Pensions</th>
+                </tr>
+                <tr>
+                    <th title="The exact date of the milestone">Date</th>
+                    <th title="Event occurring on this date (e.g., Birthday, New Year)">Milestone</th>
+                    <th title="Time remaining until this milestone is reached">Time from Now</th>
+                    <th title="Total gross salary earned up to this date">Accumulated Income (Gross)</th>
+                    <th title="Total net salary earned after estimated tax">Accumulated Income (Net)</th>
+                    <th title="Total living expenses accumulated up to this date">Accumulated Cost (Net)</th>
+                    <th title="Accumulated costs minus your total net severance pay (shows when severance runs out)">Cost after Severance (Net)</th>
+                    <th id="th-remaining-cost" title="Projected remaining living expenses from this date until the target age">Remaining Cost to Target (Net)</th>
+                    <th title="Accumulated public pension (Inkomstpension) based on 18.5% of pensionable income">Pension (Public) (Gross)</th>
+                    <th title="Accumulated occupational pension (Tjänstepension), e.g., ITP1">Pension (Occupational) (Gross)</th>
+                    <th title="Accumulated salary exchange contributions">Löneväxling (Gross)</th>
+                    <th title="Sum of Public, Occupational, and Löneväxling pensions">Total Pension</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Budget Calculator Modal -->
+    <dialog id="budgetModal">
+        <h3 style="margin-top: 0;">Monthly Budget Calculator</h3>
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 0.9em; color: #bbb;" title="Choose a standard profile to auto-fill expenses">Load Preset:</label>
+            <select id="budgetPreset" onchange="loadBudgetPreset()" style="margin: 4px 0 0 0; width: 100%; box-sizing: border-box;" title="Choose a standard profile to auto-fill expenses">
+                <option value="">-- Select a Preset --</option>
+                <option value="minimal">Minimal / Frugal (~12k SEK)</option>
+                <option value="average_single">Average Single (~21k SEK)</option>
+                <option value="average_family">Average Family (~37k SEK)</option>
+                <option value="luxury">Comfortable / Luxury (~55k SEK)</option>
+            </select>
+        </div>
+        <div class="modal-grid">
+            <label title="Rent, mortgage, avgift, property tax, etc.">Housing <input type="number" id="b_housing" value="0"></label>
+            <label title="Groceries, eating out, snacks">Food <input type="number" id="b_food" value="0"></label>
+            <label title="Car loan, gas, insurance, public transit">Transport <input type="number" id="b_transport" value="0"></label>
+            <label title="Electricity, water, heating, internet, trash">Utilities <input type="number" id="b_utilities" value="0"></label>
+            <label title="Home, life, health, pet insurance (excluding car)">Insurance <input type="number" id="b_insurance" value="0"></label>
+            <label title="Streaming, gym, magazines, software">Subscriptions <input type="number" id="b_subs" value="0"></label>
+            <label title="Hobbies, movies, events, fun money">Entertainment <input type="number" id="b_fun" value="0"></label>
+            <label title="Miscellaneous expenses, clothing, savings buffer">Other <input type="number" id="b_other" value="0"></label>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-success" onclick="saveCustomPreset()" style="float: left;">Save as Preset</button>
+            <button type="button" onclick="document.getElementById('budgetModal').close()">Cancel</button>
+            <button type="button" class="btn-primary" onclick="applyBudget()">Apply to Daily Cost</button>
+        </div>
+    </dialog>
+
+    <!-- Help & Info Modal -->
+    <dialog id="helpModal" style="width: 1000px; max-width: 90vw;">
+        <h3 style="margin-top: 0;">How Calculations Work</h3>
+        <div class="help-content">
+            <h4>Overall Purpose</h4>
+            <ul>
+                <li><strong>Financial Projection:</strong> This tool helps you visualize your financial timeline leading up to your chosen <strong>Projection End Age</strong>. It projects accumulated income, net living costs, and the growth of your pensions across key life milestones.</li>
+                <li><strong>Runway Analysis:</strong> By comparing your accumulated costs against a potential net severance payout, you can see exactly when your severance money might run out.</li>
+            </ul>
+            <h4>Budget Calculator</h4>
+            <ul>
+                <li><strong>Daily Cost Estimation:</strong> Click the calculator icon (🖩) next to "Daily Cost" to break down your monthly expenses. The tool will convert this into a daily burn rate.</li>
+                <li><strong>Presets & Customization:</strong> You can load standard Swedish budget profiles, tweak the numbers, and save your own custom presets directly to your browser for future use.</li>
+            </ul>
+            <h4>Timeline & Milestones</h4>
+            <ul>
+                <li><strong>Cost Target Age:</strong> The age you want to project your remaining living expenses towards. If the timeline extends past this age, the remaining cost will count upwards with a <code>+</code>.</li>
+                <li><strong>Cost Interval (SEK):</strong> Sets a recurring financial milestone. A highlighted row is added to the timeline exactly when your projected remaining costs hit a multiple of this amount.</li>
+                <li><strong>Toggle Milestones:</strong> Use the checkboxes under "Timeline Options" to optionally hide or show specific chronological events (Birthdays, New Year, 1 Year, 1 Month) and recurring financial milestones (Cost, Severance).</li>
+                <li><strong>Custom Events:</strong> Click the "✎ Edit Events" button to open the event manager and add specific dates/events to your timeline.</li>
+            </ul>
+            <h4>Export & Import</h4>
+            <ul>
+                <li><strong>Backup Settings:</strong> Use the green <strong>Export</strong> button to download all your inputs, budget presets, and custom events as a JSON file. Use the purple <strong>Import</strong> button to restore them later.</li>
+            </ul>
+            <h4>Tax Rules (Gothenburg 2026 rules)</h4>
+            <ul>
+                <li><strong>Municipal Tax:</strong> 33.20% (Göteborg).</li>
+                <li><strong>State Tax:</strong> 20% on taxable income above 625,600 SEK.</li>
+                <li><strong>Deductions:</strong> Automatically calculates Basic Deduction (Grundavdrag) and Earned Income Tax Credit (Jobbskatteavdrag) using 2026 baselines (Prisbasbelopp = 58,800 SEK).</li>
+            </ul>
+            <h4>Pension Rules (Standard 2024)</h4>
+            <ul>
+                <li><strong>Public Pension (Allmän pension):</strong> 18.5% of pensionable income, capped at an income ceiling of 614,934 SEK/year.</li>
+                <li><strong>Occupational Pension (Tjänstepension - ITP1):</strong> 4.5% on salary up to 571,500 SEK/year, 30% on salary above that ceiling, plus 1.7% flexpension on the entire gross amount.</li>
+                <li><strong>Löneväxling (Salary Exchange):</strong> Extra pension contribution deducted from your gross salary <em>before</em> income tax calculation, effectively lowering your accumulated net income and taxes while boosting your pension.</li>
+            </ul>
+            <h4>Severance</h4>
+            <ul>
+                <li><strong>Severance:</strong> Calculated as a net lump sum payout based on your base monthly gross salary (ignoring löneväxling). It is subtracted from your accumulated costs to show when the money runs out.</li>
+            </ul>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-primary" onclick="document.getElementById('helpModal').close()">Close</button>
+        </div>
+    </dialog>
+
+    <!-- Custom Events Modal -->
+    <dialog id="customEventsModal" style="width: 450px;">
+        <h3 style="margin-top: 0;">Edit Custom Events</h3>
+        <p style="font-size: 0.9em; color: #bbb; margin-top: -10px;">Add your own dates and events to the timeline.</p>
+        <div id="customEventsContainer" style="margin-bottom: 15px; max-height: 300px; overflow-y: auto; padding-right: 5px;">
+            <!-- Rows go here -->
+        </div>
+        <div style="margin-bottom: 15px;">
+            <button type="button" class="btn-success" onclick="addCustomEventRow()">+ Add Event</button>
+        </div>
+        <div class="modal-actions">
+            <button type="button" onclick="document.getElementById('customEventsModal').close()">Cancel</button>
+            <button type="button" class="btn-primary" onclick="applyCustomEvents()">Apply to Timeline</button>
+        </div>
+    </dialog>
+
+    <script>
+        const budgetPresets = {
+            minimal: { b_housing: 6000, b_food: 2500, b_transport: 800, b_utilities: 1000, b_insurance: 200, b_subs: 200, b_fun: 500, b_other: 500 },
+            average_single: { b_housing: 10000, b_food: 4000, b_transport: 1500, b_utilities: 1500, b_insurance: 300, b_subs: 500, b_fun: 2000, b_other: 1500 },
+            average_family: { b_housing: 16000, b_food: 8000, b_transport: 3000, b_utilities: 2500, b_insurance: 800, b_subs: 800, b_fun: 3000, b_other: 3000 },
+            luxury: { b_housing: 25000, b_food: 8000, b_transport: 5000, b_utilities: 3000, b_insurance: 1000, b_subs: 1500, b_fun: 6000, b_other: 5000 }
+        };
+
+        function addPresetToDropdown(value, text) {
+            const select = document.getElementById('budgetPreset');
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === value) {
+                    select.options[i].text = text;
+                    return;
+                }
+            }
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.text = text;
+            select.add(opt);
+        }
+
+        function saveCustomPreset() {
+            const presetName = prompt("Enter a name for this custom preset:");
+            if (!presetName || !presetName.trim()) return;
+
+            const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
+            let breakdown = {};
+            fields.forEach(id => { breakdown[id] = parseFloat(document.getElementById(id).value) || 0; });
+
+            let customPresets = JSON.parse(localStorage.getItem('fin_custom_presets')) || {};
+            customPresets[presetName.trim()] = breakdown;
+            localStorage.setItem('fin_custom_presets', JSON.stringify(customPresets));
+
+            budgetPresets[presetName.trim()] = breakdown;
+            addPresetToDropdown(presetName.trim(), presetName.trim() + " (Custom)");
+            document.getElementById('budgetPreset').value = presetName.trim();
+        }
+
+        function loadBudgetPreset() {
+            const presetKey = document.getElementById('budgetPreset').value;
+            if (!presetKey || !budgetPresets[presetKey]) return;
+            
+            const values = budgetPresets[presetKey];
+            for (const [id, val] of Object.entries(values)) {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            }
+        }
+
+        function applyBudget() {
+            const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
+            let monthlyTotal = 0;
+            let breakdown = {};
+            fields.forEach(id => {
+                let val = parseFloat(document.getElementById(id).value) || 0;
+                monthlyTotal += val;
+                breakdown[id] = val;
+            });
+            localStorage.setItem('fin_budget_breakdown', JSON.stringify(breakdown));
+            
+            const dailyTotal = (monthlyTotal * 12) / 365.25;
+            document.getElementById('budget').value = Math.round(dailyTotal);
+            document.getElementById('budgetModal').close();
+            calculate(); // Auto-recalculate
+        }
+
+        function openCustomEventsModal() {
+            const container = document.getElementById('customEventsContainer');
+            container.innerHTML = '';
+            const val = document.getElementById('customEvents').value.trim();
+            if (val) {
+                const items = val.split(/[\n,]+/);
+                for (let item of items) {
+                    if (!item.trim()) continue;
+                    let name = '';
+                    let date = '';
+                    if (item.includes(':')) {
+                        const s = item.split(':');
+                        name = s[0].trim();
+                        date = s.slice(1).join(':').trim();
+                    } else {
+                        date = item.trim();
+                    }
+                    addCustomEventRow(name, date);
+                }
+            }
+            if (container.children.length === 0) {
+                addCustomEventRow('', '');
+            }
+            document.getElementById('customEventsModal').showModal();
+        }
+
+        function addCustomEventRow(name = '', date = '') {
+            const container = document.getElementById('customEventsContainer');
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.gap = '10px';
+            div.style.marginBottom = '10px';
+            const safeName = name.replace(/"/g, '&quot;');
+            div.innerHTML = `
+                <input type="text" placeholder="Event Name (e.g. Buy Boat)" value="${safeName}" style="flex: 2;">
+                <input type="date" placeholder="YYYY-MM-DD" value="${date}" style="flex: 1;">
+                <button type="button" onclick="this.parentElement.remove()" style="padding: 4px 10px; background: #c62828; border-color: #b71c1c; border-radius: 4px; color: white; cursor: pointer;">X</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function applyCustomEvents() {
+            const container = document.getElementById('customEventsContainer');
+            const parts = [];
+            for (let row of container.children) {
+                const inputs = row.querySelectorAll('input');
+                const name = inputs[0].value.trim();
+                const date = inputs[1].value.trim();
+                if (date) {
+                    if (name) {
+                        parts.push(`${name}: ${date}`);
+                    } else {
+                        parts.push(date);
+                    }
+                }
+            }
+            document.getElementById('customEvents').value = parts.join('\n');
+            document.getElementById('customEventsModal').close();
+            calculate();
+        }
+
+        function getTimeFromNow(futureDate) {
+            const now = new Date();
+            let years = futureDate.getFullYear() - now.getFullYear();
+            let months = futureDate.getMonth() - now.getMonth();
+            let days = futureDate.getDate() - now.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(futureDate.getFullYear(), futureDate.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            let parts = [];
+            if (years > 0) parts.push(years + (years === 1 ? ' year' : ' years'));
+            if (months > 0) parts.push(months + (months === 1 ? ' month' : ' months'));
+            if (days > 0) parts.push(days + (days === 1 ? ' day' : ' days'));
+            
+            return parts.length > 0 ? parts.join(', ') : 'Today';
+        }
+
+        function formatDateLocal(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function calculateNetMonthlySalary(lon_manad) {
+            if (lon_manad <= 0) return 0;
+            
+            const lon_ar = lon_manad * 12;
+            const PBB = 58800; // 2026 Prisbasbelopp
+            const KOMMUNALSKATT_GOTEBORG = 0.3320; // 33.20%
+            const SKIKTGRANS_2026 = 625600;
+
+            // 1. Grundavdrag
+            let ga = 0;
+            if (lon_ar <= 0.99 * PBB) {
+                ga = 0.42 * PBB;
+            } else if (lon_ar <= 2.72 * PBB) {
+                ga = 0.42 * PBB + 0.20 * (lon_ar - 0.99 * PBB);
+            } else if (lon_ar <= 3.11 * PBB) {
+                ga = 0.77 * PBB;
+            } else if (lon_ar <= 7.88 * PBB) {
+                ga = 0.77 * PBB - 0.10 * (lon_ar - 3.11 * PBB);
+            } else {
+                ga = 0.29 * PBB;
+            }
+            ga = Math.min(Math.ceil(ga / 100) * 100, lon_ar);
+
+            const beskattningsbar = Math.max(0, lon_ar - ga);
+
+            // 2. Kommunalskatt
+            const kommunalskatt = beskattningsbar * KOMMUNALSKATT_GOTEBORG;
+
+            // 3. Statlig skatt
+            let statlig_skatt = 0;
+            if (beskattningsbar > SKIKTGRANS_2026) {
+                statlig_skatt = (beskattningsbar - SKIKTGRANS_2026) * 0.20;
+            }
+
+            // 4. Jobbskatteavdrag (JSA)
+            const jsa = lon_ar <= 475104 ? (lon_ar / 475104) * 47292 : 47292;
+            const total_skatt = Math.max(0, kommunalskatt + statlig_skatt - jsa);
+            return (lon_ar - total_skatt) / 12;
+        }
+
+        function calculate() {
+            let dobStr = document.getElementById('dob').value.trim();
+            
+            // Handle Swedish Personnummer (YYYYMMDD-XXXX or YYMMDD-XXXX)
+            if (dobStr.match(/^\d{6,8}[-+]\d{4}$/)) {
+                dobStr = dobStr.slice(0, -5);
+            }
+            
+            // Convert YYYYMMDD or YYMMDD to YYYY-MM-DD
+            if (/^\d{8}$/.test(dobStr)) {
+                dobStr = `${dobStr.substring(0, 4)}-${dobStr.substring(4, 6)}-${dobStr.substring(6, 8)}`;
+                document.getElementById('dob').value = dobStr;
+            } else if (/^\d{6}$/.test(dobStr)) {
+                let yr = parseInt(dobStr.substring(0, 2), 10);
+                yr += (yr < 30) ? 2000 : 1900;
+                dobStr = `${yr}-${dobStr.substring(2, 4)}-${dobStr.substring(4, 6)}`;
+                document.getElementById('dob').value = dobStr;
+            }
+
+            const dobParts = dobStr.split('-');
+            const dob = new Date(dobParts[0], dobParts[1] - 1, dobParts[2]);
+            const dailyBudget = parseFloat(document.getElementById('budget').value) || 0;
+            const monthlySalary = parseFloat(document.getElementById('salary').value) || 0;
+            const monthlyLonevaxling = parseFloat(document.getElementById('lonevaxling').value) || 0;
+            const severanceMonths = parseFloat(document.getElementById('severance').value) || 0;
+            const rawStep = parseFloat(document.getElementById('sevStepMonths').value);
+            const sevStepMonths = (rawStep && rawStep > 0) ? rawStep : 1; // Prevent infinite loop on 0
+            const targetCostAge = parseFloat(document.getElementById('targetCostAge').value) || 64;
+            const projectionEndAge = parseFloat(document.getElementById('projectionEndAge').value) || 70;
+            const costMilestoneInterval = parseFloat(document.getElementById('costInterval').value) || 50000;
+            const showCost = document.getElementById('showCost').checked;
+            const showSev = document.getElementById('showSev').checked;
+            const showBD = document.getElementById('showBD').checked;
+            const showNY = document.getElementById('showNY').checked;
+            const show1Y = document.getElementById('show1Y').checked;
+            const show1M = document.getElementById('show1M').checked;
+            const showCustom = document.getElementById('showCustom').checked;
+            
+            const customEventsStr = document.getElementById('customEvents').value.trim();
+            const customMilestones = [];
+            if (customEventsStr) {
+                const items = customEventsStr.split(/[\n,]+/);
+                for (let item of items) {
+                    item = item.trim();
+                    if (!item) continue;
+                    let name = 'Custom Event';
+                    let dateStr = item;
+                    if (item.includes(':')) {
+                        const parts = item.split(':');
+                        name = parts[0].trim();
+                        dateStr = parts.slice(1).join(':').trim();
+                    }
+                    let d;
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                        const dParts = dateStr.split('-');
+                        d = new Date(dParts[0], dParts[1] - 1, dParts[2]);
+                    } else {
+                        d = new Date(dateStr);
+                    }
+                    if (d && !isNaN(d.valueOf())) {
+                        customMilestones.push({ name: name, date: d });
+                    }
+                }
+            }
+            customMilestones.sort((a, b) => a.date - b.date);
+
+            if (!dob.valueOf()) {
+                alert("Please enter a valid date of birth.");
+                return;
+            }
+
+            // Persistence
+            localStorage.setItem('fin_settings', JSON.stringify({ 
+                dob: dobStr, 
+                budget: dailyBudget,
+                salary: monthlySalary,
+                lonevaxling: monthlyLonevaxling,
+                severance: severanceMonths,
+                sevStepMonths: sevStepMonths,
+                targetCostAge: targetCostAge,
+                projectionEndAge: projectionEndAge,
+                costInterval: costMilestoneInterval,
+                showCost: showCost,
+                showSev: showSev,
+                showBD: showBD,
+                showNY: showNY,
+                show1Y: show1Y,
+                show1M: show1M,
+                showCustom: showCustom,
+                customEvents: document.getElementById('customEvents').value
+            }));
+
+            // Update dynamic table header
+            document.getElementById('th-remaining-cost').innerText = `Remaining Cost to Age ${targetCostAge} (Net)`;
+            document.getElementById('mainTitle').innerText = `Financial Projection to ${projectionEndAge}`;
+
+            // Pension Calculation (Swedish Public Pension rules for ~2024)
+            const yearlySalary = monthlySalary * 12;
+            const PENSION_INCOME_CEILING = 614934; // Income ceiling for pensionable income
+            const PENSION_CONTRIBUTION_RATE = 0.185; // 18.5% of pensionable income
+            const pensionableIncome = Math.min(yearlySalary, PENSION_INCOME_CEILING);
+            const dailyPensionContribution = (pensionableIncome * PENSION_CONTRIBUTION_RATE) / 365.25;
+
+            // Occupational Pension Calculation (Tjänstepension - e.g., ITP1)
+            const TJP_CEILING = 571500; // 7.5 Inkomstbasbelopp (2024)
+            const tjpBottom = Math.min(yearlySalary, TJP_CEILING) * 0.045;
+            const tjpTop = Math.max(0, yearlySalary - TJP_CEILING) * 0.30;
+            const tjpFlex = yearlySalary * 0.017;
+            const dailyTjpContribution = (tjpBottom + tjpTop + tjpFlex) / 365.25;
+
+            const dailyLonevaxling = (monthlyLonevaxling * 12) / 365.25;
+            
+            // Income is reduced by the amount you sacrifice
+            const dailyGrossSalary = (yearlySalary / 365.25) - dailyLonevaxling;
+            const monthlyNetSalary = calculateNetMonthlySalary(monthlySalary - monthlyLonevaxling);
+            const dailyNetSalary = (monthlyNetSalary * 12) / 365.25;
+            
+            // Severance is typically paid on the base salary without löneväxling
+            const severanceNetMonthly = calculateNetMonthlySalary(monthlySalary);
+            const totalSeveranceNet = severanceNetMonthly * severanceMonths;
+
+            const tbody = document.querySelector('#resultTable tbody');
+            tbody.innerHTML = '';
+
+            let currentDate = new Date();
+            const oneYearFromToday = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
+            const oneMonthFromToday = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+            const endDate = new Date(dob.getFullYear() + projectionEndAge, dob.getMonth(), dob.getDate());
+            
+            let accumulatedIncomeGross = 0;
+            let accumulatedIncomeNet = 0;
+            let accumulatedCost = 0;
+            let accumulatedPension = 0;
+            let accumulatedTjp = 0;
+            let accumulatedLonevaxling = 0;
+            let lastDate = new Date(currentDate);
+            
+            let nextSevMonth = severanceMonths;
+
+            // Calculate remaining cost to target age
+            const targetCostDate = new Date(dob.getFullYear() + targetCostAge, dob.getMonth(), dob.getDate());
+            let diffTimeTarget = targetCostDate - currentDate;
+            let diffDaysTarget = diffTimeTarget / (1000 * 60 * 60 * 24);
+            let remainingCostToTarget = diffDaysTarget * dailyBudget;
+
+            const formatRemainingCost = (cost) => {
+                if (cost < 0) return "+" + Math.abs(cost).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                return cost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            };
+
+            // Add "Today" row
+            const todayRow = tbody.insertRow();
+            todayRow.insertCell(0).innerText = formatDateLocal(currentDate);
+            todayRow.insertCell(1).innerText = 'Today';
+            todayRow.insertCell(2).innerText = 'Today';
+            todayRow.insertCell(3).innerText = accumulatedIncomeGross.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(4).innerText = accumulatedIncomeNet.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(5).innerText = accumulatedCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(6).innerText = (accumulatedCost - totalSeveranceNet).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(7).innerText = formatRemainingCost(remainingCostToTarget);
+            todayRow.insertCell(8).innerText = accumulatedPension.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(9).innerText = accumulatedTjp.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(10).innerText = accumulatedLonevaxling.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(11).innerText = (accumulatedPension + accumulatedTjp + accumulatedLonevaxling).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+
+            while (currentDate <= endDate) {
+                // --- Chronological Milestones ---
+                let nextBD = new Date(currentDate.getFullYear(), dob.getMonth(), dob.getDate());
+                if (nextBD <= currentDate) nextBD.setFullYear(currentDate.getFullYear() + 1);
+                
+                let nextNY = new Date(currentDate.getFullYear() + 1, 0, 1);
+                
+                let nextChronoMilestone = new Date(endDate.getTime() + 86400000); // Default to safely past the end date
+                if (showBD && nextBD < nextChronoMilestone) nextChronoMilestone = nextBD;
+                if (showNY && nextNY < nextChronoMilestone) nextChronoMilestone = nextNY;
+                if (show1Y && oneYearFromToday > currentDate && oneYearFromToday < nextChronoMilestone) nextChronoMilestone = oneYearFromToday;
+                if (show1M && oneMonthFromToday > currentDate && oneMonthFromToday < nextChronoMilestone) nextChronoMilestone = oneMonthFromToday;
+                if (targetCostDate > currentDate && targetCostDate < nextChronoMilestone) nextChronoMilestone = targetCostDate;
+
+                // --- Remaining Cost Milestones ---
+                let nextCostMilestoneDate = null;
+                let nextCostTarget = 0;
+                if (showCost && dailyBudget > 0 && remainingCostToTarget > 0 && costMilestoneInterval > 0) {
+                    nextCostTarget = Math.floor((remainingCostToTarget - 0.001) / costMilestoneInterval) * costMilestoneInterval;
+                    if (nextCostTarget > 0) {
+                        const targetDays = nextCostTarget / dailyBudget;
+                        nextCostMilestoneDate = new Date(targetCostDate.getTime() - targetDays * 24 * 60 * 60 * 1000);
+                    }
+                }
+
+                // --- Custom Milestones ---
+                let nextCustomMilestone = showCustom ? customMilestones.find(m => m.date > currentDate) : null;
+
+                // --- Severance Milestones ---
+                let nextSevMilestoneDate = null;
+                if (showSev) {
+                    while (dailyBudget > 0 && severanceNetMonthly > 0 && nextSevMonth >= 1) {
+                        const nextSevTarget = nextSevMonth * severanceNetMonthly;
+                        const targetDays = nextSevTarget / dailyBudget;
+                        const tentativeDate = new Date(targetCostDate.getTime() - targetDays * 24 * 60 * 60 * 1000);
+                        
+                        if (tentativeDate > lastDate) {
+                            nextSevMilestoneDate = tentativeDate;
+                            break;
+                        } else {
+                            nextSevMonth -= sevStepMonths;
+                        }
+                    }
+                }
+
+                // --- Determine next event ---
+                let nextMilestone = nextChronoMilestone;
+                let isCostMilestone = false;
+                let isCustomMilestone = false;
+                let isSevMilestone = false;
+                let customName = "";
+
+                if (nextCostMilestoneDate && nextCostMilestoneDate < nextMilestone) {
+                    nextMilestone = nextCostMilestoneDate;
+                    isCostMilestone = true;
+                } else if (nextCostMilestoneDate && nextCostMilestoneDate.getTime() === nextMilestone.getTime()) {
+                    isCostMilestone = true;
+                }
+
+                if (nextCustomMilestone && nextCustomMilestone.date < nextMilestone) {
+                    nextMilestone = nextCustomMilestone.date;
+                    isCustomMilestone = true;
+                    customName = nextCustomMilestone.name;
+                    isCostMilestone = false; // Overridden because custom is strictly earlier
+                } else if (nextCustomMilestone && nextCustomMilestone.date.getTime() === nextMilestone.getTime()) {
+                    isCustomMilestone = true;
+                    customName = nextCustomMilestone.name;
+                }
+
+                if (nextSevMilestoneDate && nextSevMilestoneDate < nextMilestone) {
+                    nextMilestone = nextSevMilestoneDate;
+                    isSevMilestone = true;
+                    isCustomMilestone = false;
+                    isCostMilestone = false; // Overridden because sev is strictly earlier
+                } else if (nextSevMilestoneDate && nextSevMilestoneDate.getTime() === nextMilestone.getTime()) {
+                    isSevMilestone = true;
+                }
+
+                if (nextMilestone > endDate) nextMilestone = endDate;
+
+                // Calculate days between
+                const diffTime = Math.abs(nextMilestone - lastDate);
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                accumulatedIncomeGross += diffDays * dailyGrossSalary;
+                accumulatedIncomeNet += diffDays * dailyNetSalary;
+                accumulatedCost += diffDays * dailyBudget;
+                accumulatedPension += diffDays * dailyPensionContribution;
+                accumulatedTjp += diffDays * dailyTjpContribution;
+                accumulatedLonevaxling += diffDays * dailyLonevaxling;
+
+                const row = tbody.insertRow();
+                let type = '';
+                if (showBD && nextMilestone.getTime() === nextBD.getTime()) {
+                    const age = nextBD.getFullYear() - dob.getFullYear();
+                    type = `Birthday (Age ${age})`;
+                    if (age === 64) {
+                        type += " - Tidigaste uttag (Allmän pension)";
+                        row.className = 'milestone-special';
+                    } else if (age === 67) {
+                        type += " - Riktålder (Nuvarande brytpunkt)";
+                        row.className = 'milestone-special';
+                    } else if (age === 69) {
+                        type += " - LAS-ålder (Rätt att stanna kvar)";
+                        row.className = 'milestone-special';
+                    } else {
+                        row.className = 'milestone-bd';
+                    }
+                    if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
+                        type += " (1 Year from Today)";
+                    }
+                    if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
+                        type += " (1 Month from Today)";
+                    }
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                } else if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
+                    type = '1 Year from Today';
+                    row.className = 'milestone-1y';
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                } else if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
+                    type = '1 Month from Today';
+                    row.className = 'milestone-1m';
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                } else if (showNY && nextMilestone.getTime() === nextNY.getTime()) {
+                    type = 'New Year';
+                    row.className = 'milestone-ny';
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                } else if (isSevMilestone) {
+                    type = `${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                    row.className = 'milestone-sev';
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                } else if (isCustomMilestone) {
+                    type = `★ ${customName}`;
+                    row.className = 'milestone-custom';
+                    if (isCostMilestone) type += ` & Remaining Cost (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                } else if (isCostMilestone) {
+                    type = `Remaining Cost Milestone (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    row.className = 'milestone-cost';
+                } else if (nextMilestone.getTime() === targetCostDate.getTime()) {
+                    type = `Cost Target Age (${targetCostAge})`;
+                    row.className = 'milestone-target-cost';
+                    if (isCustomMilestone) type += ` & Custom: ${customName}`;
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mo Sev. Covers Remaining Cost`;
+                } else {
+                    type = `Projection End (Age ${projectionEndAge})`;
+                    row.className = 'milestone-target-end';
+                }
+                
+                diffTimeTarget = targetCostDate - nextMilestone;
+                diffDaysTarget = diffTimeTarget / (1000 * 60 * 60 * 24);
+                remainingCostToTarget = diffDaysTarget * dailyBudget;
+
+                row.insertCell(0).innerText = formatDateLocal(nextMilestone);
+                row.insertCell(1).innerText = type;
+                row.insertCell(2).innerText = getTimeFromNow(nextMilestone);
+                row.insertCell(3).innerText = accumulatedIncomeGross.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(4).innerText = accumulatedIncomeNet.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(5).innerText = accumulatedCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(6).innerText = (accumulatedCost - totalSeveranceNet).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(7).innerText = formatRemainingCost(remainingCostToTarget);
+                row.insertCell(8).innerText = accumulatedPension.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(9).innerText = accumulatedTjp.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(10).innerText = accumulatedLonevaxling.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(11).innerText = (accumulatedPension + accumulatedTjp + accumulatedLonevaxling).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+
+                lastDate = new Date(nextMilestone);
+                currentDate = new Date(nextMilestone);
+                
+                if (currentDate >= endDate) break;
+            }
+        }
+
+        function exportSettings() {
+            const data = {
+                fin_settings: JSON.parse(localStorage.getItem('fin_settings')),
+                fin_custom_presets: JSON.parse(localStorage.getItem('fin_custom_presets')),
+                fin_budget_breakdown: JSON.parse(localStorage.getItem('fin_budget_breakdown'))
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "pensionskalk_settings.json");
+            dlAnchorElem.click();
+        }
+
+        function triggerImport() {
+            document.getElementById('importFile').click();
+        }
+
+        function importSettings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.fin_settings) localStorage.setItem('fin_settings', JSON.stringify(data.fin_settings));
+                    if (data.fin_custom_presets) localStorage.setItem('fin_custom_presets', JSON.stringify(data.fin_custom_presets));
+                    if (data.fin_budget_breakdown) localStorage.setItem('fin_budget_breakdown', JSON.stringify(data.fin_budget_breakdown));
+                    alert("Settings imported successfully. The page will now reload.");
+                    location.reload();
+                } catch (err) {
+                    alert("Failed to parse the imported file. Please make sure it's a valid settings JSON.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (!confirm("Are you sure you want to clear all inputs and reset settings?")) return;
+            
+            localStorage.removeItem('fin_settings');
+            localStorage.removeItem('fin_budget_breakdown');
+            
+            document.getElementById('dob').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('salary').value = '';
+            document.getElementById('lonevaxling').value = '';
+            document.getElementById('severance').value = '';
+            document.getElementById('sevStepMonths').value = '1';
+            document.getElementById('targetCostAge').value = '64';
+            document.getElementById('projectionEndAge').value = '70';
+            document.getElementById('costInterval').value = '50000';
+            
+            document.getElementById('showCost').checked = true;
+            document.getElementById('showSev').checked = true;
+            document.getElementById('showBD').checked = true;
+            document.getElementById('showNY').checked = true;
+            document.getElementById('show1Y').checked = true;
+            document.getElementById('show1M').checked = true;
+            document.getElementById('showCustom').checked = true;
+            
+            document.getElementById('customEvents').value = '';
+            document.getElementById('budgetPreset').value = '';
+            
+            const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
+            fields.forEach(id => { document.getElementById(id).value = '0'; });
+            
+            document.querySelector('#resultTable tbody').innerHTML = '';
+            document.getElementById('th-remaining-cost').innerText = 'Remaining Cost to Target (Net)';
+            document.getElementById('mainTitle').innerText = 'Financial Projection to 70';
+        }
+
+        // Auto-load on startup
+        window.onload = () => {
+            // Load Custom Presets
+            const customPresets = JSON.parse(localStorage.getItem('fin_custom_presets'));
+            if (customPresets) {
+                for (const [name, vals] of Object.entries(customPresets)) {
+                    budgetPresets[name] = vals;
+                    addPresetToDropdown(name, name + " (Custom)");
+                }
+            }
+
+            const saved = JSON.parse(localStorage.getItem('fin_settings'));
+            if (saved) {
+                document.getElementById('dob').value = saved.dob.split('T')[0];
+                document.getElementById('budget').value = saved.budget || '';
+                document.getElementById('salary').value = saved.salary || '';
+                document.getElementById('lonevaxling').value = saved.lonevaxling || '';
+                document.getElementById('severance').value = saved.severance || '';
+                if (saved.sevStepMonths !== undefined) document.getElementById('sevStepMonths').value = saved.sevStepMonths;
+                document.getElementById('targetCostAge').value = saved.targetCostAge || '64';
+                document.getElementById('projectionEndAge').value = saved.projectionEndAge || '70';
+                document.getElementById('costInterval').value = saved.costInterval || '50000';
+                if (saved.showCost !== undefined) document.getElementById('showCost').checked = saved.showCost;
+                if (saved.showSev !== undefined) document.getElementById('showSev').checked = saved.showSev;
+                if (saved.showBD !== undefined) document.getElementById('showBD').checked = saved.showBD;
+                if (saved.showNY !== undefined) document.getElementById('showNY').checked = saved.showNY;
+                if (saved.show1Y !== undefined) document.getElementById('show1Y').checked = saved.show1Y;
+                if (saved.show1M !== undefined) document.getElementById('show1M').checked = saved.show1M;
+                if (saved.showCustom !== undefined) document.getElementById('showCustom').checked = saved.showCustom;
+                document.getElementById('customEvents').value = saved.customEvents || '';
+                calculate();
+            }
+            
+            const savedBreakdown = JSON.parse(localStorage.getItem('fin_budget_breakdown'));
+            if (savedBreakdown) {
+                for (const [id, val] of Object.entries(savedBreakdown)) {
+                    const el = document.getElementById(id);
+                    if (el) el.value = val;
+                }
+            }
+        };
+    </script>
+</body>
+</html>

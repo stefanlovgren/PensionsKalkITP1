@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkylator: Lönsamhet vid Löneväxling</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; font-size: 14px; }
+        .container { max-width: 900px; margin: auto; }
+        input { padding: 8px; margin: 5px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; font-family: inherit; box-sizing: border-box; }
+        
+        .input-group { display: inline-block; margin: 10px 5px; vertical-align: bottom; }
+        .input-group label { display: block; font-size: 0.85em; color: #bbb; margin-bottom: 2px; margin-left: 2px; }
+        .input-group input { margin: 0; width: 140px; height: 34px; }
+        
+        .panel { background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
+        
+        /* Summary cards */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; margin-bottom: 20px; }
+        .summary-card { background: #2c2c2c; border: 1px solid #444; padding: 15px; border-radius: 8px; text-align: center; position: relative; }
+        .summary-card h4 { margin: 0 0 10px 0; color: #bbb; font-weight: normal; }
+        .summary-card .value { font-size: 1.8em; font-weight: bold; color: #fff; }
+        .summary-card .sub-value { font-size: 0.9em; color: #888; margin-top: 5px; }
+        
+        /* Visual Bar Chart */
+        .bar-container { background: #333; border-radius: 6px; width: 100%; height: 40px; margin-top: 10px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; display: flex; align-items: center; padding-left: 15px; font-weight: bold; color: #000; transition: width 0.4s ease-in-out; }
+        .bar-today { background-color: #ef5350; }
+        .bar-future { background-color: #66bb6a; }
+        
+        .breakdown-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .breakdown-table th, .breakdown-table td { border-bottom: 1px solid #444; padding: 12px; text-align: left; }
+        .breakdown-table th { color: #888; font-weight: normal; font-size: 0.9em; }
+        .val-col { text-align: right !important; font-family: monospace; font-size: 1.1em; }
+        .highlight-row { background-color: #1b5e20; border-radius: 4px; }
+        .highlight-row td { border-bottom: none; font-weight: bold; color: #b2ff59; }
+        
+        .warning-box { background: #b71c1c; border: 1px solid #ff5252; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; }
+        .warning-box h4 { margin: 0 0 5px 0; color: #ff8a80; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hur mycket lönar sig löneväxling?</h2>
+        <p style="color: #aaa; margin-top: -10px; margin-bottom: 20px;">
+            Beräkna den garanterade skattearbitrage-vinsten när du flyttar inkomst från en hög marginalskatt idag till en lägre skatt som pensionär, plus arbetsgivarens extra bonus.
+        </p>
+        
+        <div class="warning-box" id="warning-limit">
+            <h4>⚠️ Varning: Förlorad Allmän Pension!</h4>
+            <p style="margin: 0; font-size: 0.9em;">Din bruttolön efter växling hamnar under taket för allmän pension (ca 51-53 kkr/mån). Du förlorar därmed 18,5% i statlig pensionsavsättning på beloppet under taket, vilket antagligen gör löneväxlingen till en förlustaffär. Du bör sänka ditt växlingsbelopp.</p>
+        </div>
+
+        <div class="panel">
+            <div class="input-group">
+                <label for="currentSalary">Bruttolön idag (Före växling)</label>
+                <input type="number" id="currentSalary" value="65000" step="1000" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label for="lvxAmount">Löneväxling (Brutto per månad)</label>
+                <input type="number" id="lvxAmount" value="5000" step="500" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label for="munTax">Kommunalskatt (T.ex. Gbg %)</label>
+                <input type="number" id="munTax" value="33.20" step="0.1" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label for="stateTaxToday">Statlig skatt idag (%)</label>
+                <input type="number" id="stateTaxToday" value="20.0" step="1" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label for="stateTaxFuture">Statlig skatt pensionär (%)</label>
+                <input type="number" id="stateTaxFuture" value="0.0" step="1" title="0% om du hamnar under brytpunkten som pensionär" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label for="bonusPct">Extra från arbetsgivare (%)</label>
+                <input type="number" id="bonusPct" value="6.0" step="0.5" oninput="calculate()">
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card" style="border-top: 4px solid #ef5350;">
+                <h4>Alternativ A: Ta ut i lön idag</h4>
+                <div class="value" id="card-net-today">0 kr</div>
+                <div class="sub-value" id="card-tax-today">53.20% Skatt</div>
+                
+                <div class="bar-container">
+                    <div class="bar-fill bar-today" id="bar-today-fill" style="width: 50%;">Netto</div>
+                </div>
+            </div>
+            
+            <div class="summary-card" style="border-top: 4px solid #66bb6a;">
+                <h4>Alternativ B: Löneväxla</h4>
+                <div class="value" id="card-net-future">0 kr</div>
+                <div class="sub-value" id="card-tax-future">33.20% Skatt (Pensionsnetto)</div>
+                
+                <div class="bar-container">
+                    <div class="bar-fill bar-future" id="bar-future-fill" style="width: 100%;">Netto</div>
+                </div>
+            </div>
+            
+            <div class="summary-card" style="border-top: 4px solid #4fc3f7; background: #013e5a;">
+                <h4>Garanterad Vinst (Månad)</h4>
+                <div class="value" id="card-profit-sek" style="color: #84ffff;">0 kr</div>
+                <div class="sub-value" id="card-profit-pct" style="color: #b3e5fc; font-weight: bold; font-size: 1.1em;">+0% "Riskfri" Avkastning</div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3 style="margin-top: 0;">Detaljerad Uträkning</h3>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Steg</th>
+                        <th>Förklaring</th>
+                        <th class="val-col">Ta ut som lön</th>
+                        <th class="val-col">Löneväxla</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. Bruttobelopp</strong></td>
+                        <td>Pengar att fördela</td>
+                        <td class="val-col" id="td-brutto-today">0 kr</td>
+                        <td class="val-col" id="td-brutto-future">0 kr</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Arbetsgivarens premie</strong></td>
+                        <td>Skillnad i arbetsgivaravgift (ofta +6% på pension)</td>
+                        <td class="val-col">0 kr</td>
+                        <td class="val-col" id="td-bonus" style="color: #66bb6a;">+ 0 kr</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Insättning (Brutto)</strong></td>
+                        <td>Totalt belopp före personskatt</td>
+                        <td class="val-col" id="td-insatt-today">0 kr</td>
+                        <td class="val-col" id="td-insatt-future">0 kr</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4. Skatteavdrag</strong></td>
+                        <td>Marginalskatt (lön) vs framtida kommunalskatt</td>
+                        <td class="val-col" id="td-skatt-today" style="color: #ef5350;">- 0 kr</td>
+                        <td class="val-col" id="td-skatt-future" style="color: #ef5350;">- 0 kr</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>5. Netto i handen</strong></td>
+                        <td>Faktiskt värde för dig (per månad)</td>
+                        <td class="val-col" id="td-netto-today">0 kr</td>
+                        <td class="val-col" id="td-netto-future">0 kr</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="panel" style="background: #1e1e1e; border-color: #444;">
+            <h3 style="margin-top: 0; color: #ffca28;">Viktiga Fallgropar (Jobbskatteavdrag & Riktålder)</h3>
+            <ul style="color: #bbb; line-height: 1.5; font-size: 0.95em; padding-left: 20px;">
+                <li><strong>Uttagsålder avgör skatten:</strong> Den "låga" framtida skatten förutsätter oftast att du tar ut pensionen tidigast det år du fyller 67 (eller 68), då du får ta del av <em>förhöjt grundavdrag</em>. Tar du ut den t.ex. vid 60 år är skatten högre, då du varken får jobbskatteavdrag eller förhöjt grundavdrag.</li>
+                <li><strong>Nedtrappning av Jobbskatteavdrag:</strong> För löner över ca 65 000 kr trappas jobbskatteavdraget idag ner. Det gör att din faktiska marginalskatt kan vara uppemot 55-56% idag. Detta gör växlingen <em>mer</em> lönsam än om du bara räknar på 53%.</li>
+                <li><strong>Låst kapital:</strong> Pengarna är helt låsta fram till tidigast 55 års ålder.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Förenklat PGI-tak (Pensionsgrundande inkomst) för 2024/2025
+        const PGI_LIMIT = 51245; 
+
+        function formatSek(value) {
+            return Math.round(value).toLocaleString('sv-SE') + " kr";
+        }
+
+        function calculate() {
+            const currentSalary = parseFloat(document.getElementById('currentSalary').value) || 0;
+            const lvxAmount = parseFloat(document.getElementById('lvxAmount').value) || 0;
+            const munTax = parseFloat(document.getElementById('munTax').value) || 0;
+            const stateTaxToday = parseFloat(document.getElementById('stateTaxToday').value) || 0;
+            const stateTaxFuture = parseFloat(document.getElementById('stateTaxFuture').value) || 0;
+            const bonusPct = parseFloat(document.getElementById('bonusPct').value) || 0;
+            
+            // Tax calculations
+            const totalTaxTodayPct = munTax + stateTaxToday;
+            const totalTaxFuturePct = munTax + stateTaxFuture;
+            
+            // Alternative A: Salary Today
+            const taxTodaySek = lvxAmount * (totalTaxTodayPct / 100);
+            const netToday = lvxAmount - taxTodaySek;
+            
+            // Alternative B: Salary Exchange
+            const bonusSek = lvxAmount * (bonusPct / 100);
+            const pensionGross = lvxAmount + bonusSek;
+            const taxFutureSek = pensionGross * (totalTaxFuturePct / 100);
+            const netFuture = pensionGross - taxFutureSek;
+            
+            // Profit
+            const profitSek = netFuture - netToday;
+            const profitPct = netToday > 0 ? ((netFuture / netToday) - 1) * 100 : 0;
+            
+            // Check Limits warning
+            if ((currentSalary - lvxAmount) < PGI_LIMIT && currentSalary > 0) {
+                document.getElementById('warning-limit').style.display = 'block';
+            } else {
+                document.getElementById('warning-limit').style.display = 'none';
+            }
+
+            // Update UI - Cards
+            document.getElementById('card-net-today').innerText = formatSek(netToday);
+            document.getElementById('card-tax-today').innerText = `${totalTaxTodayPct.toFixed(2)}% Skatt`;
+            document.getElementById('card-net-future').innerText = formatSek(netFuture);
+            document.getElementById('card-tax-future').innerText = `${totalTaxFuturePct.toFixed(2)}% Skatt (på belopp +${bonusPct}% premie)`;
+            document.getElementById('card-profit-sek').innerText = "+" + formatSek(profitSek);
+            document.getElementById('card-profit-pct').innerText = `+${profitPct.toFixed(1)}% "Riskfri" Avkastning`;
+            
+            // Update UI - Table
+            document.getElementById('td-brutto-today').innerText = formatSek(lvxAmount);
+            document.getElementById('td-brutto-future').innerText = formatSek(lvxAmount);
+            document.getElementById('td-bonus').innerText = "+ " + formatSek(bonusSek);
+            document.getElementById('td-insatt-today').innerText = formatSek(lvxAmount);
+            document.getElementById('td-insatt-future').innerText = formatSek(pensionGross);
+            document.getElementById('td-skatt-today').innerText = "- " + formatSek(taxTodaySek);
+            document.getElementById('td-skatt-future').innerText = "- " + formatSek(taxFutureSek);
+            document.getElementById('td-netto-today').innerText = formatSek(netToday);
+            document.getElementById('td-netto-future').innerText = formatSek(netFuture);
+            
+            // Update UI - Visual Bars (relative to max)
+            const maxNet = Math.max(netToday, netFuture);
+            const pctToday = maxNet > 0 ? (netToday / maxNet) * 100 : 0;
+            const pctFuture = maxNet > 0 ? (netFuture / maxNet) * 100 : 0;
+            
+            document.getElementById('bar-today-fill').style.width = `${pctToday}%`;
+            document.getElementById('bar-future-fill').style.width = `${pctFuture}%`;
+        }
+        
+        // Initial calculation on load
+        window.onload = calculate;
+    </script>
+</body>
+</html>
