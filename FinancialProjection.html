@@ -99,7 +99,7 @@
             <input type="number" id="sevStepMonths" placeholder="1" value="1" title="Månadsintervall för milstolpar kring avgångsvederlag">
         </div>
         <div class="input-group">
-            <label for="targetCostAge">Målder för kostnad</label>
+            <label for="targetCostAge">Målålder för kostnad</label>
             <input type="number" id="targetCostAge" placeholder="64" value="64" title="Ålder att projicera återstående kostnader fram till">
         </div>
         <div class="input-group">
@@ -201,7 +201,7 @@
             </ul>
             <h4>Tidslinje & Milstolpar</h4>
             <ul>
-                <li><strong>Målder för kostnad:</strong> Den ålder du vill projicera dina återstående levnadskostnader fram till. Om tidslinjen sträcker sig förbi denna ålder kommer den återstående kostnaden att räknas uppåt med ett <code>+</code>.</li>
+                <li><strong>Målålder för kostnad:</strong> Den ålder du vill projicera dina återstående levnadskostnader fram till. Om tidslinjen sträcker sig förbi denna ålder kommer den återstående kostnaden att räknas uppåt med ett <code>+</code>.</li>
                 <li><strong>Kostnadsintervall (SEK):</strong> Anger en återkommande ekonomisk milstolpe. En markerad rad läggs till i tidslinjen exakt när dina projicerade återstående kostnader når en multipel av detta belopp.</li>
                 <li><strong>Växla milstolpar:</strong> Använd kryssrutorna under "Tidslinjealternativ" för att valfritt dölja eller visa specifika kronologiska händelser (Födelsedagar, Nyår, 1 År, 1 Månad) och återkommande ekonomiska milstolpar (Kostnad, Avgångsvederlag).</li>
                 <li><strong>Anpassade händelser:</strong> Klicka på knappen "✎ Redigera händelser" för att öppna händelsehanteraren och lägga till specifika datum/händelser i din tidslinje.</li>
@@ -756,7 +756,7 @@
                     type = `Milstolpe för återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                     row.className = 'milestone-cost';
                 } else if (nextMilestone.getTime() === targetCostDate.getTime()) {
-                    type = `Målder för kostnad (${targetCostAge})`;
+                    type = `Målålder för kostnad (${targetCostAge})`;
                     row.className = 'milestone-target-cost';
                     if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
