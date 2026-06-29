@@ -38,13 +38,31 @@
         .warning-box h4 { margin: 0 0 5px 0; color: #ff8a80; }
         .nav-link { color: #4fc3f7; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 5px; }
         .nav-link:hover { text-decoration: underline; color: #81c784; }
+        
+        /* Buttons styling */
+        button { padding: 9px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #444; background: #1976d2; color: #fff; font-weight: bold; font-family: inherit; }
+        button:hover { background: #1e88e5; }
+        .btn-success { background: #2e7d32; border-color: #1b5e20; }
+        .btn-success:hover { background: #388e3c; }
+        .btn-secondary { background: #6a1b9a; border-color: #4a148c; }
+        .btn-secondary:hover { background: #7b1fa2; }
+        .btn-danger { background: #c62828; border-color: #b71c1c; }
+        .btn-danger:hover { background: #d32f2f; }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
-        <h2>Hur mycket lönar sig löneväxling?</h2>
-        <p style="color: #aaa; margin-top: -10px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            <h2 style="margin: 0;">Hur mycket lönar sig löneväxling?</h2>
+            <div>
+                <button type="button" class="btn-danger" onclick="clearAll()">Rensa</button>
+                <button type="button" class="btn-success" onclick="exportSettings()">Exportera</button>
+                <button type="button" class="btn-secondary" onclick="triggerImport()">Importera</button>
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importSettings(event)">
+            </div>
+        </div>
+        <p style="color: #aaa; margin-top: 0; margin-bottom: 20px;">
             Beräkna den garanterade skattevinsten när du flyttar inkomst från en hög marginalskatt idag till en lägre skatt som pensionär, plus arbetsgivarens extra bonus.
         </p>
         
@@ -179,6 +197,16 @@
             const stateTaxToday = parseFloat(document.getElementById('stateTaxToday').value) || 0;
             const stateTaxFuture = parseFloat(document.getElementById('stateTaxFuture').value) || 0;
             const bonusPct = parseFloat(document.getElementById('bonusPct').value) || 0;
+
+            // Save inputs to localStorage
+            localStorage.setItem('lonevaxling_settings', JSON.stringify({
+                currentSalary: document.getElementById('currentSalary').value,
+                lvxAmount: document.getElementById('lvxAmount').value,
+                munTax: document.getElementById('munTax').value,
+                stateTaxToday: document.getElementById('stateTaxToday').value,
+                stateTaxFuture: document.getElementById('stateTaxFuture').value,
+                bonusPct: document.getElementById('bonusPct').value
+            }));
             
             // Tax calculations
             const totalTaxTodayPct = munTax + stateTaxToday;
@@ -232,9 +260,82 @@
             document.getElementById('bar-today-fill').style.width = `${pctToday}%`;
             document.getElementById('bar-future-fill').style.width = `${pctFuture}%`;
         }
+
+        function loadSettings() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('lonevaxling_settings'));
+                if (saved) {
+                    if (saved.currentSalary !== undefined) document.getElementById('currentSalary').value = saved.currentSalary;
+                    if (saved.lvxAmount !== undefined) document.getElementById('lvxAmount').value = saved.lvxAmount;
+                    if (saved.munTax !== undefined) document.getElementById('munTax').value = saved.munTax;
+                    if (saved.stateTaxToday !== undefined) document.getElementById('stateTaxToday').value = saved.stateTaxToday;
+                    if (saved.stateTaxFuture !== undefined) document.getElementById('stateTaxFuture').value = saved.stateTaxFuture;
+                    if (saved.bonusPct !== undefined) document.getElementById('bonusPct').value = saved.bonusPct;
+                }
+            } catch (e) {
+                console.error("Could not load settings", e);
+            }
+            calculate();
+        }
+
+        function exportSettings() {
+            const data = {
+                lonevaxling_settings: JSON.parse(localStorage.getItem('lonevaxling_settings')) || {
+                    currentSalary: document.getElementById('currentSalary').value,
+                    lvxAmount: document.getElementById('lvxAmount').value,
+                    munTax: document.getElementById('munTax').value,
+                    stateTaxToday: document.getElementById('stateTaxToday').value,
+                    stateTaxFuture: document.getElementById('stateTaxFuture').value,
+                    bonusPct: document.getElementById('bonusPct').value
+                }
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "lonevaxling_settings.json");
+            dlAnchorElem.click();
+        }
+
+        function triggerImport() {
+            document.getElementById('importFile').click();
+        }
+
+        function importSettings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.lonevaxling_settings) {
+                        localStorage.setItem('lonevaxling_settings', JSON.stringify(data.lonevaxling_settings));
+                        loadSettings();
+                        alert("Inställningarna har importerats.");
+                    } else {
+                        alert("Inga giltiga inställningar hittades i filen.");
+                    }
+                } catch (err) {
+                    alert("Kunde inte läsa filen. Se till att det är en giltig JSON-fil.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (!confirm("Är du säker på att du vill rensa alla fält och återställa inställningarna?")) return;
+            localStorage.removeItem('lonevaxling_settings');
+            document.getElementById('currentSalary').value = '65000';
+            document.getElementById('lvxAmount').value = '5000';
+            document.getElementById('munTax').value = '33.20';
+            document.getElementById('stateTaxToday').value = '20.0';
+            document.getElementById('stateTaxFuture').value = '0.0';
+            document.getElementById('bonusPct').value = '6.0';
+            calculate();
+        }
         
         // Initial calculation on load
-        window.onload = calculate;
+        window.onload = loadSettings;
     </script>
 </body>
 </html>
