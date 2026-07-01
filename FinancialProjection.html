@@ -95,6 +95,10 @@
             <input type="number" id="severance" placeholder="0" title="Månader med avgångsvederlag vid uppsägning idag (beräknas som netto)">
         </div>
         <div class="input-group">
+            <label for="severancePerDay">Vederlag per dag till målålder</label>
+            <input type="text" id="severancePerDay" readonly style="background: #222; color: #b2ff59; border-color: #555; font-weight: bold; text-align: right;" title="Det genomsnittliga dagliga netto-vederlaget utslaget på tiden fram till målålder" value="-">
+        </div>
+        <div class="input-group">
             <label for="sevStepMonths">Milstolpe Avgångsvederlag (mån)</label>
             <input type="number" id="sevStepMonths" placeholder="1" value="1" title="Månadsintervall för milstolpar kring avgångsvederlag">
         </div>
@@ -589,6 +593,15 @@
             let diffDaysTarget = diffTimeTarget / (1000 * 60 * 60 * 24);
             let remainingCostToTarget = diffDaysTarget * dailyBudget;
 
+            // Calculate severance per day against target age
+            let severancePerDay = 0;
+            if (diffDaysTarget > 0 && totalSeveranceNet > 0) {
+                severancePerDay = totalSeveranceNet / diffDaysTarget;
+            }
+            document.getElementById('severancePerDay').value = severancePerDay > 0
+                ? severancePerDay.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0}) + "/dag"
+                : "-";
+
             const formatRemainingCost = (cost) => {
                 if (cost < 0) return "+" + Math.abs(cost).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
                 return cost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
@@ -837,6 +850,7 @@
             document.getElementById('salary').value = '';
             document.getElementById('lonevaxling').value = '';
             document.getElementById('severance').value = '';
+            document.getElementById('severancePerDay').value = '-';
             document.getElementById('sevStepMonths').value = '1';
             document.getElementById('targetCostAge').value = '64';
             document.getElementById('projectionEndAge').value = '70';
