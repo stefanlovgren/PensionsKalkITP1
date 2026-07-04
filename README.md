@@ -20,7 +20,7 @@ Detta verktyg hjälper dig att visualisera en tidslinje över din ekonomi fram t
 * **Resultat:** Ger dig en detaljerad tabell över milstolpar i framtiden (som t.ex. hur länge ett avgångsvederlag räcker och viktiga åldrar). Du ser hur din inkomst, dina kostnader och dina pensionsavsättningar ackumuleras över tid.
 
 ### 2. Kalkylator för Löneväxling (`Lonevaxling.html`)
-Ett verktyg för att räkna ut den garanterade skattevinsten när du väljer att löneväxla.
+Ett verktyg för att räkna ut den förväntade skattevinsten när du väljer att löneväxla.
 * **Hur man använder:** Fyll i din nuvarande bruttolön, hur stor summa du vill växla varje månad, din nuvarande och framtida skattesats, samt arbetsgivarens tillägg (oftast runt 6%).
 * **Resultat:** Kalkylatorn jämför "netto i handen idag" mot "netto i pensionen framöver" och visar vinsten. Den varnar också automatiskt ifall din lön efter växling skulle hamna under taket för allmän pension.
 

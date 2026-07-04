@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Hushållsbudget</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; font-size: 14px; }
+        .container { max-width: 1100px; margin: auto; }
+        input, select, textarea { padding: 8px; margin: 5px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; font-family: inherit; box-sizing: border-box; }
+        input[type="number"] { text-align: right; font-family: monospace; }
+        button { padding: 9px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #444; background: #2c2c2c; color: #fff; }
+        button:hover { background: #444; }
+        .btn-primary { background: #1976d2; border-color: #1565c0; font-weight: bold; }
+        .btn-primary:hover { background: #1e88e5; }
+        .btn-success { background: #2e7d32; border-color: #1b5e20; font-weight: bold; }
+        .btn-success:hover { background: #388e3c; }
+        .btn-secondary { background: #6a1b9a; border-color: #4a148c; font-weight: bold; }
+        .btn-secondary:hover { background: #7b1fa2; }
+        .btn-danger { background: #c62828; border-color: #b71c1c; font-weight: bold; }
+        .btn-danger:hover { background: #d32f2f; }
+        .btn-remove {
+            padding: 0;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            font-size: 0.7em;
+            line-height: 1;
+            border: 1px solid #555;
+            background: transparent;
+            color: #888;
+            border-radius: 3px;
+            font-weight: normal;
+            flex-shrink: 0;
+        }
+        .btn-remove:hover { background: #3d3234; border-color: #7a6268; color: #bc8a8a; }
+        .btn-accent { background: #e65100; border-color: #ef6c00; font-weight: bold; }
+        .btn-accent:hover { background: #f57c00; }
+        .btn-info { background: #00838f; border-color: #006064; font-weight: bold; }
+        .btn-info:hover { background: #0097a7; }
+        .btn-small { padding: 4px 10px; font-size: 0.85em; margin: 0 2px; }
+        .help-content h4 { color: #4fc3f7; margin: 16px 0 6px 0; }
+        .help-content h4:first-child { margin-top: 0; }
+        .help-content ul { margin: 0 0 8px 0; padding-left: 20px; line-height: 1.5; color: #ccc; }
+        .help-content p { color: #bbb; line-height: 1.5; margin: 0 0 10px 0; }
+        .nav-link { color: #4fc3f7; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        .nav-link:hover { text-decoration: underline; color: #81c784; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; background: #252525; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
+        .toolbar button { margin: 0; height: 36px; padding: 0 15px; font-size: 14px; white-space: nowrap; box-sizing: border-box; }
+        .input-group { display: inline-block; margin: 0 5px; vertical-align: bottom; }
+        .input-group label { display: block; font-size: 0.85em; color: #bbb; margin-bottom: 2px; margin-left: 2px; }
+        .input-group input, .input-group select { margin: 0; min-width: 180px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-card { background: #2c2c2c; border: 1px solid #444; padding: 15px; border-radius: 8px; text-align: center; }
+        .summary-card h4 { margin: 0 0 10px 0; color: #bbb; font-weight: normal; }
+        .summary-card .value { font-size: 1.8em; font-weight: bold; color: #fff; }
+        .summary-card .sub-value { font-size: 0.9em; color: #888; margin-top: 5px; line-height: 1.4; }
+        .positive { color: #b2ff59 !important; }
+        .negative { color: #ef5350 !important; }
+        .category-block { background: #2c2c2c; border: 1px solid #444; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+        .category-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #252525; border-bottom: 1px solid #444; }
+        .category-header input.cat-name { flex: 1; min-width: 80px; font-weight: bold; font-size: 1.05em; margin: 0; background: transparent; border: 1px solid transparent; }
+        .category-header input.cat-name:focus { background: #333; border-color: #555; }
+        .category-header .btn-add-item { flex-shrink: 0; margin: 0; white-space: nowrap; }
+        .category-total { font-family: monospace; font-size: 1.05em; font-weight: bold; color: #4fc3f7; min-width: 200px; text-align: right; margin-left: auto; }
+        .category-total.income-total { color: #81c784; }
+        .cat-name-static { flex: 1; min-width: 80px; font-weight: bold; font-size: 1.05em; }
+        .category-block.income-block { border-color: #3d5244; }
+        .income-block .category-header { background: #1e2a22; border-bottom-color: #3d5244; }
+        .income-block .cat-name-static { color: #a5d6a7; }
+        .section-title.income-section { color: #81c784; border-bottom-color: #3d5244; }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .items-table td { padding: 4px 10px; border-bottom: 1px solid #333; }
+        .items-table tr:last-child td { border-bottom: none; }
+        .items-table input.item-name { width: 100%; margin: 0; background: transparent; border: 1px solid transparent; }
+        .items-table input.item-name:focus { background: #333; border-color: #555; }
+        .items-table input.item-amount { width: 90px; margin: 0; }
+        .section-title { color: #4fc3f7; margin: 25px 0 10px 0; font-size: 1.1em; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .section-block { margin-top: 25px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #444; }
+        .section-block.income-block-section { border-bottom-color: #3d5244; }
+        .section-block .section-title { margin: 0; border: none; padding: 0; }
+        .section-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: none; }
+        .section-header-row .section-title { margin: 0; border: none; padding: 0; }
+        .section-actions { font-size: 0.85em; white-space: nowrap; }
+        .section-actions button { background: none; border: none; color: #4fc3f7; cursor: pointer; padding: 2px 6px; font-size: inherit; font-family: inherit; }
+        .section-actions button:hover { color: #81c784; text-decoration: underline; }
+        .section-actions .sep { color: #555; margin: 0 2px; }
+        .btn-fold {
+            padding: 0;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            border: 1px solid #555;
+            background: transparent;
+            color: #aaa;
+            border-radius: 3px;
+            font-size: 0.65em;
+            line-height: 1;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-fold:hover { background: #333; color: #ddd; border-color: #666; }
+        .category-block.collapsed .category-body { display: none; }
+        .category-block.collapsed .btn-fold { transform: rotate(-90deg); }
+        .section-hint { font-size: 0.85em; color: #888; margin: 6px 0 0 0; }
+        .amount-cell { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: nowrap; }
+        .amount-equiv { font-size: 0.68em; color: #777; font-family: monospace; white-space: nowrap; margin: 0; text-align: right; }
+        .amount-inputs { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+        .amount-inputs input.item-amount { width: 80px; margin: 0; flex-shrink: 0; }
+        .amount-inputs select.period-select { width: 72px; margin: 0; padding: 8px 2px; flex-shrink: 0; font-size: 0.82em; }
+        select.period-select { font-size: 0.9em; }
+        .empty-hint { color: #888; font-style: italic; padding: 20px; text-align: center; }
+        dialog { background: #2c2c2c; color: #e0e0e0; border: 1px solid #555; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 420px; max-width: 90vw; }
+        dialog.wide-modal { width: 480px; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.7); }
+        .modal-actions { text-align: right; margin-top: 15px; }
+        .modal-hint { color: #888; font-size: 0.88em; margin: 0 0 12px 0; line-height: 1.4; }
+        .suggestion-list { display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; margin-bottom: 10px; }
+        .suggestion-btn {
+            display: flex; justify-content: space-between; align-items: center; gap: 12px;
+            width: 100%; padding: 10px 12px; text-align: left; border-radius: 6px;
+            border: 1px solid #444; background: #333; color: #e0e0e0; cursor: pointer; font-family: inherit; font-size: 0.95em;
+        }
+        .suggestion-btn:hover { background: #3a3a3a; border-color: #666; }
+        .suggestion-name { flex: 1; }
+        .suggestion-amount { font-family: monospace; color: #4fc3f7; font-size: 0.9em; white-space: nowrap; }
+        .suggestion-btn.category-suggestion { align-items: center; }
+        .suggestion-btn .suggestion-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; text-align: left; }
+        .suggestion-detail { font-size: 0.78em; color: #888; line-height: 1.3; }
+        .suggestion-empty { color: #888; font-style: italic; font-size: 0.9em; padding: 8px 0; }
+        .save-indicator { font-size: 0.85em; color: #81c784; margin-left: 10px; }
+        .storage-note { font-size: 0.85em; color: #888; margin: -10px 0 20px 0; }
+        .storage-note strong { color: #bbb; }
+        .page-subtitle { color: #888; font-size: 0.95em; margin: 4px 0 18px 0; }
+        .items-table th { padding: 4px 10px; text-align: left; font-size: 0.8em; color: #888; font-weight: normal; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #333; }
+        .items-table th.amount-col { text-align: right; min-width: 320px; }
+        .items-table th.action-col { width: 28px; padding-right: 6px; }
+        .category-total-label { font-size: 0.75em; color: #888; font-weight: normal; margin-left: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h2 style="margin: 0;">Hushållsbudget</h2>
+                <p class="page-subtitle">Välj enhet per belopp — månad, kvartal, halvår eller år.</p>
+            </div>
+            <div>
+                <button type="button" class="btn-info" onclick="document.getElementById('helpModal').showModal()">Hjälp</button>
+                <button type="button" class="btn-success" onclick="exportData()">Exportera</button>
+                <button type="button" class="btn-secondary" onclick="triggerImport()">Importera</button>
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="input-group">
+                <label for="variantSelect">Budgetvariant</label>
+                <select id="variantSelect" onchange="switchVariant()"></select>
+            </div>
+            <button type="button" class="btn-primary" onclick="saveAsNewVariant()">Spara som ny variant</button>
+            <button type="button" class="btn-accent" onclick="document.getElementById('templateModal').showModal()">Ladda mall</button>
+            <button type="button" class="btn-danger" onclick="deleteVariant()">Ta bort variant</button>
+            <span id="saveIndicator" class="save-indicator">Sparas automatiskt lokalt</span>
+        </div>
+        <p class="storage-note"><strong>Lokal lagring:</strong> Alla ändringar sparas automatiskt i webbläsarens <code>localStorage</code> och laddas nästa gång du öppnar sidan. Ingen data skickas till internet. Använd <em>Exportera</em> för säkerhetskopia.</p>
+
+        <div class="summary-grid">
+            <div class="summary-card" style="border-top: 4px solid #ef5350;">
+                <h4>Utgifter / månad</h4>
+                <div class="value" id="totalExpenses">0 kr</div>
+                <div class="sub-value" id="totalExpensesYear">0 kr / år</div>
+            </div>
+            <div class="summary-card" style="border-top: 4px solid #66bb6a;">
+                <h4>Inkomster / månad (netto)</h4>
+                <div class="value" id="totalIncome">0 kr</div>
+                <div class="sub-value" id="totalIncomeYear">0 kr / år · efter skatt</div>
+            </div>
+            <div class="summary-card" style="border-top: 4px solid #4fc3f7;">
+                <h4>Saldo / månad</h4>
+                <div class="value" id="balance">0 kr</div>
+                <div class="sub-value" id="balanceYear">0 kr / år</div>
+            </div>
+        </div>
+
+        <div class="section-block income-block-section">
+            <div class="section-title income-section">Inkomster</div>
+            <p class="section-hint">Ange nettobelopp (efter skatt). Välj enhet i listrutan — mån, kvt, halvår eller år.</p>
+        </div>
+        <div id="incomeContainer"></div>
+
+        <div class="section-block">
+            <div class="section-header-row">
+                <div class="section-title">Utgifter</div>
+                <div class="section-actions">
+                    <button type="button" onclick="expandAllCategories()">Fäll ut alla</button>
+                    <span class="sep">·</span>
+                    <button type="button" onclick="collapseAllCategories()">Fäll ihop alla</button>
+                </div>
+            </div>
+            <p class="section-hint">Ange utgifter per post. Välj enhet i listrutan — mån, kvt, halvår eller år.</p>
+        </div>
+        <div id="categoriesContainer"></div>
+        <button type="button" class="btn-success" onclick="openAddCategoryModal()">+ Lägg till kategori</button>
+    </div>
+
+    <dialog id="templateModal">
+        <h3 style="margin-top: 0;">Välj startmall</h3>
+        <p style="color: #bbb; font-size: 0.9em;">Mallen ersätter innehållet i den aktiva varianten. Spara som ny variant först om du vill behålla nuvarande data.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin: 15px 0;">
+            <button type="button" class="btn-primary" onclick="applyTemplate('family')">Familj – standard (~37 000 kr/mån)</button>
+            <button type="button" class="btn-primary" onclick="applyTemplate('single')">Singel – genomsnitt (~21 000 kr/mån)</button>
+            <button type="button" class="btn-primary" onclick="applyTemplate('minimal')">Sparsam (~12 000 kr/mån)</button>
+            <button type="button" class="btn-primary" onclick="applyTemplate('empty')">Tom – börja från scratch</button>
+        </div>
+        <div class="modal-actions">
+            <button type="button" onclick="document.getElementById('templateModal').close()">Avbryt</button>
+        </div>
+    </dialog>
+
+    <dialog id="addItemModal" class="wide-modal">
+        <h3 style="margin-top: 0;">Förslag: <span id="addItemModalCategory"></span></h3>
+        <p class="modal-hint">Typiska poster med ungefärliga belopp (uppskattningar — justera efter din situation).</p>
+        <div id="addItemSuggestions" class="suggestion-list"></div>
+        <div class="modal-actions">
+            <button type="button" onclick="addBlankItem()">Tom post</button>
+            <button type="button" onclick="document.getElementById('addItemModal').close()">Avbryt</button>
+        </div>
+    </dialog>
+
+    <dialog id="addIncomeModal" class="wide-modal">
+        <h3 style="margin-top: 0;">Förslag: Inkomster</h3>
+        <p class="modal-hint">Vanliga nettoinkomster (efter skatt, ungefärliga belopp).</p>
+        <div id="addIncomeSuggestions" class="suggestion-list"></div>
+        <div class="modal-actions">
+            <button type="button" onclick="addBlankIncome()">Tom rad</button>
+            <button type="button" onclick="document.getElementById('addIncomeModal').close()">Avbryt</button>
+        </div>
+    </dialog>
+
+    <dialog id="addCategoryModal" class="wide-modal">
+        <h3 style="margin-top: 0;">Förslag: Ny kategori</h3>
+        <p class="modal-hint">Välj en kategori med typiska poster och ungefärliga belopp — eller skapa en tom kategori.</p>
+        <div id="addCategorySuggestions" class="suggestion-list"></div>
+        <div class="modal-actions">
+            <button type="button" onclick="addBlankCategory()">Tom kategori</button>
+            <button type="button" onclick="document.getElementById('addCategoryModal').close()">Avbryt</button>
+        </div>
+    </dialog>
+
+    <dialog id="helpModal" style="width: 720px; max-width: 90vw;">
+        <h3 style="margin-top: 0;">Hjälp — Hushållsbudget</h3>
+        <div class="help-content">
+            <h4>Syfte</h4>
+            <p>Bygg en flexibel månadsbudget för hushållet. Dela upp inkomster och utgifter i egna kategorier, jämför saldo och spara flera budgetvarianter lokalt i webbläsaren.</p>
+
+            <h4>Budgetvarianter</h4>
+            <ul>
+                <li><strong>Välj variant</strong> i verktygsraden för att växla mellan sparade budgetar (t.ex. &quot;nuvarande&quot;, &quot;sparmål&quot;, &quot;med bil&quot;).</li>
+                <li><strong>Spara som ny variant</strong> kopierar den aktiva budgeten under ett nytt namn.</li>
+                <li><strong>Ladda mall</strong> fyller den aktiva varianten med en färdig startprofil (familj, singel, sparsam eller tom).</li>
+            </ul>
+
+            <h4>Inkomster</h4>
+            <ul>
+                <li>Ange <strong>nettobelopp</strong> (efter skatt) — det du faktiskt får ut på kontot.</li>
+                <li>Välj enhet per rad: <strong>mån</strong>, <strong>kvt</strong>, <strong>halvår</strong> eller <strong>år</strong>.</li>
+                <li>Under beloppet visas omräkning till <strong>kr/mån · kr/år</strong>.</li>
+                <li><strong>+ Lägg till inkomst</strong> visar förslag med typiska belopp.</li>
+            </ul>
+
+            <h4>Utgifter</h4>
+            <ul>
+                <li>Organisera utgifter i <strong>kategorier</strong> (Boende, Mat, Transport …) med poster under varje kategori.</li>
+                <li>Varje post har valfri enhet — t.ex. försäkring per <strong>år</strong>, hyra per <strong>månad</strong>.</li>
+                <li>Omräkningsraden visar alltid månads- och årsbelopp; summor normaliseras internt per månad.</li>
+                <li><strong>+ Lägg till kategori</strong> och <strong>+ Lägg till post</strong> erbjuder förslag baserade på kategorityp med ungefärliga svenska hushållsbelopp.</li>
+                <li>Förslagsbeloppen är <strong>uppskattningar</strong> — justera alltid efter din egen situation.</li>
+            </ul>
+
+            <h4>Fäll ihop kategorier</h4>
+            <ul>
+                <li>Klicka på <strong>▼</strong> i kategorirubriken för att fälla ihop/ut poster. Summan syns kvar i rubriken.</li>
+                <li><strong>Fäll ut alla</strong> / <strong>Fäll ihop alla</strong> under rubriken Utgifter påverkar alla kategorier.</li>
+            </ul>
+
+            <h4>Summering</h4>
+            <ul>
+                <li>Korten högst upp visar totala <strong>utgifter</strong>, <strong>inkomster</strong> och <strong>saldo</strong> per månad.</li>
+                <li>Under varje summa visas motsvarande <strong>år</strong> och <strong>dag</strong> (dag = månad × 12 / 365,25).</li>
+            </ul>
+
+            <h4>Lagring &amp; säkerhetskopia</h4>
+            <ul>
+                <li>All data sparas automatiskt i webbläsarens <strong>localStorage</strong>. Ingen data skickas till internet.</li>
+                <li>Använd <strong>Exportera</strong> för att ladda ner en JSON-fil som backup.</li>
+                <li><strong>Importera</strong> återställer en tidigare exporterad budget.</li>
+                <li>Rensa webbläsardata för sidan tar bort sparade budgetar — exportera regelbundet som backup.</li>
+            </ul>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-primary" onclick="document.getElementById('helpModal').close()">Stäng</button>
+        </div>
+    </dialog>
+
+    <script>
+        const STORAGE_KEY = 'household_budget_data';
+
+        const TEMPLATES = {
+            family: {
+                income: [
+                    { id: 'inc1', name: 'Lön person 1', amount: 45000 },
+                    { id: 'inc2', name: 'Lön person 2', amount: 38000 }
+                ],
+                categories: [
+                    { id: 'cat1', name: 'Boende', items: [
+                        { id: 'i1', name: 'Hyra / bolån', amount: 14000 },
+                        { id: 'i2', name: 'El', amount: 1200 },
+                        { id: 'i3', name: 'Värme / vatten', amount: 800 },
+                        { id: 'i4', name: 'Internet / TV', amount: 500 },
+                        { id: 'i5', name: 'Hemförsäkring', amount: 3600, period: 'year' }
+                    ]},
+                    { id: 'cat2', name: 'Mat & hushåll', items: [
+                        { id: 'i6', name: 'Matvaror', amount: 6500 },
+                        { id: 'i7', name: 'Hushållsartiklar', amount: 800 },
+                        { id: 'i8', name: 'Äta ute', amount: 1500 }
+                    ]},
+                    { id: 'cat3', name: 'Transport', items: [
+                        { id: 'i9', name: 'Bil (lån/leasing)', amount: 3500 },
+                        { id: 'i10', name: 'Bensin / laddning', amount: 1500 },
+                        { id: 'i11', name: 'Bilförsäkring', amount: 600 },
+                        { id: 'i12', name: 'Kollektivtrafik', amount: 400 }
+                    ]},
+                    { id: 'cat4', name: 'Barn & familj', items: [
+                        { id: 'i13', name: 'Förskola / skola', amount: 2000 },
+                        { id: 'i14', name: 'Fritidsaktiviteter', amount: 1200 },
+                        { id: 'i15', name: 'Kläder barn', amount: 800 }
+                    ]},
+                    { id: 'cat5', name: 'Nöje & övrigt', items: [
+                        { id: 'i16', name: 'Streaming / abonnemang', amount: 600 },
+                        { id: 'i17', name: 'Nöjen & hobby', amount: 2000 },
+                        { id: 'i18', name: 'Kläder vuxna', amount: 1500 },
+                        { id: 'i19', name: 'Sparande / buffert', amount: 3000 }
+                    ]}
+                ]
+            },
+            single: {
+                income: [{ id: 'inc1', name: 'Lön', amount: 42000 }],
+                categories: [
+                    { id: 'cat1', name: 'Boende', items: [
+                        { id: 'i1', name: 'Hyra', amount: 9500 },
+                        { id: 'i2', name: 'El', amount: 600 },
+                        { id: 'i3', name: 'Internet', amount: 400 },
+                        { id: 'i4', name: 'Hemförsäkring', amount: 200 }
+                    ]},
+                    { id: 'cat2', name: 'Mat', items: [
+                        { id: 'i5', name: 'Matvaror', amount: 3500 },
+                        { id: 'i6', name: 'Äta ute', amount: 800 }
+                    ]},
+                    { id: 'cat3', name: 'Transport', items: [
+                        { id: 'i7', name: 'Kollektivtrafik / bil', amount: 1500 },
+                        { id: 'i8', name: 'Bensin', amount: 500 }
+                    ]},
+                    { id: 'cat4', name: 'Övrigt', items: [
+                        { id: 'i9', name: 'Abonnemang', amount: 400 },
+                        { id: 'i10', name: 'Nöje', amount: 1500 },
+                        { id: 'i11', name: 'Sparande', amount: 2000 }
+                    ]}
+                ]
+            },
+            minimal: {
+                income: [{ id: 'inc1', name: 'Lön', amount: 28000 }],
+                categories: [
+                    { id: 'cat1', name: 'Boende', items: [
+                        { id: 'i1', name: 'Hyra', amount: 5500 },
+                        { id: 'i2', name: 'El / vatten', amount: 800 }
+                    ]},
+                    { id: 'cat2', name: 'Mat', items: [
+                        { id: 'i3', name: 'Matvaror', amount: 2500 }
+                    ]},
+                    { id: 'cat3', name: 'Transport', items: [
+                        { id: 'i4', name: 'Kollektivtrafik', amount: 800 }
+                    ]},
+                    { id: 'cat4', name: 'Övrigt', items: [
+                        { id: 'i5', name: 'Telefon', amount: 200 },
+                        { id: 'i6', name: 'Övrigt', amount: 500 }
+                    ]}
+                ]
+            },
+            empty: {
+                income: [{ id: 'inc1', name: 'Lön', amount: 0 }],
+                categories: [
+                    { id: 'cat1', name: 'Ny kategori', items: [
+                        { id: 'i1', name: 'Ny post', amount: 0 }
+                    ]}
+                ]
+            }
+        };
+
+        // Typiska poster — ungefärliga svenska hushållsbelopp (netto/månad om inget annat anges)
+        const ITEM_SUGGESTIONS = {
+            boende: [
+                { name: 'Hyra / bolån', amount: 12000, period: 'month' },
+                { name: 'El', amount: 800, period: 'month' },
+                { name: 'Värme / vatten', amount: 700, period: 'month' },
+                { name: 'Internet / TV', amount: 450, period: 'month' },
+                { name: 'Hemförsäkring', amount: 3600, period: 'year' },
+                { name: 'Bostadsrättsavgift', amount: 3500, period: 'month' },
+                { name: 'Fastighetsskatt', amount: 2400, period: 'year' },
+                { name: 'Renovering / underhåll', amount: 1500, period: 'month' },
+                { name: 'Städning', amount: 800, period: 'month' }
+            ],
+            mat: [
+                { name: 'Matvaror', amount: 5500, period: 'month' },
+                { name: 'Hushållsartiklar', amount: 600, period: 'month' },
+                { name: 'Äta ute / takeaway', amount: 1200, period: 'month' },
+                { name: 'Lunch på jobbet', amount: 800, period: 'month' }
+            ],
+            transport: [
+                { name: 'Bil (lån/leasing)', amount: 3500, period: 'month' },
+                { name: 'Bensin / laddning', amount: 1200, period: 'month' },
+                { name: 'Bilförsäkring', amount: 600, period: 'month' },
+                { name: 'Kollektivtrafik', amount: 970, period: 'month' },
+                { name: 'Parkering / biltull', amount: 400, period: 'month' },
+                { name: 'Service / reparation bil', amount: 300, period: 'month' },
+                { name: 'Cykel / elsparkcykel', amount: 200, period: 'month' }
+            ],
+            barn: [
+                { name: 'Förskola / skola', amount: 2000, period: 'month' },
+                { name: 'Fritids / idrott', amount: 800, period: 'month' },
+                { name: 'Kläder barn', amount: 600, period: 'month' },
+                { name: 'Leksaker / hobby barn', amount: 300, period: 'month' },
+                { name: 'Barnvakt', amount: 1500, period: 'month' }
+            ],
+            ovrigt: [
+                { name: 'Streaming / abonnemang', amount: 400, period: 'month' },
+                { name: 'Nöjen & hobby', amount: 1500, period: 'month' },
+                { name: 'Kläder vuxna', amount: 800, period: 'month' },
+                { name: 'Sparande / buffert', amount: 3000, period: 'month' },
+                { name: 'Mobiltelefon', amount: 350, period: 'month' },
+                { name: 'Frisör / hygien', amount: 300, period: 'month' },
+                { name: 'Presenter', amount: 400, period: 'month' }
+            ],
+            halsa: [
+                { name: 'Läkemedel', amount: 200, period: 'month' },
+                { name: 'Tandvård', amount: 300, period: 'month' },
+                { name: 'Gym / träning', amount: 400, period: 'month' },
+                { name: 'Hälsförsäkring', amount: 2400, period: 'year' }
+            ],
+            forsakring: [
+                { name: 'Hemförsäkring', amount: 3600, period: 'year' },
+                { name: 'Livförsäkring', amount: 2400, period: 'year' },
+                { name: 'Olycksfallsförsäkring', amount: 1200, period: 'year' }
+            ],
+            default: [
+                { name: 'Abonnemang', amount: 300, period: 'month' },
+                { name: 'Övrigt', amount: 500, period: 'month' },
+                { name: 'Presentkort / gåvor', amount: 300, period: 'month' },
+                { name: 'Bankavgifter', amount: 100, period: 'month' }
+            ],
+            djur: [
+                { name: 'Husdjursförsäkring', amount: 200, period: 'month' },
+                { name: 'Mat / tillbehör', amount: 400, period: 'month' },
+                { name: 'Veterinär', amount: 300, period: 'month' },
+                { name: 'Hunddagis / rastning', amount: 500, period: 'month' }
+            ]
+        };
+
+        const CATEGORY_SUGGESTIONS = [
+            { name: 'Boende', key: 'boende' },
+            { name: 'Mat & hushåll', key: 'mat' },
+            { name: 'Transport', key: 'transport' },
+            { name: 'Barn & familj', key: 'barn' },
+            { name: 'Hälsa & vård', key: 'halsa' },
+            { name: 'Försäkringar', key: 'forsakring' },
+            { name: 'Nöje & övrigt', key: 'ovrigt' },
+            { name: 'Djur & husdjur', key: 'djur' }
+        ];
+
+        const INCOME_SUGGESTIONS = [
+            { name: 'Lön', amount: 35000, period: 'month' },
+            { name: 'Lön person 2', amount: 30000, period: 'month' },
+            { name: 'Barnbidrag', amount: 1250, period: 'month' },
+            { name: 'Bostadsbidrag', amount: 2000, period: 'month' },
+            { name: 'CSN', amount: 10000, period: 'month' },
+            { name: 'A-kassa', amount: 18000, period: 'month' },
+            { name: 'Hyresintäkt', amount: 5000, period: 'month' },
+            { name: 'Kapitalinkomst', amount: 500, period: 'month' },
+            { name: 'Frilans / extrainkomst', amount: 5000, period: 'month' },
+            { name: 'Föräldrapenning', amount: 8000, period: 'month' }
+        ];
+
+        let pendingAddCatId = null;
+        let appData = { activeVariant: '', variants: {} };
+
+        function normalizePeriod(period) {
+            return ['month', 'quarter', 'half', 'year'].includes(period) ? period : 'month';
+        }
+
+        function toMonthly(amount, period) {
+            const num = amount || 0;
+            switch (normalizePeriod(period)) {
+                case 'year': return Math.round(num / 12);
+                case 'half': return Math.round(num / 6);
+                case 'quarter': return Math.round(num / 3);
+                default: return num;
+            }
+        }
+
+        function fromMonthly(monthly, period) {
+            const m = monthly || 0;
+            switch (normalizePeriod(period)) {
+                case 'year': return Math.round(m * 12);
+                case 'half': return Math.round(m * 6);
+                case 'quarter': return Math.round(m * 3);
+                default: return m;
+            }
+        }
+
+        function amountStep(period) {
+            switch (normalizePeriod(period)) {
+                case 'year': return 1200;
+                case 'half': return 600;
+                case 'quarter': return 300;
+                default: return 100;
+            }
+        }
+
+        function itemAmountStep(period) {
+            switch (normalizePeriod(period)) {
+                case 'year': return 600;
+                case 'half': return 300;
+                case 'quarter': return 150;
+                default: return 50;
+            }
+        }
+
+        function periodSelectHtml(id, period, onchangeHandler) {
+            const p = normalizePeriod(period);
+            return `<select class="period-select" title="Enhet för beloppet" onchange="${onchangeHandler}">
+                <option value="month" ${p === 'month' ? 'selected' : ''}>mån</option>
+                <option value="quarter" ${p === 'quarter' ? 'selected' : ''}>kvt</option>
+                <option value="half" ${p === 'half' ? 'selected' : ''}>halvår</option>
+                <option value="year" ${p === 'year' ? 'selected' : ''}>år</option>
+            </select>`;
+        }
+
+        function normalizeBudget(budget) {
+            if (!budget) return;
+            if (!budget.collapsed) budget.collapsed = {};
+            (budget.income || []).forEach(i => { i.period = normalizePeriod(i.period); });
+            (budget.categories || []).forEach(c => (c.items || []).forEach(i => { i.period = normalizePeriod(i.period); }));
+        }
+
+        function normalizeAllVariants() {
+            Object.values(appData.variants).forEach(normalizeBudget);
+        }
+
+        function uid() {
+            return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        }
+
+        function cloneBudget(budget) {
+            return JSON.parse(JSON.stringify(budget));
+        }
+
+        function formatCurrency(num) {
+            return Math.round(num).toLocaleString('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 });
+        }
+
+        function dailyFromMonthly(monthly) {
+            return (monthly * 12) / 365.25;
+        }
+
+        function formatPeriodSubline(monthly, suffix = '') {
+            const extra = suffix ? ' · ' + suffix : '';
+            return formatCurrency(monthly * 12) + ' / år · ' + formatCurrency(dailyFromMonthly(monthly)) + ' / dag' + extra;
+        }
+
+        function formatDualLine(amount, period) {
+            const monthly = toMonthly(amount || 0, period);
+            const yearly = Math.round(monthly * 12);
+            return formatCurrency(monthly) + '/mån · ' + formatCurrency(yearly) + '/år';
+        }
+
+        function formatDualTotalHtml(monthly) {
+            return formatCurrency(monthly) + '<span class="category-total-label">/mån</span> · ' +
+                formatCurrency(Math.round(monthly * 12)) + '<span class="category-total-label">/år</span>';
+        }
+
+        function refreshAmountEquiv(elementId, amount, period) {
+            const el = document.getElementById(elementId);
+            if (el) el.textContent = formatDualLine(amount, period);
+        }
+
+        function matchCategoryKey(catName) {
+            const n = (catName || '').toLowerCase();
+            if (/boende|bostad|hus|hem|hyra|bolån/.test(n)) return 'boende';
+            if (/mat|livsmedel|hushåll|matvaror/.test(n)) return 'mat';
+            if (/transport|bil|resa|trafik|bensin|kollektiv/.test(n)) return 'transport';
+            if (/barn|familj|skola|förskola|fritid/.test(n)) return 'barn';
+            if (/hälsa|vård|medicin|tand|gym/.test(n)) return 'halsa';
+            if (/försäkring/.test(n)) return 'forsakring';
+            if (/nöje|övrigt|hobby|spar|kläder|abonnemang/.test(n)) return 'ovrigt';
+            return 'default';
+        }
+
+        function getSuggestionsForCategory(catName) {
+            const key = matchCategoryKey(catName);
+            const specific = ITEM_SUGGESTIONS[key] || [];
+            const fallback = ITEM_SUGGESTIONS.default || [];
+            const seen = new Set();
+            const result = [];
+            for (const s of [...specific, ...(key === 'default' ? [] : fallback)]) {
+                const k = s.name.toLowerCase();
+                if (!seen.has(k)) { seen.add(k); result.push(s); }
+            }
+            return result;
+        }
+
+        function formatSuggestionAmount(s) {
+            const labels = { month: 'mån', quarter: 'kvt', half: 'halvår', year: 'år' };
+            const p = normalizePeriod(s.period || 'month');
+            return formatCurrency(s.amount) + '/' + labels[p];
+        }
+
+        function filterExistingSuggestions(suggestions, existingItems) {
+            const existing = new Set(existingItems.map(i => i.name.toLowerCase().trim()));
+            return suggestions.filter(s => !existing.has(s.name.toLowerCase().trim()));
+        }
+
+        function itemsForCategoryKey(key, limit = 5) {
+            return (ITEM_SUGGESTIONS[key] || ITEM_SUGGESTIONS.default).slice(0, limit);
+        }
+
+        function estimatedMonthlyForItems(items) {
+            return items.reduce((sum, s) => sum + toMonthly(s.amount, s.period), 0);
+        }
+
+        function categorySuggestionDetail(key) {
+            const preview = itemsForCategoryKey(key, 4);
+            const totalItems = itemsForCategoryKey(key, 5);
+            const names = preview.map(s => s.name.split(' /')[0]).join(', ');
+            return `${names}… · ca ${formatCurrency(estimatedMonthlyForItems(totalItems))}/mån`;
+        }
+
+        function createItemsFromCategoryKey(key) {
+            const items = itemsForCategoryKey(key, 5).map(s => ({
+                id: uid(),
+                name: s.name,
+                amount: s.amount || 0,
+                period: normalizePeriod(s.period || 'month')
+            }));
+            if (!items.length) {
+                items.push({ id: uid(), name: 'Ny post', amount: 0, period: 'month' });
+            }
+            return items;
+        }
+
+        function filterExistingCategories(suggestions, categories) {
+            const existing = new Set(categories.map(c => c.name.toLowerCase().trim()));
+            const usedKeys = new Set(categories.map(c => matchCategoryKey(c.name)));
+            return suggestions.filter(s => {
+                if (existing.has(s.name.toLowerCase().trim())) return false;
+                if (usedKeys.has(s.key)) return false;
+                return true;
+            });
+        }
+
+        function renderCategorySuggestionButtons(container, suggestions, onPick) {
+            container.innerHTML = '';
+            if (!suggestions.length) {
+                container.innerHTML = '<p class="suggestion-empty">Inga fler kategoriförslag — alla vanliga kategorier finns redan. Välj &quot;Tom kategori&quot; för en egen.</p>';
+                return;
+            }
+            suggestions.forEach(s => {
+                const monthly = estimatedMonthlyForItems(itemsForCategoryKey(s.key, 5));
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'suggestion-btn category-suggestion';
+                btn.innerHTML = `
+                    <div class="suggestion-meta">
+                        <span class="suggestion-name">${escapeAttr(s.name)}</span>
+                        <span class="suggestion-detail">${escapeAttr(categorySuggestionDetail(s.key))}</span>
+                    </div>
+                    <span class="suggestion-amount">ca ${formatCurrency(monthly)}/mån</span>`;
+                btn.onclick = () => onPick(s);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderSuggestionButtons(container, suggestions, onPick) {
+            container.innerHTML = '';
+            if (!suggestions.length) {
+                container.innerHTML = '<p class="suggestion-empty">Inga fler förslag — alla typiska poster finns redan. Välj &quot;Tom post&quot; för en egen rad.</p>';
+                return;
+            }
+            suggestions.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'suggestion-btn';
+                btn.innerHTML = `<span class="suggestion-name">${escapeAttr(s.name)}</span><span class="suggestion-amount">${formatSuggestionAmount(s)}</span>`;
+                btn.onclick = () => onPick(s);
+                container.appendChild(btn);
+            });
+        }
+
+        function expandCategoryIfCollapsed(catId) {
+            const collapsed = getCollapsedState();
+            if (collapsed[catId]) {
+                delete collapsed[catId];
+                persist();
+            }
+        }
+
+        function openAddCategoryModal() {
+            const budget = getActiveBudget();
+            const suggestions = filterExistingCategories(CATEGORY_SUGGESTIONS, budget.categories);
+            renderCategorySuggestionButtons(document.getElementById('addCategorySuggestions'), suggestions, s => {
+                addCategoryFromSuggestion(s);
+                document.getElementById('addCategoryModal').close();
+            });
+            document.getElementById('addCategoryModal').showModal();
+        }
+
+        function addCategoryFromSuggestion(suggestion) {
+            const catId = uid();
+            getActiveBudget().categories.push({
+                id: catId,
+                name: suggestion.name,
+                items: createItemsFromCategoryKey(suggestion.key)
+            });
+            expandCategoryIfCollapsed(catId);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function addBlankCategory() {
+            getActiveBudget().categories.push({
+                id: uid(),
+                name: 'Ny kategori',
+                items: [{ id: uid(), name: 'Ny post', amount: 0, period: 'month' }]
+            });
+            scheduleSave();
+            renderCategories();
+            document.getElementById('addCategoryModal').close();
+        }
+
+        function openAddItemModal(catId) {
+            pendingAddCatId = catId;
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            if (!cat) return;
+            expandCategoryIfCollapsed(catId);
+            document.getElementById('addItemModalCategory').textContent = cat.name;
+            const suggestions = filterExistingSuggestions(getSuggestionsForCategory(cat.name), cat.items);
+            renderSuggestionButtons(document.getElementById('addItemSuggestions'), suggestions, s => {
+                addItemFromSuggestion(catId, s);
+                document.getElementById('addItemModal').close();
+            });
+            document.getElementById('addItemModal').showModal();
+        }
+
+        function addItemFromSuggestion(catId, suggestion) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            if (!cat) return;
+            cat.items.push({
+                id: uid(),
+                name: suggestion.name,
+                amount: suggestion.amount || 0,
+                period: normalizePeriod(suggestion.period || 'month')
+            });
+            expandCategoryIfCollapsed(catId);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function addBlankItem() {
+            if (!pendingAddCatId) return;
+            const cat = getActiveBudget().categories.find(c => c.id === pendingAddCatId);
+            if (!cat) return;
+            cat.items.push({ id: uid(), name: 'Ny post', amount: 0, period: 'month' });
+            expandCategoryIfCollapsed(pendingAddCatId);
+            scheduleSave();
+            renderCategories();
+            document.getElementById('addItemModal').close();
+        }
+
+        function openAddIncomeModal() {
+            const budget = getActiveBudget();
+            const suggestions = filterExistingSuggestions(INCOME_SUGGESTIONS, budget.income);
+            renderSuggestionButtons(document.getElementById('addIncomeSuggestions'), suggestions, s => {
+                addIncomeFromSuggestion(s);
+                document.getElementById('addIncomeModal').close();
+            });
+            document.getElementById('addIncomeModal').showModal();
+        }
+
+        function addIncomeFromSuggestion(suggestion) {
+            getActiveBudget().income.push({
+                id: uid(),
+                name: suggestion.name,
+                amount: suggestion.amount || 0,
+                period: normalizePeriod(suggestion.period || 'month')
+            });
+            scheduleSave();
+            renderIncome();
+        }
+
+        function addBlankIncome() {
+            getActiveBudget().income.push({ id: uid(), name: 'Ny inkomst', amount: 0, period: 'month' });
+            scheduleSave();
+            renderIncome();
+            document.getElementById('addIncomeModal').close();
+        }
+
+        function getActiveBudget() {
+            return appData.variants[appData.activeVariant];
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                    if (!appData.variants || !Object.keys(appData.variants).length) {
+                        initDefaultData();
+                    } else {
+                        normalizeAllVariants();
+                    }
+                } catch {
+                    initDefaultData();
+                }
+            } else {
+                initDefaultData();
+            }
+        }
+
+        function initDefaultData() {
+            const name = 'Familj (mall)';
+            appData = {
+                activeVariant: name,
+                variants: { [name]: cloneBudget(TEMPLATES.family) }
+            };
+            normalizeAllVariants();
+            persist();
+        }
+
+        function persist() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+                const indicator = document.getElementById('saveIndicator');
+                if (indicator) {
+                    indicator.textContent = 'Sparat lokalt ' + new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+            } catch (err) {
+                alert('Kunde inte spara lokalt. Webbläsaren kan ha blockerat lagring (t.ex. privat läge). Exportera din budget regelbundet.');
+            }
+        }
+
+        function scheduleSave() {
+            persist();
+            updateSummary();
+        }
+
+        function refreshVariantSelect() {
+            const select = document.getElementById('variantSelect');
+            const current = appData.activeVariant;
+            select.innerHTML = '';
+            Object.keys(appData.variants).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+            select.value = current;
+        }
+
+        function switchVariant() {
+            const name = document.getElementById('variantSelect').value;
+            if (!appData.variants[name]) return;
+            appData.activeVariant = name;
+            persist();
+            renderAll();
+        }
+
+        function saveAsNewVariant() {
+            const name = prompt('Namn på den nya budgetvarianten:');
+            if (!name || !name.trim()) return;
+            const trimmed = name.trim();
+            if (appData.variants[trimmed]) {
+                if (!confirm(`"${trimmed}" finns redan. Vill du skriva över den?`)) return;
+            }
+            appData.variants[trimmed] = cloneBudget(getActiveBudget());
+            appData.activeVariant = trimmed;
+            persist();
+            refreshVariantSelect();
+            renderAll();
+        }
+
+        function deleteVariant() {
+            const names = Object.keys(appData.variants);
+            if (names.length <= 1) {
+                alert('Du måste ha minst en variant kvar.');
+                return;
+            }
+            const name = appData.activeVariant;
+            if (!confirm(`Ta bort varianten "${name}"?`)) return;
+            delete appData.variants[name];
+            appData.activeVariant = Object.keys(appData.variants)[0];
+            persist();
+            refreshVariantSelect();
+            renderAll();
+        }
+
+        function applyTemplate(key) {
+            if (!TEMPLATES[key]) return;
+            if (!confirm('Detta ersätter innehållet i den aktiva varianten. Fortsätta?')) return;
+            appData.variants[appData.activeVariant] = cloneBudget(TEMPLATES[key]);
+            normalizeBudget(getActiveBudget());
+            document.getElementById('templateModal').close();
+            persist();
+            renderAll();
+        }
+
+        function addCategory() {
+            openAddCategoryModal();
+        }
+
+        function removeCategory(catId) {
+            const budget = getActiveBudget();
+            if (budget.categories.length <= 1) {
+                alert('Du måste ha minst en kategori.');
+                return;
+            }
+            budget.categories = budget.categories.filter(c => c.id !== catId);
+            if (budget.collapsed) delete budget.collapsed[catId];
+            scheduleSave();
+            renderCategories();
+        }
+
+        function getCollapsedState() {
+            const budget = getActiveBudget();
+            if (!budget.collapsed) budget.collapsed = {};
+            return budget.collapsed;
+        }
+
+        function isCategoryCollapsed(catId) {
+            return !!getCollapsedState()[catId];
+        }
+
+        function toggleCategory(catId) {
+            const collapsed = getCollapsedState();
+            if (collapsed[catId]) delete collapsed[catId];
+            else collapsed[catId] = true;
+            persist();
+            renderCategories();
+        }
+
+        function expandAllCategories() {
+            getActiveBudget().collapsed = {};
+            persist();
+            renderCategories();
+        }
+
+        function collapseAllCategories() {
+            const collapsed = {};
+            getActiveBudget().categories.forEach(c => { collapsed[c.id] = true; });
+            getActiveBudget().collapsed = collapsed;
+            persist();
+            renderCategories();
+        }
+
+        function addItem(catId) {
+            openAddItemModal(catId);
+        }
+
+        function removeItem(catId, itemId) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            if (!cat) return;
+            if (cat.items.length <= 1) {
+                alert('Kategorin måste ha minst en post.');
+                return;
+            }
+            cat.items = cat.items.filter(i => i.id !== itemId);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function updateCategoryName(catId, value) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            if (cat) cat.name = value;
+            scheduleSave();
+        }
+
+        function updateItemName(catId, itemId, value) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            const item = cat?.items.find(i => i.id === itemId);
+            if (item) item.name = value;
+            scheduleSave();
+        }
+
+        function updateItemAmount(catId, itemId, value) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            const item = cat?.items.find(i => i.id === itemId);
+            if (item) {
+                item.amount = parseFloat(value) || 0;
+                refreshAmountEquiv('equiv-item-' + itemId, item.amount, item.period);
+            }
+            scheduleSave();
+        }
+
+        function updateItemPeriod(catId, itemId, newPeriod) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            const item = cat?.items.find(i => i.id === itemId);
+            if (!item || item.period === newPeriod) return;
+            const monthly = toMonthly(item.amount, item.period);
+            item.period = normalizePeriod(newPeriod);
+            item.amount = fromMonthly(monthly, item.period);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function addIncome() {
+            openAddIncomeModal();
+        }
+
+        function removeIncome(incId) {
+            const budget = getActiveBudget();
+            if (budget.income.length <= 1) {
+                alert('Du måste ha minst en inkomstpost (sätt belopp till 0 om den inte gäller).');
+                return;
+            }
+            budget.income = budget.income.filter(i => i.id !== incId);
+            scheduleSave();
+            renderIncome();
+        }
+
+        function updateIncomeName(incId, value) {
+            const inc = getActiveBudget().income.find(i => i.id === incId);
+            if (inc) inc.name = value;
+            scheduleSave();
+        }
+
+        function updateIncomeAmount(incId, value) {
+            const inc = getActiveBudget().income.find(i => i.id === incId);
+            if (inc) {
+                inc.amount = parseFloat(value) || 0;
+                refreshAmountEquiv('equiv-income-' + incId, inc.amount, inc.period);
+            }
+            scheduleSave();
+        }
+
+        function updateIncomePeriod(incId, newPeriod) {
+            const inc = getActiveBudget().income.find(i => i.id === incId);
+            if (!inc || inc.period === newPeriod) return;
+            const monthly = toMonthly(inc.amount, inc.period);
+            inc.period = normalizePeriod(newPeriod);
+            inc.amount = fromMonthly(monthly, inc.period);
+            scheduleSave();
+            renderIncome();
+        }
+
+        function categoryTotal(cat) {
+            return cat.items.reduce((sum, item) => sum + toMonthly(item.amount, item.period), 0);
+        }
+
+        function totalIncomeMonthly(budget) {
+            return budget.income.reduce((sum, inc) => sum + toMonthly(inc.amount, inc.period), 0);
+        }
+
+        function updateSummary() {
+            const budget = getActiveBudget();
+            const expenses = budget.categories.reduce((sum, cat) => sum + categoryTotal(cat), 0);
+            const income = totalIncomeMonthly(budget);
+            const balance = income - expenses;
+
+            document.getElementById('totalExpenses').textContent = formatCurrency(expenses);
+            document.getElementById('totalExpensesYear').textContent = formatPeriodSubline(expenses);
+            document.getElementById('totalIncome').textContent = formatCurrency(income);
+            document.getElementById('totalIncomeYear').textContent = formatPeriodSubline(income, 'efter skatt');
+
+            const balanceEl = document.getElementById('balance');
+            const balanceYearEl = document.getElementById('balanceYear');
+            balanceEl.textContent = formatCurrency(balance);
+            balanceYearEl.textContent = formatPeriodSubline(balance);
+            balanceEl.className = 'value ' + (balance >= 0 ? 'positive' : 'negative');
+            balanceYearEl.className = 'sub-value ' + (balance >= 0 ? 'positive' : 'negative');
+
+            document.querySelectorAll('.category-total').forEach(el => {
+                const catId = el.dataset.catId;
+                const cat = budget.categories.find(c => c.id === catId);
+                if (cat) el.innerHTML = formatDualTotalHtml(categoryTotal(cat));
+            });
+
+            const incomeTotalEl = document.getElementById('incomeBlockTotal');
+            if (incomeTotalEl) {
+                incomeTotalEl.innerHTML = formatDualTotalHtml(income);
+            }
+        }
+
+        function renderIncome() {
+            const container = document.getElementById('incomeContainer');
+            const budget = getActiveBudget();
+            const incomeSum = totalIncomeMonthly(budget);
+
+            let rowsHtml = budget.income.map(inc => {
+                const step = amountStep(inc.period);
+                return `
+                    <tr>
+                        <td><input type="text" class="item-name" value="${escapeAttr(inc.name)}" placeholder="Inkomstkälla (netto)" oninput="updateIncomeName('${inc.id}', this.value)"></td>
+                        <td style="text-align: right;">
+                            <div class="amount-cell">
+                                <span class="amount-equiv" id="equiv-income-${inc.id}">${formatDualLine(inc.amount, inc.period)}</span>
+                                <div class="amount-inputs">
+                                    <input type="number" class="item-amount" value="${inc.amount || 0}" min="0" step="${step}" title="Belopp, netto efter skatt" oninput="updateIncomeAmount('${inc.id}', this.value)">
+                                    ${periodSelectHtml(inc.id, inc.period, `updateIncomePeriod('${inc.id}', this.value)`)}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 28px; text-align: center; padding-right: 6px;">
+                            <button type="button" class="btn-remove" onclick="removeIncome('${inc.id}')" title="Ta bort">✕</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="category-block income-block">
+                    <div class="category-header">
+                        <span class="cat-name-static">Nettoinkomster</span>
+                        <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddIncomeModal()">+ Lägg till inkomst</button>
+                        <span class="category-total income-total" id="incomeBlockTotal" title="Summa per månad och år">${formatDualTotalHtml(incomeSum)}</span>
+                    </div>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Inkomstkälla</th>
+                                <th class="amount-col">Belopp · enhet</th>
+                                <th class="action-col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+            `;
+            updateSummary();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const budget = getActiveBudget();
+            container.innerHTML = '';
+
+            if (!budget.categories.length) {
+                container.innerHTML = '<div class="empty-hint">Inga kategorier ännu. Lägg till en kategori eller ladda en mall.</div>';
+                updateSummary();
+                return;
+            }
+
+            budget.categories.forEach(cat => {
+                const block = document.createElement('div');
+                const folded = isCategoryCollapsed(cat.id);
+                block.className = 'category-block' + (folded ? ' collapsed' : '');
+
+                let itemsHtml = cat.items.map(item => {
+                    const step = itemAmountStep(item.period);
+                    return `
+                    <tr>
+                        <td><input type="text" class="item-name" value="${escapeAttr(item.name)}" placeholder="Postnamn" oninput="updateItemName('${cat.id}', '${item.id}', this.value)"></td>
+                        <td style="text-align: right;">
+                            <div class="amount-cell">
+                                <span class="amount-equiv" id="equiv-item-${item.id}">${formatDualLine(item.amount, item.period)}</span>
+                                <div class="amount-inputs">
+                                    <input type="number" class="item-amount" value="${item.amount || 0}" min="0" step="${step}" title="Belopp" oninput="updateItemAmount('${cat.id}', '${item.id}', this.value)">
+                                    ${periodSelectHtml(item.id, item.period, `updateItemPeriod('${cat.id}', '${item.id}', this.value)`)}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 28px; text-align: center; padding-right: 6px;">
+                            <button type="button" class="btn-remove" onclick="removeItem('${cat.id}', '${item.id}')" title="Ta bort">✕</button>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+
+                block.innerHTML = `
+                    <div class="category-header">
+                        <button type="button" class="btn-fold" onclick="toggleCategory('${cat.id}')" title="${folded ? 'Fäll ut' : 'Fäll ihop'}">▼</button>
+                        <input type="text" class="cat-name" value="${escapeAttr(cat.name)}" oninput="updateCategoryName('${cat.id}', this.value)">
+                        <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddItemModal('${cat.id}')">+ Lägg till post</button>
+                        <span class="category-total" data-cat-id="${cat.id}" title="Summa per månad och år">${formatDualTotalHtml(categoryTotal(cat))}</span>
+                        <button type="button" class="btn-remove" onclick="removeCategory('${cat.id}')" title="Ta bort kategori">✕</button>
+                    </div>
+                    <div class="category-body">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Post</th>
+                                    <th class="amount-col">Belopp · enhet</th>
+                                    <th class="action-col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>${itemsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+                container.appendChild(block);
+            });
+            updateSummary();
+        }
+
+        function escapeAttr(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        }
+
+        function renderAll() {
+            refreshVariantSelect();
+            renderIncome();
+            renderCategories();
+        }
+
+        function exportData() {
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = 'hushallsbudget.json';
+            a.click();
+        }
+
+        function triggerImport() {
+            document.getElementById('importFile').click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.variants || typeof data.variants !== 'object') {
+                        throw new Error('Invalid format');
+                    }
+                    appData = data;
+                    if (!appData.activeVariant || !appData.variants[appData.activeVariant]) {
+                        appData.activeVariant = Object.keys(appData.variants)[0];
+                    }
+                    normalizeAllVariants();
+                    persist();
+                    renderAll();
+                    alert('Budgetdata importerad.');
+                } catch {
+                    alert('Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        window.onload = () => {
+            loadFromStorage();
+            renderAll();
+        };
+
+        window.addEventListener('beforeunload', persist);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') persist();
+        });
+    </script>
+</body>
+</html>
