@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pensionskalkylator & Skatteavdrag</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4fc3f7;
+            --primary-hover: #29b6f6;
+            --bg-color: #1a1a1a;
+            --card-bg: #2c2c2c;
+            --text-main: #e0e0e0;
+            --text-muted: #bbb;
+            --border-color: #444;
+            --accent-1: #4fc3f7; /* Blue */
+            --accent-2: #81c784; /* Orange */
+            --accent-3: #ce93d8; /* Purple */
+            --accent-4: #ffcc80; /* Pink */
+        }
+
+        select option {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        header {
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: #4fc3f7;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+
+        .chart-container {
+            flex: 3;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            height: 600px;
+            position: relative;
+            width: 100%;
+        }
+
+        .controls-container {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            min-width: 300px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .control-group h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            appearance: none;
+            background-color: var(--bg-color);
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.25em;
+            height: 1.25em;
+            border: 2px solid var(--border-color);
+            border-radius: 0.25em;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--text-main);
+            background-color: transform;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked::before {
+            transform: scale(1);
+        }
+
+        /* Number inputs without arrows */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .setting-input {
+            width: 80px;
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-weight: bold;
+            text-align: right;
+            font-size: 0.85rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .setting-input:focus {
+            border-bottom: 1px solid var(--primary);
+        }
+
+        /* End Number inputs */
+
+        .checkbox-label {
+            font-size: 1rem;
+            color: var(--text-main);
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .checkbox-wrapper:hover .checkbox-label {
+            color: white;
+        }
+
+        .nav-link { color: #4fc3f7; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        .nav-link:hover { text-decoration: underline; color: #81c784; }
+
+        .color-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .val-display {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
+    <header>
+        <h1>Interaktiv Skatte- & Avdragskalkylator</h1>
+        <p class="subtitle">Visuell jämförelse av grundavdrag och jobbskatteavdrag (2026)</p>
+    </header>
+
+    <div class="main-content">
+        <div class="chart-container">
+        <canvas id="taxChart"></canvas>
+    </div>
+
+    <div class="controls-container">
+        <div class="control-group">
+            <h3>Din Profil</h3>
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Inkomsttyp</label>
+                    <select id="income-type" style="width: 100%; padding: 0.25rem; background: var(--bg-tertiary); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                        <option value="lon">Lön</option>
+                        <option value="pension">Pension</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Ålder</label>
+                    <select id="age-group" style="width: 100%; padding: 0.25rem; background: var(--bg-tertiary); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                        <option value="under66">&lt;= 66 år</option>
+                        <option value="over66">&gt; 66 år</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Inkomst per månad</label>
+                <input type="number" id="monthly-income" placeholder="t.ex. 35000" style="width: 100%; padding: 0.25rem; background: var(--bg-tertiary); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+            </div>
+            
+            <div id="monthly-stats" style="padding: 1rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; display: none;">
+                <h4 style="margin: 0 0 0.75rem 0; color: var(--text-main); font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Resultat för <span id="stat-annual"></span> kr/år</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.95rem;">
+                    <div style="color: var(--text-muted);">Effektiv skatt:</div>
+                    <div id="stat-percent" style="font-weight: bold;"></div>
+                    <div style="color: var(--text-muted);">Skatt att betala:</div>
+                    <div id="stat-tax" style="font-weight: bold; color: var(--text-light);"></div>
+                    <div style="color: var(--text-muted);">Skatteavdrag (JSA):</div>
+                    <div id="stat-jsa" style="font-weight: bold; color: #8b5cf6;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Inställningar</h3>
+            <div class="input-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                    <label for="tax-rate-val" style="font-size: 0.8rem; color: var(--text-muted);">Kommunalskatt (%)</label>
+                    <input type="number" id="tax-rate-val" class="setting-input" value="33.2" step="0.1">
+                </div>
+                <input type="range" id="tax-rate" min="25" max="40" step="0.1" value="33.2" style="width: 100%;">
+            </div>
+            
+            <div class="input-group" style="margin-top: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                    <label for="pbb-val" style="font-size: 0.8rem; color: var(--text-muted);">Prisbasbelopp (kr)</label>
+                    <input type="number" id="pbb-val" class="setting-input" value="59200" step="100">
+                </div>
+                <input type="range" id="pbb-value" min="50000" max="70000" step="100" value="59200" style="width: 100%;">
+            </div>
+
+            <div class="input-group" style="margin-top: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                    <label for="statlig-val" style="font-size: 0.8rem; color: var(--text-muted);">Brytpunkt Statlig (kr)</label>
+                    <input type="number" id="statlig-val" class="setting-input" value="625000" step="1000">
+                </div>
+                <input type="range" id="statlig-grans" min="500000" max="800000" step="1000" value="625000" style="width: 100%;">
+            </div>
+
+            <div class="input-group" style="margin-top: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                    <label for="x-axis-max-val" style="font-size: 0.8rem; color: var(--text-muted);">Max Årsinkomst (kr)</label>
+                    <input type="number" id="x-axis-max-val" class="setting-input" value="800000" step="50000">
+                </div>
+                <input type="range" id="x-axis-max" min="300000" max="2000000" step="50000" value="800000" style="width: 100%;">
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Konfiguration (Enkelt att justera för 2025/2026 prognoser) ---
+    const CONFIG = {
+        jsaVanlig: {
+            // Nuvarande lagstiftning för Vanligt Jobbskatteavdrag i PBB-multiplikatorer.
+            // Tillsammans med ett PBB för 2026 (ex 59 200 kr) utgör detta din 2026-prognos!
+            steg1_pbb: 0.91,
+            steg2_pbb: 3.124,
+            steg2_mult: 0.387, 
+            steg3_pbb: 8.079,
+            steg3_mult: 0.105,  
+            // Det nya politiska tillägget
+            tillagg_procent: 0.03,
+            tillagg_max: 14181
+        },
+        jsaForhojt: {
+            // Skatteverkets nivåer för Förhöjt Jobbskatteavdrag (äldre)
+            steg1_grans: 103000,
+            steg1_procent: 0.22,
+            steg2_grans: 310200,
+            steg2_procent: 0.07,
+            maxtak: 37255
+        }
+    };
+
+    // --- Logic functions ported from Python ---
+
+    function berakna_grundavdrag_vanligt(lon, pbb) {
+        if (lon <= 0) return 0;
+        let ga = 0;
+        if (lon <= 0.99 * pbb) ga = 0.42 * pbb;
+        else if (lon <= 2.72 * pbb) ga = 0.42 * pbb + 0.20 * (lon - 0.99 * pbb);
+        else if (lon <= 3.11 * pbb) ga = 0.77 * pbb;
+        else if (lon <= 7.88 * pbb) ga = 0.77 * pbb - 0.10 * (lon - 3.11 * pbb);
+        else ga = 0.29 * pbb;
+        return Math.min(Math.ceil(ga / 100) * 100, lon);
+    }
+
+    function berakna_grundavdrag_forhojt(lon) {
+        if (lon <= 0) return 0;
+        const max_ga = 179100;
+        const min_ga = 117500;
+        const bp_peak = 475104;
+        const bp_floor = 796152;
+        let ga = 0;
+        if (lon <= min_ga) ga = lon;
+        else if (lon <= bp_peak) ga = min_ga + ((lon - min_ga) / (bp_peak - min_ga)) * (max_ga - min_ga);
+        else if (lon <= bp_floor) ga = max_ga - ((lon - bp_peak) / (bp_floor - bp_peak)) * (max_ga - min_ga);
+        else ga = min_ga;
+        return Math.min(Math.ceil(ga / 100) * 100, lon);
+    }
+
+    function calculate_jobbskatteavdrag(annual_income, ga, kommunalskatt, pbb) {
+        if (annual_income <= 0) return 0;
+        
+        let base_jsa = 0;
+        const conf = CONFIG.jsaVanlig;
+
+        if (annual_income <= conf.steg1_pbb * pbb) {
+            base_jsa = annual_income - ga;
+        } else if (annual_income <= conf.steg2_pbb * pbb) {
+            base_jsa = (conf.steg1_pbb * pbb) + conf.steg2_mult * (annual_income - conf.steg1_pbb * pbb) - ga;
+        } else {
+            // Inkomst tak (motsvarande inkomst_tak i grund.py)
+            const inkomst_tak = Math.min(annual_income, conf.steg3_pbb * pbb);
+            const prev_max = (conf.steg1_pbb * pbb) + conf.steg2_mult * (conf.steg2_pbb * pbb - conf.steg1_pbb * pbb);
+            base_jsa = prev_max + conf.steg3_mult * (inkomst_tak - conf.steg2_pbb * pbb) - ga;
+        }
+        
+        let grund_skatt = Math.max(0, base_jsa * kommunalskatt);
+        
+        // Lägg till det nya politiska tillägget för 2026 precis som i grund.py
+        let tillagg = Math.min(conf.tillagg_max, annual_income * conf.tillagg_procent);
+        
+        return grund_skatt + tillagg;
+    }
+
+    function calculate_jobbskatteavdrag_forhojt(annual_income, ga, kommunalskatt, pbb) {
+        if (annual_income <= 0) return 0;
+        
+        // För äldre (över 66/67 år) är jobbskatteavdraget en fast procentsats
+        // av arbetsinkomsten och oberoende av kommunalskatt och grundavdrag.
+        // Konfigurerat via CONFIG-objektet högst upp.
+        let jsa = 0;
+        const conf = CONFIG.jsaForhojt;
+        
+        if (annual_income <= conf.steg1_grans) {
+            jsa = conf.steg1_procent * annual_income;
+        } else if (annual_income <= conf.steg2_grans) {
+            const bas_jsa = conf.steg1_procent * conf.steg1_grans; // 22 000
+            jsa = bas_jsa + conf.steg2_procent * (annual_income - conf.steg1_grans);
+        } else {
+            jsa = conf.maxtak;
+        }
+        
+        return jsa;
+    }
+
+    // --- Chart Setup ---
+
+    const verticalLinePlugin = {
+        id: 'verticalLine',
+        beforeDraw: chart => {
+            const input = document.getElementById('monthly-income');
+            if (!input) return;
+            const monthly = parseInt(input.value, 10);
+            if (isNaN(monthly) || monthly <= 0) return;
+            
+            const annual = monthly * 12;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            
+            if (annual >= xAxis.min && annual <= xAxis.max) {
+                const ctx = chart.ctx;
+                const xPos = xAxis.getPixelForValue(annual);
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(xPos, yAxis.top);
+                ctx.lineTo(xPos, yAxis.bottom);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#f8fafc'; // Vit streckad linje
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
+    const ctx = document.getElementById('taxChart').getContext('2d');
+    
+    // Style variables mapping
+    const colors = {
+        gaVanlig: '#4fc3f7', // blue
+        gaForhojt: '#81c784', // orange
+        jsaVanlig: '#ce93d8', // purple
+        jsaForhojt: '#ffcc80', // pink
+        total: '#b2ff59', // emerald green
+        percent: '#ff8a65', // red
+        grid: '#444444',
+        text: '#bbbbbb'
+    };
+
+    let chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Grundavdrag (Vanligt)',
+                    borderColor: colors.gaVanlig,
+                    backgroundColor: colors.gaVanlig + '20',
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    data: [],
+                    tension: 0.1
+                },
+                {
+                    label: 'Förhöjt Grundavdrag',
+                    borderColor: colors.gaForhojt,
+                    backgroundColor: colors.gaForhojt + '20',
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    fill: false,
+                    data: [],
+                    tension: 0.1
+                },
+                {
+                    label: 'Jobbskatteavdrag (Vanligt)',
+                    borderColor: colors.jsaVanlig,
+                    backgroundColor: colors.jsaVanlig + '20',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false,
+                    data: [],
+                    tension: 0.1
+                },
+                {
+                    label: 'Jobbskatteavdrag (Förhöjt)',
+                    borderColor: colors.jsaForhojt,
+                    backgroundColor: colors.jsaForhojt + '20',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false,
+                    data: [],
+                    tension: 0.1
+                },
+                {
+                    label: 'Total Skattelättnad (i kr)',
+                    data: [],
+                    borderColor: colors.total,
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Effektiv Skatt (%)',
+                    data: [],
+                    borderColor: colors.percent,
+                    borderWidth: 2,
+                    borderDash: [2, 2],
+                    fill: false,
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e0e0', font: { family: 'sans-serif', size: 13 } }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                    titleColor: '#e0e0e0',
+                    bodyColor: '#e0e0e0',
+                    borderColor: '#444',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        title: function(context) {
+                            return 'Årsinkomst: ' + new Intl.NumberFormat('sv-SE').format(context[0].parsed.x) + ' kr';
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            if (context.parsed.y !== null) {
+                                if (context.dataset.yAxisID === 'y1') {
+                                    label += context.parsed.y.toFixed(1) + '%';
+                                } else {
+                                    label += new Intl.NumberFormat('sv-SE').format(context.parsed.y) + ' kr';
+                                }
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    grid: { color: colors.grid, drawBorder: false },
+                    ticks: {
+                        color: colors.text,
+                        callback: function(value) { return value / 1000 + 'k'; },
+                        font: { family: 'sans-serif' }
+                    },
+                    title: { display: true, text: 'Årsinkomst (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    grid: { color: colors.grid, drawBorder: false },
+                    ticks: {
+                        color: colors.text,
+                        callback: function(value) { return value / 1000 + 'k'; },
+                        font: { family: 'sans-serif' }
+                    },
+                    title: { display: true, text: 'Avdrag / Skattelättnad (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } },
+                    min: 0
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { drawOnChartArea: false }, // avoid overlapping grid lines
+                    ticks: {
+                        color: colors.percent,
+                        callback: function(value) { return value + '%'; },
+                        font: { family: 'sans-serif' }
+                    },
+                    title: { display: true, text: 'Effektiv Skatt (%)', color: colors.percent, font: { family: 'sans-serif', size: 14 } },
+                    min: 0,
+                    max: 50
+                }
+            }
+        },
+        plugins: [verticalLinePlugin]
+    });
+
+    // --- Update Logic ---
+
+    function updateData() {
+        const maxIncome = parseInt(document.getElementById('x-axis-max').value, 10);
+        const taxRate = parseFloat(document.getElementById('tax-rate').value) / 100;
+        const pbb = parseInt(document.getElementById('pbb-value').value, 10);
+        const skiktgrans = parseInt(document.getElementById('statlig-grans').value, 10);
+        
+        function generateData(kommunalskatt, pbb, xMax, statligGrans) {
+            const dataGaVanlig = [];
+            const dataGaForhojt = [];
+            const dataJsaVanlig = [];
+            const dataJsaForhojt = [];
+            
+            // Vi räknar ut skatten vid exakt varje tusenlapp för maximal precision
+            const step = 1000;
+
+            for (let lon = 0; lon <= xMax; lon += step) {
+                let gaVanlig = berakna_grundavdrag_vanligt(lon, pbb);
+                let gaForhojt = berakna_grundavdrag_forhojt(lon);
+                dataGaVanlig.push({x: lon, y: gaVanlig});
+                dataGaForhojt.push({x: lon, y: gaForhojt});
+                dataJsaVanlig.push({x: lon, y: calculate_jobbskatteavdrag(lon, gaVanlig, kommunalskatt, pbb)});
+                dataJsaForhojt.push({x: lon, y: calculate_jobbskatteavdrag_forhojt(lon, gaForhojt, kommunalskatt, pbb)});
+            }
+            return {dataGaVanlig, dataGaForhojt, dataJsaVanlig, dataJsaForhojt};
+        }
+        const result = generateData(taxRate, pbb, maxIncome, skiktgrans);
+
+        const incomeType = document.getElementById('income-type').value;
+        const ageGroup = document.getElementById('age-group').value;
+
+        // Apply visibility
+        chart.data.datasets[0].hidden = (ageGroup !== 'under66'); // Grundavdrag Vanlig
+        chart.data.datasets[1].hidden = (ageGroup !== 'over66');  // Grundavdrag Förhöjt
+        chart.data.datasets[2].hidden = (incomeType === 'pension' || ageGroup !== 'under66'); // JSA Vanlig
+        chart.data.datasets[3].hidden = (incomeType === 'pension' || ageGroup !== 'over66');  // JSA Förhöjt
+        chart.data.datasets[4].hidden = false; // Totalen visas alltid
+
+        // Calculate accumulated total based on active profile
+        const dataTotal = [];
+        const dataPercent = [];
+        for(let i=0; i<result.dataGaVanlig.length; i++) {
+            let lon = result.dataGaVanlig[i].x;
+            let ga = ageGroup === 'under66' ? result.dataGaVanlig[i].y : result.dataGaForhojt[i].y;
+            let jsa = 0;
+            if (incomeType === 'lon') {
+                jsa = ageGroup === 'under66' ? result.dataJsaVanlig[i].y : result.dataJsaForhojt[i].y;
+            }
+            
+            // Beräkna total skattelättnad genom att jämföra skatt utan avdrag med verklig skatt.
+            // Skatt utan avdrag (Kommunal + eventuell Statlig):
+            let tax_without_deductions = lon * taxRate;
+            if (lon > skiktgrans) {
+                tax_without_deductions += (lon - skiktgrans) * 0.20;
+            }
+            
+            // Verklig skatt (Kommunal + eventuell Statlig):
+            let taxable_income = Math.max(0, lon - ga);
+            let tax_before_jsa = taxable_income * taxRate;
+            
+            // Statlig skatt (20% på beskattningsbar inkomst över skiktgränsen)
+            let statlig_skatt = 0;
+            if (taxable_income > skiktgrans) {
+                statlig_skatt = (taxable_income - skiktgrans) * 0.20;
+            }
+            
+            let final_tax = Math.max(0, tax_before_jsa - jsa) + statlig_skatt;
+            
+            // Den faktiska skattelättnaden är mellanskillnaden
+            let total = tax_without_deductions - final_tax;
+            
+            // Effektiv skatteprocent
+            let percent = lon > 0 ? (final_tax / lon) * 100 : 0;
+            
+            dataTotal.push({x: lon, y: total});
+            dataPercent.push({x: lon, y: percent});
+        }
+
+        // Apply data
+        chart.data.datasets[0].data = result.dataGaVanlig;
+        chart.data.datasets[1].data = result.dataGaForhojt;
+        chart.data.datasets[2].data = result.dataJsaVanlig;
+        chart.data.datasets[3].data = result.dataJsaForhojt;
+        chart.data.datasets[4].data = dataTotal;
+        chart.data.datasets[5].data = dataPercent;
+        
+        chart.options.scales.x.max = maxIncome;
+
+        // Uppdatera detaljfönstret om en månadslön är angiven
+        const monthlyInput = document.getElementById('monthly-income');
+        const statsDiv = document.getElementById('monthly-stats');
+        if (monthlyInput.value && !isNaN(parseInt(monthlyInput.value, 10))) {
+            const monthly = parseInt(monthlyInput.value, 10);
+            const annual = monthly * 12;
+            
+            let ga = ageGroup === 'under66' ? berakna_grundavdrag_vanligt(annual, pbb) : berakna_grundavdrag_forhojt(annual);
+            let jsa = 0;
+            if (incomeType === 'lon') {
+                jsa = ageGroup === 'under66' ? calculate_jobbskatteavdrag(annual, ga, taxRate, pbb) : calculate_jobbskatteavdrag_forhojt(annual, ga, taxRate, pbb);
+            }
+            
+            let taxable = Math.max(0, annual - ga);
+            let tax_before = taxable * taxRate;
+            let statlig = 0;
+            if (taxable > skiktgrans) statlig = (taxable - skiktgrans) * 0.20;
+            let final_tax = Math.max(0, tax_before - jsa) + statlig;
+            let percent = annual > 0 ? (final_tax / annual) * 100 : 0;
+            
+            document.getElementById('stat-annual').innerText = new Intl.NumberFormat('sv-SE').format(annual);
+            document.getElementById('stat-percent').innerText = percent.toFixed(1) + '%';
+            document.getElementById('stat-percent').style.color = colors.percent;
+            document.getElementById('stat-tax').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(final_tax)) + ' kr/år';
+            document.getElementById('stat-jsa').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(jsa)) + ' kr/år';
+            
+            statsDiv.style.display = 'block';
+        } else {
+            statsDiv.style.display = 'none';
+        }
+
+        chart.update();
+    }
+
+    // --- Event Listeners ---
+
+    document.getElementById('income-type').addEventListener('change', updateData);
+    document.getElementById('age-group').addEventListener('change', updateData);
+    document.getElementById('monthly-income').addEventListener('input', updateData);
+
+    document.getElementById('tax-rate').addEventListener('input', function(e) {
+        document.getElementById('tax-rate-val').value = e.target.value;
+        updateData();
+    });
+    document.getElementById('tax-rate-val').addEventListener('input', function(e) {
+        document.getElementById('tax-rate').value = e.target.value;
+        updateData();
+    });
+
+    document.getElementById('pbb-value').addEventListener('input', function(e) {
+        document.getElementById('pbb-val').value = e.target.value;
+        updateData();
+    });
+    document.getElementById('pbb-val').addEventListener('input', function(e) {
+        document.getElementById('pbb-value').value = e.target.value;
+        updateData();
+    });
+
+    document.getElementById('statlig-grans').addEventListener('input', function(e) {
+        document.getElementById('statlig-val').value = e.target.value;
+        updateData();
+    });
+    document.getElementById('statlig-val').addEventListener('input', function(e) {
+        document.getElementById('statlig-grans').value = e.target.value;
+        updateData();
+    });
+
+    document.getElementById('x-axis-max').addEventListener('input', function(e) {
+        document.getElementById('x-axis-max-val').value = e.target.value;
+        updateData();
+    });
+    document.getElementById('x-axis-max-val').addEventListener('input', function(e) {
+        document.getElementById('x-axis-max').value = e.target.value;
+        updateData();
+    });
+
+    // Initial render
+    updateData();
+
+</script>
+</body>
+</html>
