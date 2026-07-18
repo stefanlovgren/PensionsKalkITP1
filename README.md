@@ -29,5 +29,15 @@ Ett detaljerat kvitto på vart dina pensionspengar faktiskt tar vägen varje må
 * **Hur man använder:** Fyll i din bruttolön och eventuell löneväxling. Du kan även slå på funktionen för att se hur löneväxling påverkar avsättningarna till ITP1.
 * **Resultat:** Bryter ner dina avsättningar i Allmän pension (Inkomstpension och PPM), Tjänstepension (ITP1 - Bas, Topp och Flex) och Löneväxling. Den visar också hur stor procent av din bruttolön som totalt sparas till pensionen.
 
+### 4. Hushållsbudget (`HouseholdBudget.html`)
+Få överblick över hushållets månadsekonomi.
+* **Hur man använder:** Dela upp utgifter i egna kategorier med underposter och ange nettoinkomster.
+* **Resultat:** Följ saldot i realtid. Budgeten sparas lokalt och du kan växla mellan flera sparade varianter eller utgå från en färdig mall.
+
+### 5. Interaktiv Skatte- & Avdragskalkylator (`SkatteAvdragEffekt.html`)
+Visuell jämförelse av grundavdrag och jobbskatteavdrag (2026).
+* **Hur man använder:** Fyll i inkomsttyp, ålder och månadslön samt justera kommunalskatt och andra variabler.
+* **Resultat:** Visar effektiv skatt och skattelättnader beroende på ålder och inkomst med hjälp av interaktiva grafer.
+
 ## Spara och flytta data
 Både den ekonomiska prognosen och pensionsfördelningen har knappar för att **Exportera** och **Importera**. Detta laddar ner en liten `.json`-fil till din dator som du senare kan ladda upp igen för att återställa alla dina inmatningar och inställningar ifall du byter dator eller rensar webbläsaren.
