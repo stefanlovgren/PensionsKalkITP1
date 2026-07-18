@@ -274,44 +274,54 @@
                     <div style="color: var(--text-muted);">Skatt att betala:</div>
                     <div id="stat-tax" style="font-weight: bold; color: var(--text-light);"></div>
                     <div style="color: var(--text-muted);">Skatteavdrag (JSA):</div>
-                    <div id="stat-jsa" style="font-weight: bold; color: #8b5cf6;"></div>
+                    <div id="stat-jsa" style="font-weight: bold; color: #ce93d8;"></div>
+                    <div style="color: var(--text-muted);">Alla avdrag (Totalt):</div>
+                    <div id="stat-total-avdrag" style="font-weight: bold; color: #b2ff59;"></div>
+                    <div style="color: var(--text-muted);">Lön efter skatt:</div>
+                    <div id="stat-net" style="font-weight: bold; color: #4fc3f7;"></div>
                 </div>
             </div>
         </div>
 
         <div class="control-group">
-            <h3>Inställningar</h3>
-            <div class="input-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
-                    <label for="tax-rate-val" style="font-size: 0.8rem; color: var(--text-muted);">Kommunalskatt (%)</label>
-                    <input type="number" id="tax-rate-val" class="setting-input" value="33.2" step="0.1">
-                </div>
-                <input type="range" id="tax-rate" min="25" max="40" step="0.1" value="33.2" style="width: 100%;">
-            </div>
-            
-            <div class="input-group" style="margin-top: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
-                    <label for="pbb-val" style="font-size: 0.8rem; color: var(--text-muted);">Prisbasbelopp (kr)</label>
-                    <input type="number" id="pbb-val" class="setting-input" value="59200" step="100">
-                </div>
-                <input type="range" id="pbb-value" min="50000" max="70000" step="100" value="59200" style="width: 100%;">
-            </div>
+            <details>
+                <summary style="cursor: pointer; user-select: none; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;">
+                    <h3 style="display: inline; border: none; padding: 0;">Inställningar</h3>
+                </summary>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                            <label for="tax-rate-val" style="font-size: 0.8rem; color: var(--text-muted);">Kommunalskatt (%)</label>
+                            <input type="number" id="tax-rate-val" class="setting-input" value="33.2" step="0.1">
+                        </div>
+                        <input type="range" id="tax-rate" min="25" max="40" step="0.1" value="33.2" style="width: 100%;">
+                    </div>
+                    
+                    <div class="input-group" style="margin-top: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                            <label for="pbb-val" style="font-size: 0.8rem; color: var(--text-muted);">Prisbasbelopp (kr)</label>
+                            <input type="number" id="pbb-val" class="setting-input" value="59200" step="100">
+                        </div>
+                        <input type="range" id="pbb-value" min="50000" max="70000" step="100" value="59200" style="width: 100%;">
+                    </div>
 
-            <div class="input-group" style="margin-top: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
-                    <label for="statlig-val" style="font-size: 0.8rem; color: var(--text-muted);">Brytpunkt Statlig (kr)</label>
-                    <input type="number" id="statlig-val" class="setting-input" value="625000" step="1000">
-                </div>
-                <input type="range" id="statlig-grans" min="500000" max="800000" step="1000" value="625000" style="width: 100%;">
-            </div>
+                    <div class="input-group" style="margin-top: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                            <label for="statlig-val" style="font-size: 0.8rem; color: var(--text-muted);">Brytpunkt Statlig (kr)</label>
+                            <input type="number" id="statlig-val" class="setting-input" value="625000" step="1000">
+                        </div>
+                        <input type="range" id="statlig-grans" min="500000" max="800000" step="1000" value="625000" style="width: 100%;">
+                    </div>
 
-            <div class="input-group" style="margin-top: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
-                    <label for="x-axis-max-val" style="font-size: 0.8rem; color: var(--text-muted);">Max Årsinkomst (kr)</label>
-                    <input type="number" id="x-axis-max-val" class="setting-input" value="800000" step="50000">
+                    <div class="input-group" style="margin-top: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                            <label for="x-axis-max-val" style="font-size: 0.8rem; color: var(--text-muted);">Max Årsinkomst (kr)</label>
+                            <input type="number" id="x-axis-max-val" class="setting-input" value="800000" step="50000">
+                        </div>
+                        <input type="range" id="x-axis-max" min="300000" max="2000000" step="50000" value="800000" style="width: 100%;">
+                    </div>
                 </div>
-                <input type="range" id="x-axis-max" min="300000" max="2000000" step="50000" value="800000" style="width: 100%;">
-            </div>
+            </details>
         </div>
         </div>
     </div>
@@ -717,11 +727,18 @@
             let final_tax = Math.max(0, tax_before - jsa) + statlig;
             let percent = annual > 0 ? (final_tax / annual) * 100 : 0;
             
+            let tax_without_deductions = annual * taxRate;
+            if (annual > skiktgrans) tax_without_deductions += (annual - skiktgrans) * 0.20;
+            let total_avdrag = tax_without_deductions - final_tax;
+            let net_income = annual - final_tax;
+            
             document.getElementById('stat-annual').innerText = new Intl.NumberFormat('sv-SE').format(annual);
             document.getElementById('stat-percent').innerText = percent.toFixed(1) + '%';
             document.getElementById('stat-percent').style.color = colors.percent;
-            document.getElementById('stat-tax').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(final_tax)) + ' kr/år';
-            document.getElementById('stat-jsa').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(jsa)) + ' kr/år';
+            document.getElementById('stat-tax').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(final_tax/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(final_tax)) + ' kr/år)';
+            document.getElementById('stat-jsa').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(jsa/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(jsa)) + ' kr/år)';
+            document.getElementById('stat-total-avdrag').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(total_avdrag/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(total_avdrag)) + ' kr/år)';
+            document.getElementById('stat-net').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(net_income/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(net_income)) + ' kr/år)';
             
             statsDiv.style.display = 'block';
         } else {
