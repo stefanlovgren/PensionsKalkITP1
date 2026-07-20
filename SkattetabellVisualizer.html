@@ -235,15 +235,15 @@
     <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
     <header>
         <h1>Skattetabell Visualizer</h1>
-        <p class="subtitle">Interaktiv visualisering av Skatteverkets allmänna tabeller (Månadslön 2026)</p>
+        <p class="subtitle">Interaktiv visualisering av Skatteverkets allmänna tabeller (MånadsInkomst 2026)</p>
     </header>
 
     <div class="main-content">
         <div class="controls-container">
             <div class="control-group">
-                <h3>Din Inkomst</h3>
+                <h3>Din MånadsInkomst</h3>
                 <div class="input-group" style="margin-top: 0.5rem;">
-                    <label for="user-income">Månadslön (kr)</label>
+                    <label for="user-income">MånadsInkomst (kr)</label>
                     <input type="number" id="user-income" class="full-width" placeholder="t.ex. 35000">
                 </div>
                 <div id="income-results" style="margin-top: 0.75rem; font-size: 0.95rem; line-height: 1.4;">
@@ -302,7 +302,7 @@
                 <h3>Inställningar</h3>
                 <div class="input-group" style="margin-top: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
-                        <label for="x-axis-max-val">Max Månadsinkomst (kr)</label>
+                        <label for="x-axis-max-val">Max MånadsInkomst (kr)</label>
                         <input type="number" id="x-axis-max-val" class="setting-input" value="100000" step="5000">
                     </div>
                     <input type="range" id="x-axis-max" min="10000" max="200000" step="5000" value="100000">
@@ -419,7 +419,7 @@
                     padding: 12,
                     callbacks: {
                         title: function(context) {
-                            return 'Månadsinkomst: ' + new Intl.NumberFormat('sv-SE').format(context[0].parsed.x) + ' kr';
+                            return 'MånadsInkomst: ' + new Intl.NumberFormat('sv-SE').format(context[0].parsed.x) + ' kr';
                         },
                         label: function(context) {
                             let label = context.dataset.label || '';
@@ -446,7 +446,7 @@
                         callback: function(value) { return value / 1000 + 'k'; },
                         font: { family: 'sans-serif' }
                     },
-                    title: { display: true, text: 'Månadsinkomst (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } },
+                    title: { display: true, text: 'MånadsInkomst (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } },
                     min: 0
                 },
                 y: {
@@ -532,7 +532,7 @@
 
         chart.update();
 
-        // Uppdatera "Din Inkomst" resultat
+        // Uppdatera "Din MånadsInkomst" resultat
         const incomeInput = document.getElementById('user-income');
         if (incomeInput) {
             const income = parseFloat(incomeInput.value);
@@ -549,14 +549,30 @@
                 }
                 
                 let resultsHtml = '';
-                activeCols.forEach(colIdx => {
+                const nettos = [];
+                activeCols.forEach((colIdx, index) => {
                     const yVal = groupData.cols[colIdx][closestJ];
                     const percent = ((yVal / income) * 100).toFixed(1);
                     const netto = income - yVal;
+                    nettos.push(netto);
+
+                    let diffsHtml = '';
+                    for (let p = 0; p < index; p++) {
+                        const prevColIdx = activeCols[p];
+                        const diff = netto - nettos[p];
+                        const sign = diff > 0 ? '+' : '';
+                        const color = diff > 0 ? '#81c784' : (diff < 0 ? '#ff8a65' : 'inherit');
+                        diffsHtml += `<div style="font-size: 0.85em; margin-top: 4px;">
+                            Diff vs ${colNames[prevColIdx].split(': ')[1]}: 
+                            <strong style="color: ${color}">${sign}${new Intl.NumberFormat('sv-SE').format(diff)} kr</strong>
+                        </div>`;
+                    }
+
                     resultsHtml += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: var(--bg-color); border-radius: 4px; border-left: 3px solid ${lineColors[colIdx]};">
-                        <strong style="color: ${lineColors[colIdx]}">${colNames[colIdx].split(':')[0]}:</strong><br>
+                        <strong style="color: ${lineColors[colIdx]}">${colNames[colIdx].split(': ')[1]}</strong><br>
                         Skatt: ${new Intl.NumberFormat('sv-SE').format(yVal)} kr (${percent}%)<br>
                         Netto: ${new Intl.NumberFormat('sv-SE').format(netto)} kr
+                        ${diffsHtml}
                     </div>`;
                 });
                 if (activeCols.length === 0) {
@@ -564,7 +580,7 @@
                 }
                 resultsDiv.innerHTML = resultsHtml;
             } else {
-                resultsDiv.innerHTML = '<span style="color: var(--text-muted);">Ange en månadslön för att se skatt.</span>';
+                resultsDiv.innerHTML = '<span style="color: var(--text-muted);">Ange en månadsinkomst för att se skatt.</span>';
             }
         }
 
