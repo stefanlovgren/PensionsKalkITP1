@@ -558,7 +558,8 @@
                     padding: 12,
                     callbacks: {
                         title: function(context) {
-                            return 'Årsinkomst: ' + new Intl.NumberFormat('sv-SE').format(context[0].parsed.x) + ' kr';
+                            const val = context[0].parsed.x;
+                            return 'Inkomst: ' + new Intl.NumberFormat('sv-SE').format(val) + ' kr/år (' + new Intl.NumberFormat('sv-SE').format(Math.round(val/12)) + ' kr/mån)';
                         },
                         label: function(context) {
                             let label = context.dataset.label || '';
@@ -567,7 +568,7 @@
                                 if (context.dataset.yAxisID === 'y1') {
                                     label += context.parsed.y.toFixed(1) + '%';
                                 } else {
-                                    label += new Intl.NumberFormat('sv-SE').format(context.parsed.y) + ' kr';
+                                    label += new Intl.NumberFormat('sv-SE').format(context.parsed.y) + ' kr/år (' + new Intl.NumberFormat('sv-SE').format(Math.round(context.parsed.y/12)) + ' kr/mån)';
                                 }
                             }
                             return label;
@@ -581,10 +582,13 @@
                     grid: { color: colors.grid, drawBorder: false },
                     ticks: {
                         color: colors.text,
-                        callback: function(value) { return value / 1000 + 'k'; },
-                        font: { family: 'sans-serif' }
+                        callback: function(value) { 
+                            if (value === 0) return '0';
+                            return [value / 1000 + 'k/år', (value / 12 / 1000).toFixed(1).replace('.0', '') + 'k/mån']; 
+                        },
+                        font: { family: 'sans-serif', size: 11 }
                     },
-                    title: { display: true, text: 'Årsinkomst (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } }
+                    title: { display: true, text: 'Inkomst', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } }
                 },
                 y: {
                     type: 'linear',
@@ -593,10 +597,13 @@
                     grid: { color: colors.grid, drawBorder: false },
                     ticks: {
                         color: colors.text,
-                        callback: function(value) { return value / 1000 + 'k'; },
-                        font: { family: 'sans-serif' }
+                        callback: function(value) { 
+                            if (value === 0) return '0';
+                            return [value / 1000 + 'k/år', (value / 12 / 1000).toFixed(1).replace('.0', '') + 'k/mån']; 
+                        },
+                        font: { family: 'sans-serif', size: 11 }
                     },
-                    title: { display: true, text: 'Avdrag / Skattelättnad (kr)', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } },
+                    title: { display: true, text: 'Avdrag / Skattelättnad', color: '#e0e0e0', font: { family: 'sans-serif', size: 14 } },
                     min: 0
                 },
                 y1: {

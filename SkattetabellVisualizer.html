@@ -394,6 +394,18 @@
                 ctx.strokeStyle = '#ffffff'; 
                 ctx.setLineDash([5, 5]);
                 ctx.stroke();
+                
+                // Print the income text
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'left';
+                ctx.font = 'bold 12px sans-serif';
+                // Adjust text position if it's too close to the right edge
+                if (x > xAxis.right - 60) {
+                    ctx.textAlign = 'right';
+                    ctx.fillText(new Intl.NumberFormat('sv-SE').format(income) + ' kr', x - 8, yAxis.top + 20);
+                } else {
+                    ctx.fillText(new Intl.NumberFormat('sv-SE').format(income) + ' kr', x + 8, yAxis.top + 20);
+                }
                 ctx.restore();
             }
         }
