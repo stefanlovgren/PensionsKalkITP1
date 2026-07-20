@@ -39,11 +39,12 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 2rem;
+            box-sizing: border-box;
         }
 
         header {
@@ -238,6 +239,18 @@
     </header>
 
     <div class="main-content">
+        <div class="controls-container">
+            <div class="control-group">
+                <h3>Din Inkomst</h3>
+                <div class="input-group" style="margin-top: 0.5rem;">
+                    <label for="user-income">Månadslön (kr)</label>
+                    <input type="number" id="user-income" class="full-width" placeholder="t.ex. 35000">
+                </div>
+                <div id="income-results" style="margin-top: 0.75rem; font-size: 0.95rem; line-height: 1.4;">
+                </div>
+            </div>
+        </div>
+
         <div class="chart-container">
             <canvas id="tabellChart"></canvas>
         </div>
@@ -351,9 +364,37 @@
         groupSelect.value = groups[0];
     }
 
+    const verticalLinePlugin = {
+        id: 'verticalLine',
+        afterDraw: (chart, args, options) => {
+            const incomeInput = document.getElementById('user-income');
+            if (!incomeInput) return;
+            const income = parseFloat(incomeInput.value);
+            if (isNaN(income) || income <= 0) return;
+
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            
+            if (income >= xAxis.min && income <= xAxis.max) {
+                const x = xAxis.getPixelForValue(income);
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, yAxis.top);
+                ctx.lineTo(x, yAxis.bottom);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff'; 
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
     const ctx = document.getElementById('tabellChart').getContext('2d');
     let chart = new Chart(ctx, {
         type: 'line',
+        plugins: [verticalLinePlugin],
         data: {
             labels: [],
             datasets: []
@@ -490,6 +531,80 @@
         }
 
         chart.update();
+
+        // Uppdatera "Din Inkomst" resultat
+        const incomeInput = document.getElementById('user-income');
+        if (incomeInput) {
+            const income = parseFloat(incomeInput.value);
+            const resultsDiv = document.getElementById('income-results');
+            if (!isNaN(income) && income > 0) {
+                let closestJ = 0;
+                let minDiff = Infinity;
+                for (let j = 0; j < groupData.x.length; j++) {
+                    const diff = Math.abs(groupData.x[j] - income);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestJ = j;
+                    }
+                }
+                
+                let resultsHtml = '';
+                activeCols.forEach(colIdx => {
+                    const yVal = groupData.cols[colIdx][closestJ];
+                    const percent = ((yVal / income) * 100).toFixed(1);
+                    const netto = income - yVal;
+                    resultsHtml += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: var(--bg-color); border-radius: 4px; border-left: 3px solid ${lineColors[colIdx]};">
+                        <strong style="color: ${lineColors[colIdx]}">${colNames[colIdx].split(':')[0]}:</strong><br>
+                        Skatt: ${new Intl.NumberFormat('sv-SE').format(yVal)} kr (${percent}%)<br>
+                        Netto: ${new Intl.NumberFormat('sv-SE').format(netto)} kr
+                    </div>`;
+                });
+                if (activeCols.length === 0) {
+                    resultsHtml = '<span style="color: var(--text-muted);">Välj minst en kolumn.</span>';
+                }
+                resultsDiv.innerHTML = resultsHtml;
+            } else {
+                resultsDiv.innerHTML = '<span style="color: var(--text-muted);">Ange en månadslön för att se skatt.</span>';
+            }
+        }
+
+        saveSettings();
+    }
+
+    function loadSettings() {
+        const settingsStr = localStorage.getItem('skattetabellSettings');
+        if (settingsStr) {
+            try {
+                const settings = JSON.parse(settingsStr);
+                if (settings.group && groups.includes(settings.group)) document.getElementById('group-select').value = settings.group;
+                if (settings.showPercent !== undefined) document.getElementById('show-percent').checked = settings.showPercent;
+                if (settings.xAxisMax) {
+                    document.getElementById('x-axis-max').value = settings.xAxisMax;
+                    document.getElementById('x-axis-max-val').value = settings.xAxisMax;
+                }
+                if (settings.yAxisMaxPercent) document.getElementById('y-axis-max-percent').value = settings.yAxisMaxPercent;
+                if (settings.userIncome) document.getElementById('user-income').value = settings.userIncome;
+                if (settings.activeCols && Array.isArray(settings.activeCols)) {
+                    document.querySelectorAll('.col-check').forEach(cb => {
+                        cb.checked = settings.activeCols.includes(parseInt(cb.value, 10));
+                    });
+                }
+            } catch (e) {
+                console.error("Kunde inte läsa inställningar från localStorage", e);
+            }
+        }
+    }
+
+    function saveSettings() {
+        const settings = {
+            group: document.getElementById('group-select').value,
+            showPercent: document.getElementById('show-percent').checked,
+            xAxisMax: document.getElementById('x-axis-max').value,
+            yAxisMaxPercent: document.getElementById('y-axis-max-percent').value,
+            userIncome: document.getElementById('user-income') ? document.getElementById('user-income').value : '',
+            activeCols: Array.from(document.querySelectorAll('.col-check')).filter(cb => cb.checked).map(cb => parseInt(cb.value, 10))
+        };
+        localStorage.setItem('skattetabellSettings', JSON.stringify(settings));
     }
 
     // Event listeners
@@ -497,6 +612,11 @@
     document.querySelectorAll('.col-check').forEach(cb => cb.addEventListener('change', updateChart));
     document.getElementById('show-percent').addEventListener('change', updateChart);
     document.getElementById('y-axis-max-percent').addEventListener('change', updateChart);
+    
+    const incomeInputEl = document.getElementById('user-income');
+    if (incomeInputEl) {
+        incomeInputEl.addEventListener('input', updateChart);
+    }
     
     document.getElementById('x-axis-max').addEventListener('input', function(e) {
         document.getElementById('x-axis-max-val').value = e.target.value;
@@ -508,6 +628,7 @@
     });
 
     // Starta
+    loadSettings();
     updateChart();
 </script>
 </body>
