@@ -302,6 +302,14 @@
                 <h3>Inställningar</h3>
                 <div class="input-group" style="margin-top: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
+                        <label for="x-axis-min-val">Min MånadsInkomst (kr)</label>
+                        <input type="number" id="x-axis-min-val" class="setting-input" value="0" step="5000">
+                    </div>
+                    <input type="range" id="x-axis-min" min="0" max="190000" step="5000" value="0">
+                </div>
+
+                <div class="input-group" style="margin-top: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.1rem;">
                         <label for="x-axis-max-val">Max MånadsInkomst (kr)</label>
                         <input type="number" id="x-axis-max-val" class="setting-input" value="100000" step="5000">
                     </div>
@@ -470,6 +478,7 @@
         const colCheckboxes = document.querySelectorAll('.col-check');
         const activeCols = Array.from(colCheckboxes).filter(cb => cb.checked).map(cb => parseInt(cb.value, 10));
         const showPercent = document.getElementById('show-percent').checked;
+        const minX = parseInt(document.getElementById('x-axis-min').value, 10);
         const maxX = parseInt(document.getElementById('x-axis-max').value, 10);
 
         const groupData = SKATTETABELL_DATA[group];
@@ -509,6 +518,7 @@
         }
 
         chart.data.datasets = datasets;
+        chart.options.scales.x.min = minX;
         chart.options.scales.x.max = maxX;
         
         const yAxisSettingsDiv = document.getElementById('y-axis-settings');
@@ -594,6 +604,10 @@
                 const settings = JSON.parse(settingsStr);
                 if (settings.group && groups.includes(settings.group)) document.getElementById('group-select').value = settings.group;
                 if (settings.showPercent !== undefined) document.getElementById('show-percent').checked = settings.showPercent;
+                if (settings.xAxisMin !== undefined) {
+                    document.getElementById('x-axis-min').value = settings.xAxisMin;
+                    document.getElementById('x-axis-min-val').value = settings.xAxisMin;
+                }
                 if (settings.xAxisMax) {
                     document.getElementById('x-axis-max').value = settings.xAxisMax;
                     document.getElementById('x-axis-max-val').value = settings.xAxisMax;
@@ -615,6 +629,7 @@
         const settings = {
             group: document.getElementById('group-select').value,
             showPercent: document.getElementById('show-percent').checked,
+            xAxisMin: document.getElementById('x-axis-min').value,
             xAxisMax: document.getElementById('x-axis-max').value,
             yAxisMaxPercent: document.getElementById('y-axis-max-percent').value,
             userIncome: document.getElementById('user-income') ? document.getElementById('user-income').value : '',
@@ -634,6 +649,15 @@
         incomeInputEl.addEventListener('input', updateChart);
     }
     
+    document.getElementById('x-axis-min').addEventListener('input', function(e) {
+        document.getElementById('x-axis-min-val').value = e.target.value;
+        updateChart();
+    });
+    document.getElementById('x-axis-min-val').addEventListener('change', function(e) {
+        document.getElementById('x-axis-min').value = e.target.value;
+        updateChart();
+    });
+
     document.getElementById('x-axis-max').addEventListener('input', function(e) {
         document.getElementById('x-axis-max-val').value = e.target.value;
         updateChart();
