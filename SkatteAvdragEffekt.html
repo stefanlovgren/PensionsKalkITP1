@@ -273,9 +273,11 @@
                     <div id="stat-percent" style="font-weight: bold;"></div>
                     <div style="color: var(--text-muted);">Skatt att betala:</div>
                     <div id="stat-tax" style="font-weight: bold; color: var(--text-light);"></div>
-                    <div style="color: var(--text-muted);">Skatteavdrag (JSA):</div>
-                    <div id="stat-jsa" style="font-weight: bold; color: #ce93d8;"></div>
-                    <div style="color: var(--text-muted);">Alla avdrag (Totalt):</div>
+                    <div id="label-stat-ga" style="color: var(--text-muted);">Skatteeffekt GA:</div>
+                    <div id="stat-ga" style="font-weight: bold;"></div>
+                    <div id="label-stat-jsa" style="color: var(--text-muted);">Jobbskatteavdrag:</div>
+                    <div id="stat-jsa" style="font-weight: bold;"></div>
+                    <div style="color: var(--text-muted);">Faktisk skattebesparing:</div>
                     <div id="stat-total-avdrag" style="font-weight: bold; color: #b2ff59;"></div>
                     <div style="color: var(--text-muted);">Lön efter skatt:</div>
                     <div id="stat-net" style="font-weight: bold; color: #4fc3f7;"></div>
@@ -517,7 +519,7 @@
                     tension: 0.1
                 },
                 {
-                    label: 'Total Skattelättnad (kr)',
+                    label: 'Faktisk skattebesparing (kr)',
                     data: [],
                     borderColor: colors.total,
                     borderWidth: 3,
@@ -738,12 +740,22 @@
             if (annual > skiktgrans) tax_without_deductions += (annual - skiktgrans) * 0.20;
             let total_avdrag = tax_without_deductions - final_tax;
             let net_income = annual - final_tax;
+            let ga_skatteeffekt = total_avdrag - jsa;
+            let isUnder66 = ageGroup === 'under66';
             
             document.getElementById('stat-annual').innerText = new Intl.NumberFormat('sv-SE').format(annual);
             document.getElementById('stat-percent').innerText = percent.toFixed(1) + '%';
             document.getElementById('stat-percent').style.color = colors.percent;
             document.getElementById('stat-tax').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(final_tax/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(final_tax)) + ' kr/år)';
+            
+            document.getElementById('label-stat-ga').innerText = isUnder66 ? 'Skatteeffekt GA (Vanligt):' : 'Skatteeffekt GA (Förhöjt):';
+            document.getElementById('stat-ga').style.color = isUnder66 ? colors.gaVanlig : colors.gaForhojt;
+            document.getElementById('stat-ga').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(ga_skatteeffekt/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(ga_skatteeffekt)) + ' kr/år)';
+            
+            document.getElementById('label-stat-jsa').innerText = isUnder66 ? 'Jobbskatteavdrag (Vanligt):' : 'Jobbskatteavdrag (Förhöjt):';
+            document.getElementById('stat-jsa').style.color = isUnder66 ? colors.jsaVanlig : colors.jsaForhojt;
             document.getElementById('stat-jsa').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(jsa/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(jsa)) + ' kr/år)';
+            
             document.getElementById('stat-total-avdrag').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(total_avdrag/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(total_avdrag)) + ' kr/år)';
             document.getElementById('stat-net').innerText = new Intl.NumberFormat('sv-SE').format(Math.round(net_income/12)) + ' kr/mån (' + new Intl.NumberFormat('sv-SE').format(Math.round(net_income)) + ' kr/år)';
             
