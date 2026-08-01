@@ -107,6 +107,10 @@
             <input type="number" id="targetCostAge" placeholder="64" value="64" title="Ålder att projicera återstående kostnader fram till">
         </div>
         <div class="input-group">
+            <label for="timeToTarget">Tid kvar till målålder</label>
+            <input type="text" id="timeToTarget" readonly style="background: #222; color: #b2ff59; border-color: #555; font-weight: bold; text-align: center; width: 280px;" title="Tiden kvar i år / månader / veckor / dagar" value="-">
+        </div>
+        <div class="input-group">
             <label for="projectionEndAge">Slutålder för prognos</label>
             <input type="number" id="projectionEndAge" placeholder="70" value="70" title="Ålder då den ekonomiska prognosen slutar">
         </div>
@@ -592,6 +596,18 @@
             let diffTimeTarget = targetCostDate - currentDate;
             let diffDaysTarget = diffTimeTarget / (1000 * 60 * 60 * 24);
             let remainingCostToTarget = diffDaysTarget * dailyBudget;
+
+            // Update Time to Target text
+            const timeInput = document.getElementById('timeToTarget');
+            if (diffDaysTarget > 0) {
+                const diffWeeksTotal = diffDaysTarget / 7;
+                const diffMonthsTotal = diffDaysTarget / 30.436875;
+                const diffYearsTotal = diffDaysTarget / 365.25;
+                
+                timeInput.value = `${diffYearsTotal.toFixed(1)} år / ${diffMonthsTotal.toFixed(1)} mån / ${diffWeeksTotal.toFixed(1)} v / ${Math.round(diffDaysTarget)} d`;
+            } else {
+                timeInput.value = "-";
+            }
 
             // Calculate severance per day against target age
             let severancePerDay = 0;
