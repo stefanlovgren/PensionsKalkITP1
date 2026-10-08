@@ -266,7 +266,7 @@
             <ul>
                 <li>Ange <strong>nettobelopp</strong> (efter skatt) — det du faktiskt får ut på kontot.</li>
                 <li>Välj enhet per rad: <strong>mån</strong>, <strong>kvt</strong>, <strong>halvår</strong> eller <strong>år</strong>.</li>
-                <li>Under beloppet visas omräkning till <strong>kr/mån · kr/år</strong>.</li>
+                <li>Under beloppet visas omräkning till <strong>kr/mån · kr/år · kr/dag</strong>.</li>
                 <li><strong>+ Lägg till inkomst</strong> visar förslag med typiska belopp.</li>
             </ul>
 
@@ -274,7 +274,7 @@
             <ul>
                 <li>Organisera utgifter i <strong>kategorier</strong> (Boende, Mat, Transport …) med poster under varje kategori.</li>
                 <li>Varje post har valfri enhet — t.ex. försäkring per <strong>år</strong>, hyra per <strong>månad</strong>.</li>
-                <li>Omräkningsraden visar alltid månads- och årsbelopp; summor normaliseras internt per månad.</li>
+                <li>Omräkningsraden visar alltid månads-, års- och dagsbelopp; summor normaliseras internt per månad.</li>
                 <li><strong>+ Lägg till kategori</strong> och <strong>+ Lägg till post</strong> erbjuder förslag baserade på kategorityp med ungefärliga svenska hushållsbelopp.</li>
                 <li>Förslagsbeloppen är <strong>uppskattningar</strong> — justera alltid efter din egen situation.</li>
             </ul>
@@ -581,12 +581,14 @@
         function formatDualLine(amount, period) {
             const monthly = toMonthly(amount || 0, period);
             const yearly = Math.round(monthly * 12);
-            return formatCurrency(monthly) + '/mån · ' + formatCurrency(yearly) + '/år';
+            const daily = dailyFromMonthly(monthly);
+            return formatCurrency(monthly) + '/mån · ' + formatCurrency(yearly) + '/år · ' + formatCurrency(daily) + '/dag';
         }
 
         function formatDualTotalHtml(monthly) {
             return formatCurrency(monthly) + '<span class="category-total-label">/mån</span> · ' +
-                formatCurrency(Math.round(monthly * 12)) + '<span class="category-total-label">/år</span>';
+                formatCurrency(Math.round(monthly * 12)) + '<span class="category-total-label">/år</span> · ' +
+                formatCurrency(dailyFromMonthly(monthly)) + '<span class="category-total-label">/dag</span>';
         }
 
         function refreshAmountEquiv(elementId, amount, period) {
@@ -1130,7 +1132,7 @@
                     <div class="category-header">
                         <span class="cat-name-static">Nettoinkomster</span>
                         <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddIncomeModal()">+ Lägg till inkomst</button>
-                        <span class="category-total income-total" id="incomeBlockTotal" title="Summa per månad och år">${formatDualTotalHtml(incomeSum)}</span>
+                        <span class="category-total income-total" id="incomeBlockTotal" title="Summa per månad, år och dag">${formatDualTotalHtml(incomeSum)}</span>
                     </div>
                     <table class="items-table">
                         <thead>
@@ -1189,7 +1191,7 @@
                         <button type="button" class="btn-fold" onclick="toggleCategory('${cat.id}')" title="${folded ? 'Fäll ut' : 'Fäll ihop'}">▼</button>
                         <input type="text" class="cat-name" value="${escapeAttr(cat.name)}" oninput="updateCategoryName('${cat.id}', this.value)">
                         <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddItemModal('${cat.id}')">+ Lägg till post</button>
-                        <span class="category-total" data-cat-id="${cat.id}" title="Summa per månad och år">${formatDualTotalHtml(categoryTotal(cat))}</span>
+                        <span class="category-total" data-cat-id="${cat.id}" title="Summa per månad, år och dag">${formatDualTotalHtml(categoryTotal(cat))}</span>
                         <button type="button" class="btn-remove" onclick="removeCategory('${cat.id}')" title="Ta bort kategori">✕</button>
                     </div>
                     <div class="category-body">
