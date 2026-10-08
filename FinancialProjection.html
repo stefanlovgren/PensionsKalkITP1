@@ -96,7 +96,7 @@
         </div>
         <div class="input-group">
             <label for="severancePerDay">Vederlag per dag till målålder</label>
-            <input type="text" id="severancePerDay" readonly style="background: #222; color: #b2ff59; border-color: #555; font-weight: bold; text-align: right;" title="Det genomsnittliga dagliga netto-vederlaget utslaget på tiden fram till målålder" value="-">
+            <input type="text" id="severancePerDay" readonly style="background: #222; color: #b2ff59; border-color: #555; font-weight: bold; text-align: center; width: 340px;" title="Det genomsnittliga dagliga netto-vederlaget utslaget på tiden fram till målålder" value="-">
         </div>
         <div class="input-group">
             <label for="sevStepMonths">Milstolpe Avgångsvederlag (mån)</label>
@@ -572,6 +572,8 @@
             // Severance is typically paid on the base salary without löneväxling
             const severanceNetMonthly = calculateNetMonthlySalary(monthlySalary);
             const totalSeveranceNet = severanceNetMonthly * severanceMonths;
+            const severanceNetMonthlyWithLonevaxling = calculateNetMonthlySalary(monthlySalary - monthlyLonevaxling);
+            const totalSeveranceNetWithLonevaxling = severanceNetMonthlyWithLonevaxling * severanceMonths;
 
             const tbody = document.querySelector('#resultTable tbody');
             tbody.innerHTML = '';
@@ -611,12 +613,18 @@
 
             // Calculate severance per day against target age
             let severancePerDay = 0;
+            let severancePerDayWithLonevaxling = 0;
             if (diffDaysTarget > 0 && totalSeveranceNet > 0) {
                 severancePerDay = totalSeveranceNet / diffDaysTarget;
+                severancePerDayWithLonevaxling = totalSeveranceNetWithLonevaxling / diffDaysTarget;
             }
-            document.getElementById('severancePerDay').value = severancePerDay > 0
-                ? severancePerDay.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0}) + "/dag"
-                : "-";
+            if (severancePerDay > 0) {
+                const svStr = severancePerDay.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                const svStrWithL = severancePerDayWithLonevaxling.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                document.getElementById('severancePerDay').value = `${svStr}/dag (m. löneväxl: ${svStrWithL})`;
+            } else {
+                document.getElementById('severancePerDay').value = "-";
+            }
 
             const formatRemainingCost = (cost) => {
                 if (cost < 0) return "+" + Math.abs(cost).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
