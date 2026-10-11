@@ -21,6 +21,7 @@
         .milestone-bd { color: #81c784; font-weight: bold; background-color: #1e3b20; }
         .milestone-cost { color: #ce93d8; font-weight: bold; background-color: #311b3b; }
         .milestone-custom { color: #b2ff59; font-weight: bold; background-color: #1b5e20; }
+        .milestone-custom-special { color: #ffe082; font-weight: bold; background-color: #5d3600; border-left: 3px solid #ffb300; }
         .milestone-sev { color: #ffcc80; font-weight: bold; background-color: #4e342e; }
         .milestone-special { color: #ffd54f; font-weight: bold; background-color: #3e2723; }
         .milestone-1y { color: #f48fb1; font-weight: bold; background-color: #310b45; }
@@ -212,7 +213,7 @@
                 <li><strong>Målålder för kostnad:</strong> Den ålder du vill projicera dina återstående levnadskostnader fram till. Om tidslinjen sträcker sig förbi denna ålder kommer den återstående kostnaden att räknas uppåt med ett <code>+</code>.</li>
                 <li><strong>Kostnadsintervall (SEK):</strong> Anger en återkommande ekonomisk milstolpe. En markerad rad läggs till i tidslinjen exakt när dina projicerade återstående kostnader når en multipel av detta belopp.</li>
                 <li><strong>Växla milstolpar:</strong> Använd kryssrutorna under "Tidslinjealternativ" för att valfritt dölja eller visa specifika kronologiska händelser (Födelsedagar, Nyår, 1 År, 1 Månad) och återkommande ekonomiska milstolpar (Kostnad, Avgångsvederlag).</li>
-                <li><strong>Anpassade händelser:</strong> Klicka på knappen "✎ Redigera händelser" för att öppna händelsehanteraren och lägga till specifika datum/händelser i din tidslinje.</li>
+                <li><strong>Anpassade händelser:</strong> Klicka på knappen "✎ Redigera händelser" för att öppna händelsehanteraren och lägga till specifika datum/händelser i din tidslinje. Du kan även markera händelser som 🌟 Unika för att framhäva dem med en särskild färg och ikon.</li>
             </ul>
             <h4>Exportera & Importera</h4>
             <ul>
@@ -241,10 +242,10 @@
     </dialog>
 
     <!-- Custom Events Modal -->
-    <dialog id="customEventsModal" style="width: 450px;">
+    <dialog id="customEventsModal" style="width: 540px; max-width: 95vw;">
         <h3 style="margin-top: 0;">Redigera anpassade händelser</h3>
-        <p style="font-size: 0.9em; color: #bbb; margin-top: -10px;">Lägg till dina egna datum och händelser på tidslinjen.</p>
-        <div id="customEventsContainer" style="margin-bottom: 15px; max-height: 300px; overflow-y: auto; padding-right: 5px;">
+        <p style="font-size: 0.9em; color: #bbb; margin-top: -10px;">Lägg till dina egna datum och händelser på tidslinjen. Markera som 🌟 Unik för extra framhävning.</p>
+        <div id="customEventsContainer" style="margin-bottom: 15px; max-height: 320px; overflow-y: auto; padding-right: 5px;">
             <!-- Rows go here -->
         </div>
         <div style="margin-bottom: 15px;">
@@ -331,35 +332,52 @@
                 const items = val.split(/[\n,]+/);
                 for (let item of items) {
                     if (!item.trim()) continue;
+                    let clean = item.trim();
+                    let isSpecial = false;
+                    if (/^(🌟|⭐|★|\[★\]|\[unik\]|\[!\])\s*/i.test(clean)) {
+                        isSpecial = true;
+                        clean = clean.replace(/^(🌟|⭐|★|\[★\]|\[unik\]|\[!\])\s*/i, '');
+                    } else if (/(\[special\]|\[unik\]|\*)$/i.test(clean)) {
+                        isSpecial = true;
+                        clean = clean.replace(/\s*(\[special\]|\[unik\]|\*)$/i, '');
+                    }
                     let name = '';
                     let date = '';
-                    if (item.includes(':')) {
-                        const s = item.split(':');
+                    if (clean.includes(':')) {
+                        const s = clean.split(':');
                         name = s[0].trim();
                         date = s.slice(1).join(':').trim();
                     } else {
-                        date = item.trim();
+                        date = clean.trim();
                     }
-                    addCustomEventRow(name, date);
+                    addCustomEventRow(name, date, isSpecial);
                 }
             }
             if (container.children.length === 0) {
-                addCustomEventRow('', '');
+                addCustomEventRow('', '', false);
             }
             document.getElementById('customEventsModal').showModal();
         }
 
-        function addCustomEventRow(name = '', date = '') {
+        function addCustomEventRow(name = '', date = '', isSpecial = false) {
             const container = document.getElementById('customEventsContainer');
             const div = document.createElement('div');
             div.style.display = 'flex';
-            div.style.gap = '10px';
+            div.style.gap = '8px';
+            div.style.alignItems = 'center';
             div.style.marginBottom = '10px';
+            div.style.padding = '4px';
+            div.style.borderRadius = '4px';
+            div.style.background = isSpecial ? 'rgba(255, 193, 7, 0.1)' : 'transparent';
             const safeName = name.replace(/"/g, '&quot;');
             div.innerHTML = `
-                <input type="text" placeholder="Händelsenamn (t.ex. Köpa båt)" value="${safeName}" style="flex: 2;">
-                <input type="date" placeholder="ÅÅÅÅ-MM-DD" value="${date}" style="flex: 1;">
-                <button type="button" onclick="this.parentElement.remove()" style="padding: 4px 10px; background: #c62828; border-color: #b71c1c; border-radius: 4px; color: white; cursor: pointer;">X</button>
+                <input type="text" placeholder="Händelsenamn (t.ex. Köpa båt)" value="${safeName}" style="flex: 2; min-width: 120px;">
+                <input type="date" placeholder="ÅÅÅÅ-MM-DD" value="${date}" style="flex: 1.2; min-width: 120px;">
+                <label style="display: flex; align-items: center; gap: 4px; font-size: 0.85em; cursor: pointer; white-space: nowrap; user-select: none; color: #ffd54f;" title="Markera som speciell/unik händelse">
+                    <input type="checkbox" class="event-special-chk" ${isSpecial ? 'checked' : ''} onchange="this.closest('div').style.background = this.checked ? 'rgba(255, 193, 7, 0.1)' : 'transparent'" style="cursor: pointer; margin: 0;">
+                    <span>🌟 Unik</span>
+                </label>
+                <button type="button" onclick="this.parentElement.remove()" style="padding: 4px 10px; background: #c62828; border-color: #b71c1c; border-radius: 4px; color: white; cursor: pointer;" title="Ta bort händelse">✕</button>
             `;
             container.appendChild(div);
         }
@@ -368,14 +386,18 @@
             const container = document.getElementById('customEventsContainer');
             const parts = [];
             for (let row of container.children) {
-                const inputs = row.querySelectorAll('input');
-                const name = inputs[0].value.trim();
-                const date = inputs[1].value.trim();
+                const textInput = row.querySelector('input[type="text"]');
+                const dateInput = row.querySelector('input[type="date"]');
+                const chk = row.querySelector('.event-special-chk');
+                const name = textInput ? textInput.value.trim() : '';
+                const date = dateInput ? dateInput.value.trim() : '';
+                const isSpecial = chk ? chk.checked : false;
                 if (date) {
+                    const prefix = isSpecial ? '🌟 ' : '';
                     if (name) {
-                        parts.push(`${name}: ${date}`);
+                        parts.push(`${prefix}${name}: ${date}`);
                     } else {
-                        parts.push(date);
+                        parts.push(`${prefix}${date}`);
                     }
                 }
             }
@@ -497,6 +519,14 @@
                 for (let item of items) {
                     item = item.trim();
                     if (!item) continue;
+                    let isSpecial = false;
+                    if (/^(🌟|⭐|★|\[★\]|\[unik\]|\[!\])\s*/i.test(item)) {
+                        isSpecial = true;
+                        item = item.replace(/^(🌟|⭐|★|\[★\]|\[unik\]|\[!\])\s*/i, '');
+                    } else if (/(\[special\]|\[unik\]|\*)$/i.test(item)) {
+                        isSpecial = true;
+                        item = item.replace(/\s*(\[special\]|\[unik\]|\*)$/i, '');
+                    }
                     let name = 'Anpassad händelse';
                     let dateStr = item;
                     if (item.includes(':')) {
@@ -512,7 +542,7 @@
                         d = new Date(dateStr);
                     }
                     if (d && !isNaN(d.valueOf())) {
-                        customMilestones.push({ name: name, date: d });
+                        customMilestones.push({ name: name, date: d, isSpecial: isSpecial });
                     }
                 }
             }
@@ -695,6 +725,7 @@
                 let nextMilestone = nextChronoMilestone;
                 let isCostMilestone = false;
                 let isCustomMilestone = false;
+                let isCustomSpecial = false;
                 let isSevMilestone = false;
                 let customName = "";
 
@@ -709,16 +740,19 @@
                     nextMilestone = nextCustomMilestone.date;
                     isCustomMilestone = true;
                     customName = nextCustomMilestone.name;
+                    isCustomSpecial = !!nextCustomMilestone.isSpecial;
                     isCostMilestone = false; // Overridden because custom is strictly earlier
                 } else if (nextCustomMilestone && nextCustomMilestone.date.getTime() === nextMilestone.getTime()) {
                     isCustomMilestone = true;
                     customName = nextCustomMilestone.name;
+                    isCustomSpecial = !!nextCustomMilestone.isSpecial;
                 }
 
                 if (nextSevMilestoneDate && nextSevMilestoneDate < nextMilestone) {
                     nextMilestone = nextSevMilestoneDate;
                     isSevMilestone = true;
                     isCustomMilestone = false;
+                    isCustomSpecial = false;
                     isCostMilestone = false; // Overridden because sev is strictly earlier
                 } else if (nextSevMilestoneDate && nextSevMilestoneDate.getTime() === nextMilestone.getTime()) {
                     isSevMilestone = true;
@@ -760,34 +794,49 @@
                         type += " (1 månad från idag)";
                     }
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial && row.className !== 'milestone-special') row.className = 'milestone-custom-special';
+                    }
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
                     type = '1 år från idag';
                     row.className = 'milestone-1y';
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
                     type = '1 månad från idag';
                     row.className = 'milestone-1m';
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (showNY && nextMilestone.getTime() === nextNY.getTime()) {
                     type = 'Nyår';
                     row.className = 'milestone-ny';
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else if (isSevMilestone) {
                     type = `${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                     row.className = 'milestone-sev';
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                 } else if (isCustomMilestone) {
-                    type = `★ ${customName}`;
-                    row.className = 'milestone-custom';
+                    type = isCustomSpecial ? `🌟 ${customName} (Unik)` : `★ ${customName}`;
+                    row.className = isCustomSpecial ? 'milestone-custom-special' : 'milestone-custom';
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                 } else if (isCostMilestone) {
                     type = `Milstolpe för återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
@@ -795,7 +844,10 @@
                 } else if (nextMilestone.getTime() === targetCostDate.getTime()) {
                     type = `Målålder för kostnad (${targetCostAge})`;
                     row.className = 'milestone-target-cost';
-                    if (isCustomMilestone) type += ` & Anpassad: ${customName}`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
                     if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
                 } else {
                     type = `Prognosens slut (Ålder ${projectionEndAge})`;
