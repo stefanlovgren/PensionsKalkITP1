@@ -164,6 +164,18 @@
             <button type="button" class="btn-danger" onclick="deleteVariant()">Ta bort variant</button>
             <span id="saveIndicator" class="save-indicator">Sparas automatiskt lokalt</span>
         </div>
+        <div class="toolbar currency-bar">
+            <div class="input-group">
+                <label for="currencySelect">Visa &amp; redigera i valuta</label>
+                <select id="currencySelect" onchange="changeDisplayCurrency(this.value)"></select>
+            </div>
+            <div class="input-group" id="rateGroup">
+                <label for="rateInput" id="rateLabel">Kurs</label>
+                <input type="number" id="rateInput" min="0" step="any" style="width: 110px;" onchange="changeRate(this.value)">
+            </div>
+            <button type="button" class="btn-secondary" id="fetchRateBtn" onclick="fetchRate()" title="Hämtar aktuell ECB-kurs från frankfurter.app">Hämta aktuell kurs</button>
+            <span class="save-indicator" id="rateInfo">Allt lagras i SEK</span>
+        </div>
         <p class="storage-note"><strong>Lokal lagring:</strong> Alla ändringar sparas automatiskt i webbläsarens <code>localStorage</code> och laddas nästa gång du öppnar sidan. Ingen data skickas till internet. Använd <em>Exportera</em> för säkerhetskopia.</p>
 
         <div class="summary-grid">
@@ -565,8 +577,90 @@
             return JSON.parse(JSON.stringify(budget));
         }
 
-        function formatCurrency(num) {
+        // ---- Valuta: belopp lagras alltid i SEK; visningsvaluta konverteras med kurs (SEK per 1 enhet) ----
+        const CURRENCIES = ['SEK', 'EUR', 'USD', 'NOK', 'DKK', 'GBP', 'CHF', 'PLN', 'THB'];
+        const DEFAULT_RATES = { EUR: 11.0, USD: 10.0, NOK: 0.95, DKK: 1.48, GBP: 12.8, CHF: 11.8, PLN: 2.55, THB: 0.29 };
+
+        function getCurrencySettings() {
+            if (!appData.currency) appData.currency = { code: 'SEK', rates: { ...DEFAULT_RATES } };
+            if (!appData.currency.rates) appData.currency.rates = { ...DEFAULT_RATES };
+            return appData.currency;
+        }
+        function displayCode() { return (appData && appData.currency && appData.currency.code) || 'SEK'; }
+        function isForeign() { return displayCode() !== 'SEK'; }
+        function currentRate() {
+            if (!isForeign()) return 1;
+            const r = getCurrencySettings().rates[displayCode()];
+            return r > 0 ? r : 1;
+        }
+        function sekToDisplay(sek) { return sek / currentRate(); }
+        function displayToSek(val) { return val * currentRate(); }
+        function roundForInput(n) { return Math.round(n * 100) / 100; }
+
+        function formatSEK(num) {
             return Math.round(num).toLocaleString('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 });
+        }
+
+        // Tar emot belopp i SEK och visar i vald valuta
+        function formatCurrency(num) {
+            if (!isForeign()) return formatSEK(num);
+            const v = sekToDisplay(num);
+            const digits = Math.abs(v) < 100 ? 2 : 0;
+            return v.toLocaleString('sv-SE', { style: 'currency', currency: displayCode(), minimumFractionDigits: digits, maximumFractionDigits: digits });
+        }
+
+        function populateCurrencyControls() {
+            const cs = getCurrencySettings();
+            const sel = document.getElementById('currencySelect');
+            sel.innerHTML = CURRENCIES.map(c => `<option value="${c}">${c}${c === 'SEK' ? ' (huvudvaluta)' : ''}</option>`).join('');
+            sel.value = cs.code;
+            const foreign = isForeign();
+            document.getElementById('rateGroup').style.display = foreign ? '' : 'none';
+            document.getElementById('fetchRateBtn').style.display = foreign ? '' : 'none';
+            document.getElementById('rateLabel').textContent = `1 ${cs.code} = ? SEK`;
+            document.getElementById('rateInput').value = foreign ? currentRate() : '';
+            document.getElementById('rateInfo').textContent = foreign
+                ? `Inmatning i ${cs.code} räknas om och lagras i SEK` + (cs.rateDate && cs.rateDate[cs.code] ? ` · kurs från ${cs.rateDate[cs.code]}` : '')
+                : 'Allt lagras i SEK';
+        }
+
+        function changeDisplayCurrency(code) {
+            getCurrencySettings().code = CURRENCIES.includes(code) ? code : 'SEK';
+            persist();
+            renderAll();
+        }
+
+        function changeRate(value) {
+            const r = parseFloat(value);
+            if (!(r > 0)) { alert('Ange en kurs större än 0.'); populateCurrencyControls(); return; }
+            const cs = getCurrencySettings();
+            cs.rates[cs.code] = r;
+            if (cs.rateDate) delete cs.rateDate[cs.code];
+            persist();
+            renderAll();
+        }
+
+        async function fetchRate() {
+            const cs = getCurrencySettings();
+            if (!isForeign()) return;
+            const btn = document.getElementById('fetchRateBtn');
+            btn.disabled = true;
+            try {
+                const res = await fetch(`https://api.frankfurter.app/latest?from=${cs.code}&to=SEK`);
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+                const r = data.rates && data.rates.SEK;
+                if (!(r > 0)) throw new Error('no rate');
+                cs.rates[cs.code] = r;
+                cs.rateDate = cs.rateDate || {};
+                cs.rateDate[cs.code] = data.date;
+                persist();
+                renderAll();
+            } catch {
+                alert('Kunde inte hämta kurs. Ange kursen manuellt.');
+            } finally {
+                btn.disabled = false;
+            }
         }
 
         function dailyFromMonthly(monthly) {
@@ -582,7 +676,8 @@
             const monthly = toMonthly(amount || 0, period);
             const yearly = Math.round(monthly * 12);
             const daily = dailyFromMonthly(monthly);
-            return formatCurrency(monthly) + '/mån · ' + formatCurrency(yearly) + '/år · ' + formatCurrency(daily) + '/dag';
+            const sekNote = isForeign() ? ' · ≈ ' + formatSEK(monthly) + '/mån' : '';
+            return formatCurrency(monthly) + '/mån · ' + formatCurrency(yearly) + '/år · ' + formatCurrency(daily) + '/dag' + sekNote;
         }
 
         function formatDualTotalHtml(monthly) {
@@ -1006,7 +1101,7 @@
             const cat = getActiveBudget().categories.find(c => c.id === catId);
             const item = cat?.items.find(i => i.id === itemId);
             if (item) {
-                item.amount = parseFloat(value) || 0;
+                item.amount = displayToSek(parseFloat(value) || 0);
                 refreshAmountEquiv('equiv-item-' + itemId, item.amount, item.period);
             }
             scheduleSave();
@@ -1047,7 +1142,7 @@
         function updateIncomeAmount(incId, value) {
             const inc = getActiveBudget().income.find(i => i.id === incId);
             if (inc) {
-                inc.amount = parseFloat(value) || 0;
+                inc.amount = displayToSek(parseFloat(value) || 0);
                 refreshAmountEquiv('equiv-income-' + incId, inc.amount, inc.period);
             }
             scheduleSave();
@@ -1081,11 +1176,15 @@
             document.getElementById('totalExpensesYear').textContent = formatPeriodSubline(expenses);
             document.getElementById('totalIncome').textContent = formatCurrency(income);
             document.getElementById('totalIncomeYear').textContent = formatPeriodSubline(income, 'efter skatt');
+            if (isForeign()) {
+                document.getElementById('totalExpensesYear').textContent += ' · ≈ ' + formatSEK(expenses) + '/mån';
+                document.getElementById('totalIncomeYear').textContent += ' · ≈ ' + formatSEK(income) + '/mån';
+            }
 
             const balanceEl = document.getElementById('balance');
             const balanceYearEl = document.getElementById('balanceYear');
             balanceEl.textContent = formatCurrency(balance);
-            balanceYearEl.textContent = formatPeriodSubline(balance);
+            balanceYearEl.textContent = formatPeriodSubline(balance) + (isForeign() ? ' · ≈ ' + formatSEK(balance) + '/mån' : '');
             balanceEl.className = 'value ' + (balance >= 0 ? 'positive' : 'negative');
             balanceYearEl.className = 'sub-value ' + (balance >= 0 ? 'positive' : 'negative');
 
@@ -1107,7 +1206,7 @@
             const incomeSum = totalIncomeMonthly(budget);
 
             let rowsHtml = budget.income.map(inc => {
-                const step = amountStep(inc.period);
+                const step = isForeign() ? 'any' : amountStep(inc.period);
                 return `
                     <tr>
                         <td><input type="text" class="item-name" value="${escapeAttr(inc.name)}" placeholder="Inkomstkälla (netto)" oninput="updateIncomeName('${inc.id}', this.value)"></td>
@@ -1115,7 +1214,7 @@
                             <div class="amount-cell">
                                 <span class="amount-equiv" id="equiv-income-${inc.id}">${formatDualLine(inc.amount, inc.period)}</span>
                                 <div class="amount-inputs">
-                                    <input type="number" class="item-amount" value="${inc.amount || 0}" min="0" step="${step}" title="Belopp, netto efter skatt" oninput="updateIncomeAmount('${inc.id}', this.value)">
+                                    <input type="number" class="item-amount" value="${roundForInput(sekToDisplay(inc.amount || 0))}" min="0" step="${step}" title="Belopp i ${displayCode()}, netto efter skatt" oninput="updateIncomeAmount('${inc.id}', this.value)">
                                     ${periodSelectHtml(inc.id, inc.period, `updateIncomePeriod('${inc.id}', this.value)`)}
                                 </div>
                             </div>
@@ -1166,7 +1265,7 @@
                 block.className = 'category-block' + (folded ? ' collapsed' : '');
 
                 let itemsHtml = cat.items.map(item => {
-                    const step = itemAmountStep(item.period);
+                    const step = isForeign() ? 'any' : itemAmountStep(item.period);
                     return `
                     <tr>
                         <td><input type="text" class="item-name" value="${escapeAttr(item.name)}" placeholder="Postnamn" oninput="updateItemName('${cat.id}', '${item.id}', this.value)"></td>
@@ -1174,7 +1273,7 @@
                             <div class="amount-cell">
                                 <span class="amount-equiv" id="equiv-item-${item.id}">${formatDualLine(item.amount, item.period)}</span>
                                 <div class="amount-inputs">
-                                    <input type="number" class="item-amount" value="${item.amount || 0}" min="0" step="${step}" title="Belopp" oninput="updateItemAmount('${cat.id}', '${item.id}', this.value)">
+                                    <input type="number" class="item-amount" value="${roundForInput(sekToDisplay(item.amount || 0))}" min="0" step="${step}" title="Belopp i ${displayCode()}" oninput="updateItemAmount('${cat.id}', '${item.id}', this.value)">
                                     ${periodSelectHtml(item.id, item.period, `updateItemPeriod('${cat.id}', '${item.id}', this.value)`)}
                                 </div>
                             </div>
@@ -1218,6 +1317,7 @@
 
         function renderAll() {
             refreshVariantSelect();
+            populateCurrencyControls();
             renderIncome();
             renderCategories();
         }
