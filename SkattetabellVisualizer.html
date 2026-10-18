@@ -246,6 +246,10 @@
                     <label for="user-income">MånadsInkomst (kr)</label>
                     <input type="number" id="user-income" class="full-width" placeholder="t.ex. 35000">
                 </div>
+                <div class="input-group" style="margin-top: 0.5rem;">
+                    <label for="user-benefit">Förmånsbelopp (kr/mån)</label>
+                    <input type="number" id="user-benefit" class="full-width" placeholder="t.ex. 3000">
+                </div>
                 <div id="income-results" style="margin-top: 0.75rem; font-size: 0.95rem; line-height: 1.4;">
                 </div>
             </div>
@@ -558,23 +562,28 @@
         const incomeInput = document.getElementById('user-income');
         if (incomeInput) {
             const income = parseFloat(incomeInput.value);
+            const benefitRaw = parseFloat(document.getElementById('user-benefit').value);
+            const benefit = isNaN(benefitRaw) ? 0 : benefitRaw;
+            const taxableIncome = income + benefit;
             const resultsDiv = document.getElementById('income-results');
             if (!isNaN(income) && income > 0) {
                 let closestJ = 0;
                 let minDiff = Infinity;
                 for (let j = 0; j < groupData.x.length; j++) {
-                    const diff = Math.abs(groupData.x[j] - income);
+                    const diff = Math.abs(groupData.x[j] - taxableIncome);
                     if (diff < minDiff) {
                         minDiff = diff;
                         closestJ = j;
                     }
                 }
                 
-                let resultsHtml = '';
+                let resultsHtml = benefit > 0
+                    ? `<div style="margin-bottom: 0.5rem; color: var(--text-muted);">Skattepliktig inkomst (inkl. förmån): ${new Intl.NumberFormat('sv-SE').format(taxableIncome)} kr</div>`
+                    : '';
                 const nettos = [];
                 activeCols.forEach((colIdx, index) => {
                     const yVal = groupData.cols[colIdx][closestJ];
-                    const percent = ((yVal / income) * 100).toFixed(1);
+                    const percent = ((yVal / taxableIncome) * 100).toFixed(1);
                     const netto = income - yVal;
                     nettos.push(netto);
 
@@ -626,6 +635,7 @@
                 }
                 if (settings.yAxisMaxPercent) document.getElementById('y-axis-max-percent').value = settings.yAxisMaxPercent;
                 if (settings.userIncome) document.getElementById('user-income').value = settings.userIncome;
+                if (settings.userBenefit) document.getElementById('user-benefit').value = settings.userBenefit;
                 if (settings.activeCols && Array.isArray(settings.activeCols)) {
                     document.querySelectorAll('.col-check').forEach(cb => {
                         cb.checked = settings.activeCols.includes(parseInt(cb.value, 10));
@@ -645,6 +655,7 @@
             xAxisMax: document.getElementById('x-axis-max').value,
             yAxisMaxPercent: document.getElementById('y-axis-max-percent').value,
             userIncome: document.getElementById('user-income') ? document.getElementById('user-income').value : '',
+            userBenefit: document.getElementById('user-benefit').value,
             activeCols: Array.from(document.querySelectorAll('.col-check')).filter(cb => cb.checked).map(cb => parseInt(cb.value, 10))
         };
         localStorage.setItem('skattetabellSettings', JSON.stringify(settings));
@@ -660,6 +671,7 @@
     if (incomeInputEl) {
         incomeInputEl.addEventListener('input', updateChart);
     }
+    document.getElementById('user-benefit').addEventListener('input', updateChart);
     
     document.getElementById('x-axis-min').addEventListener('input', function(e) {
         document.getElementById('x-axis-min-val').value = e.target.value;
