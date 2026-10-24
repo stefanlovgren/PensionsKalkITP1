@@ -135,6 +135,17 @@
         .items-table th.amount-col { text-align: right; min-width: 320px; }
         .items-table th.action-col { width: 28px; padding-right: 6px; }
         .category-total-label { font-size: 0.75em; color: #888; font-weight: normal; margin-left: 4px; }
+        .toggle { position: relative; display: inline-block; width: 30px; height: 16px; flex-shrink: 0; vertical-align: middle; cursor: pointer; }
+        .toggle input { opacity: 0; width: 0; height: 0; margin: 0; position: absolute; }
+        .toggle .slider { position: absolute; inset: 0; background: #555; border-radius: 16px; transition: background 0.2s; }
+        .toggle .slider::before { content: ''; position: absolute; width: 12px; height: 12px; left: 2px; top: 2px; background: #ddd; border-radius: 50%; transition: transform 0.2s; }
+        .toggle input:checked + .slider { background: #43a047; }
+        .toggle input:checked + .slider::before { transform: translateX(14px); }
+        .items-table th.toggle-col, .items-table td.toggle-cell { width: 34px; padding-right: 0; text-align: center; }
+        tr.excluded input.item-name, tr.excluded .amount-cell { opacity: 0.4; }
+        tr.excluded input.item-name { text-decoration: line-through; }
+        .category-block.excluded .cat-name, .category-block.excluded .cat-name-static, .category-block.excluded .category-total, .category-block.excluded .category-body { opacity: 0.4; }
+        .category-block.excluded .cat-name { text-decoration: line-through; }
     </style>
 </head>
 <body>
@@ -1176,17 +1187,62 @@
             renderIncome();
         }
 
+        // Subtotal of enabled items (shown in group header even if group itself is excluded)
         function categoryTotal(cat) {
-            return cat.items.reduce((sum, item) => sum + toMonthly(item.amount, item.period), 0);
+            return cat.items.reduce((sum, item) => item.disabled ? sum : sum + toMonthly(item.amount, item.period), 0);
+        }
+
+        function incomeSubtotal(budget) {
+            return budget.income.reduce((sum, inc) => inc.disabled ? sum : sum + toMonthly(inc.amount, inc.period), 0);
         }
 
         function totalIncomeMonthly(budget) {
-            return budget.income.reduce((sum, inc) => sum + toMonthly(inc.amount, inc.period), 0);
+            return budget.incomeDisabled ? 0 : incomeSubtotal(budget);
+        }
+
+        function toggleHtml(checked, onchangeHandler, title) {
+            return `<label class="toggle" title="${title}"><input type="checkbox" ${checked ? 'checked' : ''} onchange="${onchangeHandler}"><span class="slider"></span></label>`;
+        }
+
+        function setDisabled(obj, enabled) {
+            if (enabled) delete obj.disabled; else obj.disabled = true;
+        }
+
+        function toggleItemEnabled(catId, itemId, enabled) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            const item = cat?.items.find(i => i.id === itemId);
+            if (!item) return;
+            setDisabled(item, enabled);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function toggleCategoryEnabled(catId, enabled) {
+            const cat = getActiveBudget().categories.find(c => c.id === catId);
+            if (!cat) return;
+            setDisabled(cat, enabled);
+            scheduleSave();
+            renderCategories();
+        }
+
+        function toggleIncomeEnabled(incId, enabled) {
+            const inc = getActiveBudget().income.find(i => i.id === incId);
+            if (!inc) return;
+            setDisabled(inc, enabled);
+            scheduleSave();
+            renderIncome();
+        }
+
+        function toggleIncomeGroupEnabled(enabled) {
+            const budget = getActiveBudget();
+            if (enabled) delete budget.incomeDisabled; else budget.incomeDisabled = true;
+            scheduleSave();
+            renderIncome();
         }
 
         function updateSummary() {
             const budget = getActiveBudget();
-            const expenses = budget.categories.reduce((sum, cat) => sum + categoryTotal(cat), 0);
+            const expenses = budget.categories.reduce((sum, cat) => cat.disabled ? sum : sum + categoryTotal(cat), 0);
             const income = totalIncomeMonthly(budget);
             const balance = income - expenses;
 
@@ -1214,19 +1270,20 @@
 
             const incomeTotalEl = document.getElementById('incomeBlockTotal');
             if (incomeTotalEl) {
-                incomeTotalEl.innerHTML = formatDualTotalHtml(income);
+                incomeTotalEl.innerHTML = formatDualTotalHtml(incomeSubtotal(budget));
             }
         }
 
         function renderIncome() {
             const container = document.getElementById('incomeContainer');
             const budget = getActiveBudget();
-            const incomeSum = totalIncomeMonthly(budget);
+            const incomeSum = incomeSubtotal(budget);
 
             let rowsHtml = budget.income.map(inc => {
                 const step = isForeign() ? 'any' : amountStep(inc.period);
                 return `
-                    <tr>
+                    <tr class="${inc.disabled ? 'excluded' : ''}">
+                        <td class="toggle-cell">${toggleHtml(!inc.disabled, `toggleIncomeEnabled('${inc.id}', this.checked)`, 'Räkna med i summan')}</td>
                         <td><input type="text" class="item-name" value="${escapeAttr(inc.name)}" placeholder="Inkomstkälla (netto)" oninput="updateIncomeName('${inc.id}', this.value)"></td>
                         <td style="text-align: right;">
                             <div class="amount-cell">
@@ -1245,8 +1302,9 @@
             }).join('');
 
             container.innerHTML = `
-                <div class="category-block income-block">
+                <div class="category-block income-block${budget.incomeDisabled ? ' excluded' : ''}">
                     <div class="category-header">
+                        ${toggleHtml(!budget.incomeDisabled, `toggleIncomeGroupEnabled(this.checked)`, 'Räkna med gruppen i totalen')}
                         <span class="cat-name-static">Nettoinkomster</span>
                         <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddIncomeModal()">+ Lägg till inkomst</button>
                         <span class="category-total income-total" id="incomeBlockTotal" title="Summa per månad, år och dag">${formatDualTotalHtml(incomeSum)}</span>
@@ -1254,6 +1312,7 @@
                     <table class="items-table">
                         <thead>
                             <tr>
+                                <th class="toggle-col"></th>
                                 <th>Inkomstkälla</th>
                                 <th class="amount-col">Belopp · enhet</th>
                                 <th class="action-col"></th>
@@ -1280,12 +1339,13 @@
             budget.categories.forEach(cat => {
                 const block = document.createElement('div');
                 const folded = isCategoryCollapsed(cat.id);
-                block.className = 'category-block' + (folded ? ' collapsed' : '');
+                block.className = 'category-block' + (folded ? ' collapsed' : '') + (cat.disabled ? ' excluded' : '');
 
                 let itemsHtml = cat.items.map(item => {
                     const step = isForeign() ? 'any' : itemAmountStep(item.period);
                     return `
-                    <tr>
+                    <tr class="${item.disabled ? 'excluded' : ''}">
+                        <td class="toggle-cell">${toggleHtml(!item.disabled, `toggleItemEnabled('${cat.id}', '${item.id}', this.checked)`, 'Räkna med i summan')}</td>
                         <td><input type="text" class="item-name" value="${escapeAttr(item.name)}" placeholder="Postnamn" oninput="updateItemName('${cat.id}', '${item.id}', this.value)"></td>
                         <td style="text-align: right;">
                             <div class="amount-cell">
@@ -1306,6 +1366,7 @@
                 block.innerHTML = `
                     <div class="category-header">
                         <button type="button" class="btn-fold" onclick="toggleCategory('${cat.id}')" title="${folded ? 'Fäll ut' : 'Fäll ihop'}">▼</button>
+                        ${toggleHtml(!cat.disabled, `toggleCategoryEnabled('${cat.id}', this.checked)`, 'Räkna med kategorin i totalen')}
                         <input type="text" class="cat-name" value="${escapeAttr(cat.name)}" oninput="updateCategoryName('${cat.id}', this.value)">
                         <button type="button" class="btn-success btn-small btn-add-item" onclick="openAddItemModal('${cat.id}')">+ Lägg till post</button>
                         <span class="category-total" data-cat-id="${cat.id}" title="Summa per månad, år och dag">${formatDualTotalHtml(categoryTotal(cat))}</span>
@@ -1315,6 +1376,7 @@
                         <table class="items-table">
                             <thead>
                                 <tr>
+                                    <th class="toggle-col"></th>
                                     <th>Post</th>
                                     <th class="amount-col">Belopp · enhet</th>
                                     <th class="action-col"></th>

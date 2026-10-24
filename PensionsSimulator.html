@@ -219,6 +219,7 @@
               <span>2% (standard)</span>
               <span>6% (offensiv)</span>
             </div>
+            <p class="text-[10px] text-slate-500 leading-snug">Påverkar inte år 1 (det bestäms av delningstal med förskottsränta 1,6 %). Avkastning över 1,6 % höjer pensionen år för år, under 1,6 % sänker den.</p>
           </div>
         </div>
 
@@ -468,17 +469,20 @@
       return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
     }
 
-    // Calculate lifetime monthly payout using actuarial dividing factor (delningstal)
-    // plus expected real return effect on remaining capital
-    function calculateLifetimePayout(principal, annualRate, age) {
+    // Förskottsränta (norm) som redan är inbakad i delningstalet / första utbetalningen
+    const FORSKOTTSRANTA = 0.016;
+
+    // Livsvarig utbetalning år 1: kapital / delningstal (delningstalet innehåller redan 1,6 % förskottsränta).
+    // Förväntad avkastning påverkar INTE år 1.
+    function calculateLifetimePayout(principal, age) {
       const delningstal = delningstalTable[age] || 19.3;
-      // Standard initial annual payment without return: principal / delningstal
-      const baseMonthly = (principal / delningstal) / 12;
-      
-      // Incorporate annual return & arvsvinster adjustment over the horizon (~20 yrs)
-      const adjustedMonthly = calculateAnnuity(principal, annualRate, delningstal);
-      // Average the strict dividing factor and financial annuity
-      return (baseMonthly + adjustedMonthly) / 2;
+      return (principal / delningstal) / 12;
+    }
+
+    // Årlig omräkning (följsamhetsindexering): verklig avkastning jämfört med förskottsräntan.
+    // Faktor för år i (0 = första året).
+    function adjustmentFactor(annualRate, yearIndex) {
+      return Math.pow((1 + annualRate) / (1 + FORSKOTTSRANTA), yearIndex);
     }
 
     // Chart Instance
@@ -605,21 +609,24 @@
       const tjansteCap = cap * (state.tjanstePct / 100);
 
       // Calculations
-      const inkomstMonthly = calculateLifetimePayout(inkomstCap, state.annualReturn, state.retireAge);
-      const ppmMonthly = calculateLifetimePayout(ppmCap, state.annualReturn, state.retireAge);
+      // År 1-belopp (oberoende av förväntad avkastning)
+      const inkomstMonthly = calculateLifetimePayout(inkomstCap, state.retireAge);
+      const ppmMonthly = calculateLifetimePayout(ppmCap, state.retireAge);
       const lifetimeBaseMonthly = inkomstMonthly + ppmMonthly;
 
       let tjansteMonthly = 0;
       const isLifetimeTjanste = state.tjansteYears === 0;
 
       if (isLifetimeTjanste) {
-        tjansteMonthly = calculateLifetimePayout(tjansteCap, state.annualReturn, state.retireAge);
+        tjansteMonthly = calculateLifetimePayout(tjansteCap, state.retireAge);
       } else {
-        tjansteMonthly = calculateAnnuity(tjansteCap, state.annualReturn, state.tjansteYears);
+        // Tidsbegränsad: annuitet med förskottsräntan som antagande
+        tjansteMonthly = calculateAnnuity(tjansteCap, FORSKOTTSRANTA, state.tjansteYears);
       }
 
       const totalPhase1 = lifetimeBaseMonthly + tjansteMonthly;
-      const totalPhase2 = lifetimeBaseMonthly;
+      // Fas 2 startar efter tjansteYears års omräkningar
+      const totalPhase2 = lifetimeBaseMonthly * adjustmentFactor(state.annualReturn, state.tjansteYears);
 
       // Update Labels in Input Box
       document.getElementById('inkomstLabel').innerText = `${state.inkomstPct}% (${formatKr(inkomstCap)})`;
@@ -654,7 +661,7 @@
         cardPhase2Badge.innerText = `FAS 2: Från år ${nextYear} (${state.retireAge + state.tjansteYears} år)`;
         cardMonthlyPhase2.innerText = formatKr(totalPhase2);
         
-        const diffKr = tjansteMonthly;
+        const diffKr = Math.max(0, totalPhase1 - totalPhase2);
         const diffPct = Math.round((diffKr / totalPhase1) * 100);
         cardDropContainer.innerHTML = `
           <span class="text-slate-500">Minskning efter uttagstid:</span>
@@ -668,12 +675,10 @@
       // Calculate 20-year total sum paid out
       const simHorizon = 20;
       let totalSumPaid20y = 0;
-      if (isLifetimeTjanste) {
-        totalSumPaid20y = totalPhase1 * 12 * simHorizon;
-      } else {
-        const tjansteDurationIn20 = Math.min(state.tjansteYears, simHorizon);
-        const postDurationIn20 = simHorizon - tjansteDurationIn20;
-        totalSumPaid20y = (totalPhase1 * 12 * tjansteDurationIn20) + (totalPhase2 * 12 * postDurationIn20);
+      for (let i = 0; i < simHorizon; i++) {
+        const f = adjustmentFactor(state.annualReturn, i);
+        const tj = (isLifetimeTjanste || i < state.tjansteYears) ? tjansteMonthly : 0;
+        totalSumPaid20y += (lifetimeBaseMonthly + tj) * f * 12;
       }
       document.getElementById('metricTotal20y').innerText = formatKr(totalSumPaid20y);
       
@@ -745,13 +750,16 @@
         const curAge = startAge + i;
         labels.push(`${curAge} år`);
 
-        const tj = (isLifetimeTjanste || i < state.tjansteYears) ? tjansteMonthly : 0;
-        const gross = inkomstMonthly + ppmMonthly + tj;
+        const f = adjustmentFactor(state.annualReturn, i);
+        const ink = inkomstMonthly * f;
+        const ppm = ppmMonthly * f;
+        const tj = (isLifetimeTjanste || i < state.tjansteYears) ? tjansteMonthly * f : 0;
+        const gross = ink + ppm + tj;
         const tax = monthlyTaxGbg(Math.round(gross), curAge);
         chartTaxInfo.push({ gross, tax });
 
-        inkomstData.push(Math.round(inkomstMonthly));
-        ppmData.push(Math.round(ppmMonthly));
+        inkomstData.push(Math.round(ink));
+        ppmData.push(Math.round(ppm));
         tjansteData.push(Math.round(tj));
         netGbgData.push(Math.round(gross - tax));
         netSinkData.push(Math.round(gross * 0.8));
