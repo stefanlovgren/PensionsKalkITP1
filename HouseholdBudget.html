@@ -171,6 +171,7 @@
                 <select id="variantSelect" onchange="switchVariant()"></select>
             </div>
             <button type="button" class="btn-primary" onclick="saveAsNewVariant()">Spara som ny variant</button>
+            <button type="button" onclick="renameVariant()">Byt namn</button>
             <button type="button" class="btn-accent" onclick="document.getElementById('templateModal').showModal()">Ladda mall</button>
             <button type="button" class="btn-danger" onclick="deleteVariant()">Ta bort variant</button>
             <span id="saveIndicator" class="save-indicator">Sparas automatiskt lokalt</span>
@@ -1008,6 +1009,23 @@
             appData.activeVariant = name;
             persist();
             renderAll();
+        }
+
+        function renameVariant() {
+            const oldName = appData.activeVariant;
+            const name = prompt('Nytt namn på budgetvarianten:', oldName);
+            if (!name || !name.trim()) return;
+            const trimmed = name.trim();
+            if (trimmed === oldName) return;
+            if (appData.variants[trimmed]) {
+                alert(`"${trimmed}" finns redan. Välj ett annat namn.`);
+                return;
+            }
+            appData.variants[trimmed] = appData.variants[oldName];
+            delete appData.variants[oldName];
+            appData.activeVariant = trimmed;
+            persist();
+            refreshVariantSelect();
         }
 
         function saveAsNewVariant() {
