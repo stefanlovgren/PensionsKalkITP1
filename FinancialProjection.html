@@ -25,6 +25,7 @@
         .milestone-sev { color: #ffcc80; font-weight: bold; background-color: #4e342e; }
         .milestone-special { color: #ffd54f; font-weight: bold; background-color: #3e2723; }
         .milestone-1y { color: #f48fb1; font-weight: bold; background-color: #310b45; }
+        .milestone-3m { color: #ffb74d; font-weight: bold; background-color: #3e2700; }
         .milestone-1m { color: #ff8a65; font-weight: bold; background-color: #3e1503; }
         .milestone-target-cost { color: #84ffff; font-weight: bold; background-color: #004d40; }
         .milestone-target-end { color: #b0bec5; font-weight: bold; background-color: #263238; }
@@ -127,6 +128,7 @@
                 <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showBD" checked style="vertical-align: middle; margin-right: 4px;">Födelsedagar</label>
                 <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showNY" checked style="vertical-align: middle; margin-right: 4px;">Nyår</label>
                 <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1Y" checked style="vertical-align: middle; margin-right: 4px;">1 År</label>
+                <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show3M" checked style="vertical-align: middle; margin-right: 4px;">3 Månader</label>
                 <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="show1M" checked style="vertical-align: middle; margin-right: 4px;">1 Månad</label>
                 <label style="display: inline; font-size: 14px; color: #e0e0e0; cursor: pointer; margin-left: 10px;"><input type="checkbox" id="showCustom" checked style="vertical-align: middle; margin-right: 4px;">Anpassad</label>
             </div>
@@ -212,7 +214,7 @@
             <ul>
                 <li><strong>Målålder för kostnad:</strong> Den ålder du vill projicera dina återstående levnadskostnader fram till. Om tidslinjen sträcker sig förbi denna ålder kommer den återstående kostnaden att räknas uppåt med ett <code>+</code>.</li>
                 <li><strong>Kostnadsintervall (SEK):</strong> Anger en återkommande ekonomisk milstolpe. En markerad rad läggs till i tidslinjen exakt när dina projicerade återstående kostnader når en multipel av detta belopp.</li>
-                <li><strong>Växla milstolpar:</strong> Använd kryssrutorna under "Tidslinjealternativ" för att valfritt dölja eller visa specifika kronologiska händelser (Födelsedagar, Nyår, 1 År, 1 Månad) och återkommande ekonomiska milstolpar (Kostnad, Avgångsvederlag).</li>
+                <li><strong>Växla milstolpar:</strong> Använd kryssrutorna under "Tidslinjealternativ" för att valfritt dölja eller visa specifika kronologiska händelser (Födelsedagar, Nyår, 1 År, 3 Månader, 1 Månad) och återkommande ekonomiska milstolpar (Kostnad, Avgångsvederlag).</li>
                 <li><strong>Anpassade händelser:</strong> Klicka på knappen "✎ Redigera händelser" för att öppna händelsehanteraren och lägga till specifika datum/händelser i din tidslinje. Du kan även markera händelser som 🌟 Unika för att framhäva dem med en särskild färg och ikon.</li>
             </ul>
             <h4>Exportera & Importera</h4>
@@ -509,6 +511,7 @@
             const showBD = document.getElementById('showBD').checked;
             const showNY = document.getElementById('showNY').checked;
             const show1Y = document.getElementById('show1Y').checked;
+            const show3M = document.getElementById('show3M').checked;
             const show1M = document.getElementById('show1M').checked;
             const showCustom = document.getElementById('showCustom').checked;
             
@@ -569,6 +572,7 @@
                 showBD: showBD,
                 showNY: showNY,
                 show1Y: show1Y,
+                show3M: show3M,
                 show1M: show1M,
                 showCustom: showCustom,
                 customEvents: document.getElementById('customEvents').value
@@ -610,6 +614,7 @@
 
             let currentDate = new Date();
             const oneYearFromToday = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
+            const threeMonthsFromToday = new Date(currentDate.getFullYear(), currentDate.getMonth() + 3, currentDate.getDate());
             const oneMonthFromToday = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
             const endDate = new Date(dob.getFullYear() + projectionEndAge, dob.getMonth(), dob.getDate());
             
@@ -687,6 +692,7 @@
                 if (showBD && nextBD < nextChronoMilestone) nextChronoMilestone = nextBD;
                 if (showNY && nextNY < nextChronoMilestone) nextChronoMilestone = nextNY;
                 if (show1Y && oneYearFromToday > currentDate && oneYearFromToday < nextChronoMilestone) nextChronoMilestone = oneYearFromToday;
+                if (show3M && threeMonthsFromToday > currentDate && threeMonthsFromToday < nextChronoMilestone) nextChronoMilestone = threeMonthsFromToday;
                 if (show1M && oneMonthFromToday > currentDate && oneMonthFromToday < nextChronoMilestone) nextChronoMilestone = oneMonthFromToday;
                 if (targetCostDate > currentDate && targetCostDate < nextChronoMilestone) nextChronoMilestone = targetCostDate;
 
@@ -790,6 +796,9 @@
                     if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
                         type += " (1 år från idag)";
                     }
+                    if (show3M && nextMilestone.getTime() === threeMonthsFromToday.getTime()) {
+                        type += " (3 månader från idag)";
+                    }
                     if (show1M && nextMilestone.getTime() === oneMonthFromToday.getTime()) {
                         type += " (1 månad från idag)";
                     }
@@ -802,6 +811,15 @@
                 } else if (show1Y && nextMilestone.getTime() === oneYearFromToday.getTime()) {
                     type = '1 år från idag';
                     row.className = 'milestone-1y';
+                    if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
+                    if (isCustomMilestone) {
+                        type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
+                        if (isCustomSpecial) row.className = 'milestone-custom-special';
+                    }
+                    if (isSevMilestone) type += ` & ${nextSevMonth} mån avgångsvederlag täcker återstående kostnad`;
+                } else if (show3M && nextMilestone.getTime() === threeMonthsFromToday.getTime()) {
+                    type = '3 månader från idag';
+                    row.className = 'milestone-3m';
                     if (isCostMilestone) type += ` & Återstående kostnad (${nextCostTarget.toLocaleString('sv-SE')} SEK)`;
                     if (isCustomMilestone) {
                         type += ` & ${isCustomSpecial ? '🌟 Unik: ' : 'Anpassad: '}${customName}`;
@@ -937,6 +955,7 @@
             document.getElementById('showBD').checked = true;
             document.getElementById('showNY').checked = true;
             document.getElementById('show1Y').checked = true;
+            document.getElementById('show3M').checked = true;
             document.getElementById('show1M').checked = true;
             document.getElementById('showCustom').checked = true;
             
@@ -978,6 +997,7 @@
                 if (saved.showBD !== undefined) document.getElementById('showBD').checked = saved.showBD;
                 if (saved.showNY !== undefined) document.getElementById('showNY').checked = saved.showNY;
                 if (saved.show1Y !== undefined) document.getElementById('show1Y').checked = saved.show1Y;
+                if (saved.show3M !== undefined) document.getElementById('show3M').checked = saved.show3M;
                 if (saved.show1M !== undefined) document.getElementById('show1M').checked = saved.show1M;
                 if (saved.showCustom !== undefined) document.getElementById('showCustom').checked = saved.showCustom;
                 document.getElementById('customEvents').value = saved.customEvents || '';
