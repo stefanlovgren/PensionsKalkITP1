@@ -158,7 +158,7 @@
                     <th title="Total bruttolön intjänad fram till detta datum">Ackumulerad inkomst (Brutto)</th>
                     <th title="Total nettolön intjänad efter uppskattad skatt">Ackumulerad inkomst (Netto)</th>
                     <th title="Totala levnadskostnader ackumulerade fram till detta datum">Ackumulerad kostnad (Netto)</th>
-                    <th title="Ackumulerade kostnader minus totalt nettoavgångsvederlag (visar när avgångsvederlaget tar slut)">Kostnad efter avgångsvederlag (Netto)</th>
+                    <th title="Totalt nettoavgångsvederlag minus ackumulerade kostnader (visar hur mycket som finns kvar av vederlaget)">Kvar av avgångsvederlag (Netto)</th>
                     <th id="th-remaining-cost" title="Projicerade återstående levnadskostnader från detta datum fram till måldatumet">Återstående kostnad till mål (Netto)</th>
                     <th title="Ackumulerad allmän pension (Inkomstpension) baserad på 18.5% av pensionsgrundande inkomst">Pension (Allmän) (Brutto)</th>
                     <th title="Ackumulerad tjänstepension, t.ex. ITP1">Pension (Tjänstepension) (Brutto)</th>
@@ -239,7 +239,7 @@
             </ul>
             <h4>Avgångsvederlag</h4>
             <ul>
-                <li><strong>Avgångsvederlag:</strong> Beräknas som en nettoutbetalning (engångssumma) baserat på din grundläggande månatliga bruttolön (exklusive löneväxling). Detta subtraheras från dina ackumulerade kostnader för att visa när pengarna tar slut.</li>
+                <li><strong>Avgångsvederlag:</strong> Beräknas som en nettoutbetalning (engångssumma) baserat på din grundläggande månatliga bruttolön (exklusive löneväxling). Dina ackumulerade kostnader dras från detta belopp för att visa hur mycket som finns kvar och när pengarna tar slut.</li>
             </ul>
         </div>
         <div class="modal-actions" style="margin-top: 20px;">
@@ -694,7 +694,7 @@
             todayRow.insertCell(3).innerText = accumulatedIncomeGross.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(4).innerText = accumulatedIncomeNet.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(5).innerText = accumulatedCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
-            todayRow.insertCell(6).innerText = (accumulatedCost - totalSeveranceNet).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+            todayRow.insertCell(6).innerText = (totalSeveranceNet - accumulatedCost).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(7).innerText = formatRemainingCost(remainingCostToTarget);
             todayRow.insertCell(8).innerText = accumulatedPension.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
             todayRow.insertCell(9).innerText = accumulatedTjp.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
@@ -902,7 +902,7 @@
                 row.insertCell(3).innerText = accumulatedIncomeGross.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
                 row.insertCell(4).innerText = accumulatedIncomeNet.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
                 row.insertCell(5).innerText = accumulatedCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
-                row.insertCell(6).innerText = (accumulatedCost - totalSeveranceNet).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                row.insertCell(6).innerText = (totalSeveranceNet - accumulatedCost).toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
                 row.insertCell(7).innerText = formatRemainingCost(remainingCostToTarget);
                 row.insertCell(8).innerText = accumulatedPension.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
                 row.insertCell(9).innerText = accumulatedTjp.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
