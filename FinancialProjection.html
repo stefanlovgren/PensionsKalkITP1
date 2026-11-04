@@ -82,7 +82,11 @@
                 Daglig kostnad (SEK)
                 <button type="button" class="btn-small btn-accent" onclick="document.getElementById('budgetModal').showModal()" title="Beräkna från månadsbudget">🖩 Beräkna</button>
             </label>
-            <input type="number" id="budget" placeholder="0" title="Daglig kassa som krävs för att leva">
+            <input type="number" id="budget" placeholder="0" oninput="updateCostInfo()" title="Daglig kassa som krävs för att leva">
+        </div>
+        <div class="input-group">
+            <label for="costInfo">Kostnad per månad / år</label>
+            <input type="text" id="costInfo" readonly style="background: #222; color: #b2ff59; border-color: #555; font-weight: bold; text-align: center; width: 260px;" title="Uppskattad kostnad per månad och år baserat på daglig kostnad" value="-">
         </div>
         <div class="input-group">
             <label for="salary">Bruttolön (SEK/mån)</label>
@@ -322,8 +326,23 @@
             
             const dailyTotal = (monthlyTotal * 12) / 365.25;
             document.getElementById('budget').value = Math.round(dailyTotal);
+            updateCostInfo();
             document.getElementById('budgetModal').close();
             calculate(); // Auto-recalculate
+        }
+
+        function updateCostInfo() {
+            const dailyBudget = parseFloat(document.getElementById('budget').value) || 0;
+            const costInfoEl = document.getElementById('costInfo');
+            if (dailyBudget > 0) {
+                const yearlyCost = dailyBudget * 365.25;
+                const monthlyCost = yearlyCost / 12;
+                const mStr = monthlyCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                const yStr = yearlyCost.toLocaleString('sv-SE', {style: 'currency', currency: 'SEK', maximumFractionDigits: 0});
+                costInfoEl.value = `${mStr}/mån / ${yStr}/år`;
+            } else {
+                costInfoEl.value = '-';
+            }
         }
 
         function openCustomEventsModal() {
@@ -498,6 +517,7 @@
             const dobParts = dobStr.split('-');
             const dob = new Date(dobParts[0], dobParts[1] - 1, dobParts[2]);
             const dailyBudget = parseFloat(document.getElementById('budget').value) || 0;
+            updateCostInfo();
             const monthlySalary = parseFloat(document.getElementById('salary').value) || 0;
             const monthlyLonevaxling = parseFloat(document.getElementById('lonevaxling').value) || 0;
             const severanceMonths = parseFloat(document.getElementById('severance').value) || 0;
@@ -941,6 +961,7 @@
             
             document.getElementById('dob').value = '';
             document.getElementById('budget').value = '';
+            document.getElementById('costInfo').value = '-';
             document.getElementById('salary').value = '';
             document.getElementById('lonevaxling').value = '';
             document.getElementById('severance').value = '';
