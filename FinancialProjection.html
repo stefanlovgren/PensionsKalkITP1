@@ -35,12 +35,12 @@
         button { padding: 9px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #444; background: #2c2c2c; color: #fff; }
         button:hover { background: #444; }
         .btn-small { padding: 2px 6px; font-size: 0.85em; margin-left: 4px; vertical-align: middle; border-radius: 3px; }
-        dialog { background: #2c2c2c; color: #e0e0e0; border: 1px solid #555; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 400px; }
+        dialog { background: #2c2c2c; color: #e0e0e0; border: 1px solid #555; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 460px; max-width: 92vw; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.7); }
         .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; margin-top: 10px; }
         .modal-grid label { display: flex; flex-direction: column; font-size: 0.9em; color: #bbb; }
         .modal-grid input { margin: 4px 0 0 0; width: 100%; box-sizing: border-box; }
-        .modal-actions { text-align: right; }
+        .modal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
         .btn-primary { background: #1976d2; border-color: #1565c0; font-weight: bold; }
         .btn-primary:hover { background: #1e88e5; }
         .btn-info { background: #00838f; border-color: #006064; font-weight: bold; }
@@ -177,24 +177,27 @@
             <label style="font-size: 0.9em; color: #bbb;" title="Välj en standardprofil för att fylla i utgifter automatiskt">Läs in profil:</label>
             <select id="budgetPreset" onchange="loadBudgetPreset()" style="margin: 4px 0 0 0; width: 100%; box-sizing: border-box;" title="Välj en standardprofil för att fylla i utgifter automatiskt">
                 <option value="">-- Välj en profil --</option>
-                <option value="minimal">Minimal / Sparsam (~12k SEK)</option>
-                <option value="average_single">Genomsnitt Singel (~21k SEK)</option>
-                <option value="average_family">Genomsnitt Familj (~37k SEK)</option>
-                <option value="luxury">Bekvämt / Lyx (~55k SEK)</option>
+                <option value="minimal">Minimal / Sparsam (~12k SEK/mån • ~384 kr/dag)</option>
+                <option value="average_single">Genomsnitt Singel (~21k SEK/mån • ~700 kr/dag)</option>
+                <option value="average_family">Genomsnitt Familj (~37k SEK/mån • ~1 219 kr/dag)</option>
+                <option value="luxury">Bekvämt / Lyx (~55k SEK/mån • ~1 791 kr/dag)</option>
             </select>
         </div>
         <div class="modal-grid">
-            <label title="Hyra, bolån, avgift, fastighetsskatt, etc.">Boende <input type="number" id="b_housing" value="0"></label>
-            <label title="Matvaror, äta ute, snacks">Mat <input type="number" id="b_food" value="0"></label>
-            <label title="Billån, bensin, försäkring, kollektivtrafik">Transport <input type="number" id="b_transport" value="0"></label>
-            <label title="El, vatten, värme, internet, sophämtning">El/Vatten/Bredband <input type="number" id="b_utilities" value="0"></label>
-            <label title="Hem, liv, hälsa, husdjursförsäkring (exklusive bil)">Försäkringar <input type="number" id="b_insurance" value="0"></label>
-            <label title="Streaming, gym, tidskrifter, programvara">Abonnemang <input type="number" id="b_subs" value="0"></label>
-            <label title="Hobbyer, filmer, evenemang, nöjespengar">Nöje <input type="number" id="b_fun" value="0"></label>
-            <label title="Övriga utgifter, kläder, sparbuffert">Övrigt <input type="number" id="b_other" value="0"></label>
+            <label title="Hyra, bolån, avgift, fastighetsskatt, etc.">Boende <input type="number" id="b_housing" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Matvaror, äta ute, snacks">Mat <input type="number" id="b_food" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Billån, bensin, försäkring, kollektivtrafik">Transport <input type="number" id="b_transport" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="El, vatten, värme, internet, sophämtning">El/Vatten/Bredband <input type="number" id="b_utilities" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Hem, liv, hälsa, husdjursförsäkring (exklusive bil)">Försäkringar <input type="number" id="b_insurance" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Streaming, gym, tidskrifter, programvara">Abonnemang <input type="number" id="b_subs" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Hobbyer, filmer, evenemang, nöjespengar">Nöje <input type="number" id="b_fun" value="0" oninput="updateBudgetModalSummary()"></label>
+            <label title="Övriga utgifter, kläder, sparbuffert">Övrigt <input type="number" id="b_other" value="0" oninput="updateBudgetModalSummary()"></label>
+        </div>
+        <div id="budgetModalSummary" style="margin-bottom: 15px; padding: 8px 12px; background: #222; border: 1px solid #444; border-radius: 4px; text-align: center; font-weight: bold; color: #b2ff59;">
+            Totalt: 0 kr/mån • 0 kr/dag
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn-success" onclick="saveCustomPreset()" style="float: left;">Spara som profil</button>
+            <button type="button" class="btn-success" onclick="saveCustomPreset()" style="margin-right: auto;">Spara som profil</button>
             <button type="button" onclick="document.getElementById('budgetModal').close()">Avbryt</button>
             <button type="button" class="btn-primary" onclick="applyBudget()">Tillämpa på daglig kostnad</button>
         </div>
@@ -285,6 +288,27 @@
             select.add(opt);
         }
 
+        function formatCustomPresetLabel(name, breakdown) {
+            const monthly = Object.values(breakdown).reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+            const daily = Math.round((monthly * 12) / 365.25);
+            const mStr = Math.round(monthly).toLocaleString('sv-SE');
+            const dStr = daily.toLocaleString('sv-SE');
+            return `${name} (${mStr} kr/mån • ~${dStr} kr/dag)`;
+        }
+
+        function updateBudgetModalSummary() {
+            const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
+            let monthlyTotal = 0;
+            fields.forEach(id => {
+                monthlyTotal += parseFloat(document.getElementById(id).value) || 0;
+            });
+            const dailyTotal = Math.round((monthlyTotal * 12) / 365.25);
+            const summaryEl = document.getElementById('budgetModalSummary');
+            if (summaryEl) {
+                summaryEl.innerText = `Totalt: ${Math.round(monthlyTotal).toLocaleString('sv-SE')} kr/mån • ~${dailyTotal.toLocaleString('sv-SE')} kr/dag`;
+            }
+        }
+
         function saveCustomPreset() {
             const presetName = prompt("Ange ett namn för denna anpassade profil:");
             if (!presetName || !presetName.trim()) return;
@@ -298,7 +322,7 @@
             localStorage.setItem('fin_custom_presets', JSON.stringify(customPresets));
 
             budgetPresets[presetName.trim()] = breakdown;
-            addPresetToDropdown(presetName.trim(), presetName.trim() + " (Anpassad)");
+            addPresetToDropdown(presetName.trim(), formatCustomPresetLabel(presetName.trim(), breakdown));
             document.getElementById('budgetPreset').value = presetName.trim();
         }
 
@@ -311,6 +335,7 @@
                 const el = document.getElementById(id);
                 if (el) el.value = val;
             }
+            updateBudgetModalSummary();
         }
 
         function applyBudget() {
@@ -985,6 +1010,7 @@
             
             const fields = ['b_housing', 'b_food', 'b_transport', 'b_utilities', 'b_insurance', 'b_subs', 'b_fun', 'b_other'];
             fields.forEach(id => { document.getElementById(id).value = '0'; });
+            updateBudgetModalSummary();
             
             document.querySelector('#resultTable tbody').innerHTML = '';
             document.getElementById('th-remaining-cost').innerText = 'Återstående kostnad till mål (Netto)';
@@ -998,7 +1024,7 @@
             if (customPresets) {
                 for (const [name, vals] of Object.entries(customPresets)) {
                     budgetPresets[name] = vals;
-                    addPresetToDropdown(name, name + " (Anpassad)");
+                    addPresetToDropdown(name, formatCustomPresetLabel(name, vals));
                 }
             }
 
@@ -1032,6 +1058,7 @@
                     if (el) el.value = val;
                 }
             }
+            updateBudgetModalSummary();
         };
     </script>
 </body>
