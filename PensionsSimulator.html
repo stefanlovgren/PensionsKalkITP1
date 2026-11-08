@@ -61,309 +61,341 @@
       background-color: #555;
       border-radius: 9999px;
     }
-    .nav-link { color: #4fc3f7; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+    .nav-link { color: #4fc3f7; text-decoration: none; font-weight: bold; display: inline-block; }
     .nav-link:hover { text-decoration: underline; color: #81c784; }
-    .page-title { color: #4fc3f7; border-bottom: 1px solid #555; padding-bottom: 10px; margin-top: 0; font-size: 2em; font-weight: bold; }
-    .page-subtitle { color: #bbb; font-size: 1.1rem; margin-top: 0.5rem; }
+    .page-title { color: #4fc3f7; margin: 0; font-size: 1.35rem; font-weight: bold; line-height: 1.2; }
+    .page-subtitle { color: #bbb; font-size: 0.8rem; }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.75); }
   </style>
 </head>
 <body class="min-h-full flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900 bg-slate-50">
 
-  <!-- Header (same style as other pages) -->
-  <header class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-8">
-    <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
-    <h1 class="page-title">Pensionssimulator – Uttagsplanerare</h1>
-    <p class="page-subtitle">Simulera och visualisera utbetalning före skatt (5–20 år vs livsvarigt), i dagens penningvärde</p>
+  <!-- Compact Header -->
+  <header class="max-w-[1550px] mx-auto w-full px-4 sm:px-6 pt-3 pb-2 border-b border-slate-200">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="nav-link text-sm whitespace-nowrap">← Översikt</a>
+        <div class="border-l border-slate-300 pl-4">
+          <h1 class="page-title">Pensionssimulator – Uttagsplanerare</h1>
+          <p class="page-subtitle">Utbetalning före & efter skatt (5–20 år vs livsvarigt) i dagens penningvärde</p>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById('infoModal').showModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#00838f] hover:bg-[#0097a7] border border-[#006064] transition-colors shadow-sm cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Hjälp & Info
+      </button>
+    </div>
   </header>
 
   <!-- Main Content Layout -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <main class="flex-1 max-w-[1550px] mx-auto w-full px-4 sm:px-6 py-3">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
       
       <!-- LEFT COLUMN: Input Controls (5 cols) -->
-      <section class="lg:col-span-5 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-6">
-        <div class="border-b border-slate-100 pb-4">
-          <h2 class="text-lg font-bold text-slate-900">1. Dina förutsättningar</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Justera reglagen för att se effekten på din månatliga pension direkt.</p>
+      <section class="lg:col-span-5 bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 space-y-3">
+        <div class="border-b border-slate-100 pb-2 flex items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">1. Dina förutsättningar</h2>
+            <p class="text-[11px] text-slate-500">Valen sparas automatiskt lokalt.</p>
+          </div>
+          <button id="resetAllBtn" type="button" class="text-xs text-teal-600 hover:text-teal-700 font-medium underline whitespace-nowrap">
+            Återställ allt
+          </button>
         </div>
 
         <!-- 1. Total Capital -->
-        <div class="space-y-2">
+        <div class="space-y-1.5" title="Din gissning av hela pensionskapitalet när uttaget börjar, i dagens penningvärde.">
           <div class="flex justify-between items-center">
-            <label for="totalCapitalRange" class="text-sm font-semibold text-slate-700">Gissat totalt kapital vid uttag</label>
-            <div class="flex items-center gap-1 font-bold text-slate-900 bg-slate-100 px-3 py-1 rounded-lg text-sm border border-slate-200">
-              <input type="text" id="totalCapitalInput" class="w-24 text-right bg-transparent outline-none focus:ring-0 font-bold" value="3 000 000">
-              <span class="text-slate-500 text-xs">kr</span>
+            <label for="totalCapitalRange" class="text-xs font-semibold text-slate-700">Gissat totalt kapital vid uttag</label>
+            <div class="flex items-center gap-1 font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg text-xs border border-slate-200">
+              <input type="text" id="totalCapitalInput" class="w-20 text-right bg-transparent outline-none focus:ring-0 font-bold" value="3 000 000">
+              <span class="text-slate-500 text-[11px]">kr</span>
             </div>
           </div>
-          <input type="range" id="totalCapitalRange" min="500000" max="10000000" step="50000" value="3000000"
-            class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
-          <div class="flex justify-between text-[11px] text-slate-400 font-medium px-0.5">
-            <span>500 000 kr</span>
-            <span>3 Mkr</span>
-            <span>6 Mkr</span>
-            <span>10 Mkr</span>
+          <input type="range" id="totalCapitalRange" min="500000" max="20000000" step="100000" value="3000000"
+            class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer block">
+          <div class="grid grid-cols-7 gap-1 text-[10px] text-slate-400 font-medium">
+            <button type="button" data-capital="1000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">1 Mkr</button>
+            <button type="button" data-capital="3000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">3 Mkr</button>
+            <button type="button" data-capital="6000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">6 Mkr</button>
+            <button type="button" data-capital="10000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">10 Mkr</button>
+            <button type="button" data-capital="12500000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">12,5 Mkr</button>
+            <button type="button" data-capital="15000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">15 Mkr</button>
+            <button type="button" data-capital="20000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">20 Mkr</button>
           </div>
         </div>
 
-        <p class="text-[11px] text-slate-500 leading-tight -mt-4">Din gissning av hela pensionskapitalet när uttaget börjar, i dagens penningvärde.</p>
-
         <!-- 2. Capital Distribution -->
-        <div class="space-y-4 pt-2 border-t border-slate-100">
+        <div class="space-y-2 pt-2 border-t border-slate-100">
           <div class="flex items-center justify-between">
-            <label class="text-sm font-semibold text-slate-700">Kapitalfördelning</label>
-            <div class="flex items-center gap-3">
-              <button id="saveDistBtn" type="button" class="text-xs text-teal-600 hover:text-teal-700 font-medium underline">
+            <label class="text-xs font-semibold text-slate-700">Kapitalfördelning</label>
+            <div class="flex items-center gap-2.5">
+              <button id="saveDistBtn" type="button" class="text-[11px] text-teal-600 hover:text-teal-700 font-medium underline">
                 Spara som standard
               </button>
-              <button id="resetDistBtn" type="button" class="text-xs text-teal-600 hover:text-teal-700 font-medium underline">
+              <button id="resetDistBtn" type="button" class="text-[11px] text-teal-600 hover:text-teal-700 font-medium underline">
                 Återställ standard (50/15/35)
               </button>
             </div>
           </div>
 
+          <div class="grid grid-cols-4 gap-1 text-[10px]">
+            <button type="button" data-inkomst="60" data-ppm="15" title="Lön under brytpunkt (< 50 tkr/mån): 60 % Inkomst, 15 % PPM, 25 % Tjänstepension" class="dist-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">Medellön<br><span class="opacity-75">60 / 15 / 25</span></button>
+            <button type="button" data-inkomst="45" data-ppm="15" title="Tjänsteman (~55–65 tkr/mån): 45 % Inkomst, 15 % PPM, 40 % Tjänstepension" class="dist-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">Tjänsteman<br><span class="opacity-75">45 / 15 / 40</span></button>
+            <button type="button" data-inkomst="30" data-ppm="10" title="Högre lön (~70–90 tkr/mån, 30 % ITP1 över taket): 30 % Inkomst, 10 % PPM, 60 % Tjänstepension" class="dist-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">Högre lön<br><span class="opacity-75">30 / 10 / 60</span></button>
+            <button type="button" data-inkomst="20" data-ppm="10" title="Hög lön + löneväxling: 20 % Inkomst, 10 % PPM, 70 % Tjänstepension" class="dist-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">Hög + växling<br><span class="opacity-75">20 / 10 / 70</span></button>
+          </div>
+
           <!-- Inkomstpension -->
-          <div class="space-y-1.5 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
+          <div class="space-y-1 bg-blue-50/60 px-2.5 py-1.5 rounded-lg border border-blue-100" title="Alltid livsvarigt uttag enligt lag. Delas med statligt delningstal.">
             <div class="flex justify-between text-xs">
               <span class="font-medium text-blue-900 flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                Inkomstpension (Allmän)
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                Inkomstpension (Allmän, livsvarig)
               </span>
               <span class="font-bold text-blue-950" id="inkomstLabel">50% (1 500 000 kr)</span>
             </div>
-            <input type="range" id="inkomstPct" min="10" max="80" step="1" value="50" class="w-full h-1.5 bg-blue-200 rounded-lg cursor-pointer accent-blue-600">
-            <p class="text-[11px] text-blue-700/80 leading-tight">Alltid livsvarigt uttag enligt lag. Delas med statligt delningstal.</p>
+            <input type="range" id="inkomstPct" min="10" max="80" step="1" value="50" class="w-full h-1.5 bg-blue-200 rounded-lg cursor-pointer accent-blue-600 block">
           </div>
 
           <!-- Premiepension (PPM) -->
-          <div class="space-y-1.5 bg-amber-50/60 p-3 rounded-xl border border-amber-100">
+          <div class="space-y-1 bg-amber-50/60 px-2.5 py-1.5 rounded-lg border border-amber-100" title="Alltid livsvarigt uttag enligt lag.">
             <div class="flex justify-between text-xs">
               <span class="font-medium text-amber-900 flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                Premiepension (PPM)
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                Premiepension (PPM, livsvarig)
               </span>
               <span class="font-bold text-amber-950" id="ppmLabel">15% (450 000 kr)</span>
             </div>
-            <input type="range" id="ppmPct" min="5" max="40" step="1" value="15" class="w-full h-1.5 bg-amber-200 rounded-lg cursor-pointer accent-amber-500">
-            <p class="text-[11px] text-amber-800/80 leading-tight">Alltid livsvarigt uttag enligt lag.</p>
+            <input type="range" id="ppmPct" min="5" max="40" step="1" value="15" class="w-full h-1.5 bg-amber-200 rounded-lg cursor-pointer accent-amber-500 block">
           </div>
 
           <!-- Tjänstepension -->
-          <div class="space-y-1.5 bg-teal-50/70 p-3 rounded-xl border border-teal-200">
+          <div class="space-y-1 bg-teal-50/70 px-2.5 py-1.5 rounded-lg border border-teal-200" title="Denna del kan du välja att koncentrera på 5–20 år eller ta livsvarigt.">
             <div class="flex justify-between text-xs">
               <span class="font-medium text-teal-900 flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
-                Tjänstepension
+                <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+                Tjänstepension (valbar uttagstid)
               </span>
               <span class="font-bold text-teal-950" id="tjansteLabel">35% (1 050 000 kr)</span>
             </div>
             <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
               <div id="tjansteBar" class="bg-teal-600 h-full rounded-full transition-all duration-150" style="width: 35%;"></div>
             </div>
-            <p class="text-[11px] text-teal-800 leading-tight font-medium">Denna del kan du välja att koncentrera på 5, 10, 15 år eller ta livsvarigt.</p>
           </div>
         </div>
 
         <!-- 3. Tjänstepension Payout Period Buttons -->
-        <div class="space-y-2 pt-2 border-t border-slate-100">
-          <label class="text-sm font-semibold text-slate-700 block">
-            Uttagstid för Tjänstepension
-          </label>
+        <div class="space-y-1.5 pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-semibold text-slate-700">Uttagstid för Tjänstepension</label>
+            <span class="text-[10px] text-slate-400" id="periodDescriptionText">Utbetalas månad 1–120</span>
+          </div>
           <div class="grid grid-cols-5 gap-1.5" id="payoutPeriodButtonGroup">
-            <button type="button" data-years="5" class="payout-btn py-2 px-1 text-center rounded-xl text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
+            <button type="button" data-years="5" class="payout-btn py-1.5 px-1 text-center rounded-lg text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
               5 år
             </button>
-            <button type="button" data-years="10" class="payout-btn py-2 px-1 text-center rounded-xl text-xs font-semibold border transition-all border-teal-600 bg-teal-600 text-[#1a1a1a] shadow-sm ring-2 ring-teal-600/20">
+            <button type="button" data-years="10" class="payout-btn py-1.5 px-1 text-center rounded-lg text-xs font-semibold border transition-all border-teal-600 bg-teal-600 text-[#1a1a1a] shadow-sm ring-2 ring-teal-600/20">
               10 år
             </button>
-            <button type="button" data-years="15" class="payout-btn py-2 px-1 text-center rounded-xl text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
+            <button type="button" data-years="15" class="payout-btn py-1.5 px-1 text-center rounded-lg text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
               15 år
             </button>
-            <button type="button" data-years="20" class="payout-btn py-2 px-1 text-center rounded-xl text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
+            <button type="button" data-years="20" class="payout-btn py-1.5 px-1 text-center rounded-lg text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
               20 år
             </button>
-            <button type="button" data-years="0" class="payout-btn py-2 px-1 text-center rounded-xl text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
+            <button type="button" data-years="0" class="payout-btn py-1.5 px-1 text-center rounded-lg text-xs font-semibold border transition-all border-slate-200 text-slate-700 hover:bg-slate-100">
               Livsvarigt
             </button>
           </div>
-          <p class="text-[11px] text-slate-500" id="periodDescriptionText">
-            Tjänstepensionen betalas ut månad 1–120. Därefter upphör den och pensionen minskar till grundnivån.
-          </p>
         </div>
 
         <!-- 4. Retirement Age & Expected Real Return -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+        <div class="space-y-2.5 pt-2 border-t border-slate-100">
           <!-- Retirement Age -->
-          <div class="space-y-1.5">
-            <label for="retireAge" class="text-xs font-semibold text-slate-700 block">Pensionsålder vid start</label>
-            <select id="retireAge" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option value="63">63 år (Delningstal ~21.5)</option>
-              <option value="64">64 år (Delningstal ~20.8)</option>
-              <option value="65">65 år (Delningstal ~20.0)</option>
-              <option value="66" selected>66 år (Delningstal ~19.3)</option>
-              <option value="67">67 år (Delningstal ~18.5)</option>
-              <option value="68">68 år (Delningstal ~17.8)</option>
-              <option value="70">70 år (Delningstal ~16.4)</option>
-            </select>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <label for="retireAge" class="text-xs font-semibold text-slate-700 whitespace-nowrap">Pensionsålder vid start</label>
+              <select id="retireAge" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <option value="63">63 år (Delningstal ~21.5)</option>
+                <option value="64">64 år (Delningstal ~20.8)</option>
+                <option value="65">65 år (Delningstal ~20.0)</option>
+                <option value="66" selected>66 år (Delningstal ~19.3)</option>
+                <option value="67">67 år (Delningstal ~18.5)</option>
+                <option value="68">68 år (Delningstal ~17.8)</option>
+                <option value="70">70 år (Delningstal ~16.4)</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 text-[10px]">
+              <button type="button" data-age="64" class="age-quick-btn py-0.5 px-2 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">64 år (tidigast)</button>
+              <button type="button" data-age="66" class="age-quick-btn py-0.5 px-2 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">66 år (standard)</button>
+              <button type="button" data-age="67" class="age-quick-btn py-0.5 px-2 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">67 år (riktålder)</button>
+            </div>
           </div>
 
           <!-- Real Return -->
-          <div class="space-y-1.5">
+          <div class="space-y-1 pt-2 border-t border-slate-100" title="Påverkar inte år 1 (det bestäms av delningstal med förskottsränta 1,6 %). Avkastning över 1,6 % höjer pensionen år för år, under 1,6 % sänker den.">
             <div class="flex justify-between items-center">
-              <label for="annualReturn" class="text-xs font-semibold text-slate-700">Årlig real avkastning</label>
+              <label for="annualReturn" class="text-xs font-semibold text-slate-700">Årlig real avkastning <span class="text-[10px] font-normal text-slate-400">(norm 1,6 %)</span></label>
               <span id="returnLabel" class="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">2.0 %</span>
             </div>
-            <input type="range" id="annualReturn" min="0" max="6.0" step="0.25" value="2.0" class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-teal-600">
-            <div class="flex justify-between text-[10px] text-slate-400">
-              <span>0% (kontant)</span>
-              <span>2% (standard)</span>
-              <span>6% (offensiv)</span>
+            <input type="range" id="annualReturn" min="0" max="6.0" step="0.1" value="2.0" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-teal-600 block">
+            <div class="grid grid-cols-5 gap-1 text-[10px]">
+              <button type="button" data-return="0" class="return-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">0%<br><span class="opacity-75">(kontant)</span></button>
+              <button type="button" data-return="1.6" class="return-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">1,6%<br><span class="opacity-75">(norm)</span></button>
+              <button type="button" data-return="2" class="return-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">2%<br><span class="opacity-75">(standard)</span></button>
+              <button type="button" data-return="4" class="return-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">4%<br><span class="opacity-75">(balans)</span></button>
+              <button type="button" data-return="6" class="return-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">6%<br><span class="opacity-75">(offensiv)</span></button>
             </div>
-            <p class="text-[10px] text-slate-500 leading-snug">Påverkar inte år 1 (det bestäms av delningstal med förskottsränta 1,6 %). Avkastning över 1,6 % höjer pensionen år för år, under 1,6 % sänker den.</p>
           </div>
         </div>
 
       </section>
 
       <!-- RIGHT COLUMN: Results & Chart (7 cols) -->
-      <section class="lg:col-span-7 space-y-6">
+      <section class="lg:col-span-7 space-y-3">
         
-        <!-- Summary Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Phase 1 Card (Highlighted) -->
-          <div class="bg-[#2c2c2c] border border-teal-500/40 text-white rounded-2xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between">
-            <div class="absolute right-0 top-0 translate-x-4 -translate-y-4 w-28 h-28 bg-teal-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <!-- Combined Top Summary Row: Phase 1, Phase 2, and Key Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <!-- Phase 1 Card (4 cols) -->
+          <div class="sm:col-span-4 bg-[#2c2c2c] border border-teal-500/40 text-white rounded-xl p-3 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-400/20 text-teal-300 border border-teal-400/30">
                   FAS 1: <span id="cardPhase1PeriodLabel" class="ml-1">År 1–10</span>
                 </span>
-                <span class="text-xs text-slate-400">Före skatt</span>
+                <span class="text-[10px] text-slate-400">Före skatt</span>
               </div>
-              <h3 class="text-sm font-medium text-slate-200 mt-2">Månadsbelopp vid start</h3>
-              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mt-1" id="cardMonthlyPhase1">
+              <div class="text-2xl font-extrabold tracking-tight text-white mt-1" id="cardMonthlyPhase1">
                 20 180 kr
               </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
-              <span>Inklusive tjänstepension</span>
+            <div class="mt-2 pt-1.5 border-t border-slate-200 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Inkl. TP:</span>
               <span class="text-teal-300 font-semibold" id="cardTjansteExtraLabel">+9 850 kr/mån</span>
             </div>
           </div>
 
-          <!-- Phase 2 Card -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
+          <!-- Phase 2 Card (4 cols) -->
+          <div class="sm:col-span-4 bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="cardPhase2Badge">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="cardPhase2Badge">
                   FAS 2: Från år 11
                 </span>
-                <span class="text-xs text-slate-400">Före skatt</span>
+                <span class="text-[10px] text-slate-400">Före skatt</span>
               </div>
-              <h3 class="text-sm font-medium text-slate-600 mt-2">Månadsbelopp när TP tagit slut</h3>
-              <div class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-1" id="cardMonthlyPhase2">
+              <div class="text-2xl font-extrabold tracking-tight text-slate-900 mt-1" id="cardMonthlyPhase2">
                 10 330 kr
               </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 text-xs flex items-center justify-between" id="cardDropContainer">
-              <span class="text-slate-500">Minskning efter uttagsperiod:</span>
+            <div class="mt-2 pt-1.5 border-t border-slate-100 text-[11px] flex items-center justify-between" id="cardDropContainer">
+              <span class="text-slate-500">Minskning:</span>
               <span class="font-bold text-rose-600" id="cardDropAmount">-9 850 kr (-49%)</span>
             </div>
           </div>
-        </div>
 
-        <!-- Metric badges -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-            <span class="text-[11px] font-medium text-slate-500 block">Total utbetalning 20 år</span>
-            <span class="text-base sm:text-lg font-bold text-slate-900" id="metricTotal20y">3 660 000 kr</span>
-          </div>
-          <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-            <span class="text-[11px] font-medium text-slate-500 block">Genererad avkastning</span>
-            <span class="text-base sm:text-lg font-bold text-emerald-600" id="metricReturnsEarned">+660 000 kr</span>
-          </div>
-          <div class="col-span-2 sm:col-span-1 bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-            <span class="text-[11px] font-medium text-slate-500 block">Livsvarig basnivå</span>
-            <span class="text-base sm:text-lg font-bold text-blue-700" id="metricLifetimeBase">10 330 kr/mån</span>
+          <!-- Metric badges stacked (4 cols) -->
+          <div class="sm:col-span-4 grid grid-cols-1 gap-1.5">
+            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+              <span class="text-[11px] font-medium text-slate-500">Utbetalt 20 år:</span>
+              <span class="text-xs font-bold text-slate-900" id="metricTotal20y">3 660 000 kr</span>
+            </div>
+            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+              <span class="text-[11px] font-medium text-slate-500">Avkastning 20 år:</span>
+              <span class="text-xs font-bold text-emerald-600" id="metricReturnsEarned">+660 000 kr</span>
+            </div>
+            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+              <span class="text-[11px] font-medium text-slate-500">Livsvarig bas:</span>
+              <span class="text-xs font-bold text-blue-700" id="metricLifetimeBase">10 330 kr/mån</span>
+            </div>
           </div>
         </div>
 
         <!-- Chart Section -->
-        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
             <div>
-              <h3 class="text-base font-bold text-slate-900">Månatlig inkomst år för år</h3>
-              <p class="text-xs text-slate-500">Staplar = brutto per källa. Linjer = netto efter skatt (Göteborg tabell 33 resp. SINK 20 %).</p>
+              <h3 class="text-sm font-bold text-slate-900">Månatlig inkomst år för år</h3>
+              <p class="text-[11px] text-slate-500">Staplar = brutto per källa. Linjer = netto efter skatt (Göteborg tabell 33 resp. SINK 20 %).</p>
             </div>
-            <div class="flex items-center gap-3 text-xs">
-              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-blue-600"></span> Inkomstpension</div>
-              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-amber-500"></span> PPM</div>
-              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-teal-600"></span> Tjänstepension</div>
+            <div class="flex items-center gap-3 text-[11px]">
+              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span> Inkomst</div>
+              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> PPM</div>
+              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-teal-600"></span> Tjänste</div>
             </div>
           </div>
           
-          <div class="relative w-full h-72 sm:h-80">
+          <div class="relative w-full h-52 sm:h-56">
             <canvas id="pensionChart"></canvas>
           </div>
         </div>
 
         <!-- Detailed Breakdown Table -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-900">Detaljerad månadsspecifikation (före skatt)</h3>
-            <span class="text-xs text-slate-400">Uppskattade belopp</span>
+          <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-xs font-bold text-slate-900">Detaljerad månadsspecifikation (före & efter skatt)</h3>
+            <span class="text-[11px] text-slate-400">Uppskattade belopp vid start / fas 2</span>
           </div>
           <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left text-xs sm:text-sm">
-              <thead class="bg-slate-50/80 text-slate-600 uppercase text-[11px] border-b border-slate-200">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50/80 text-slate-600 uppercase text-[10px] border-b border-slate-200">
                 <tr>
-                  <th class="py-3 px-4 font-semibold">Pensionsdel</th>
-                  <th class="py-3 px-4 font-semibold">Kapital</th>
-                  <th class="py-3 px-4 font-semibold">Uttagstid</th>
-                  <th class="py-3 px-4 font-semibold text-right">Belopp / Månad</th>
+                  <th class="py-1.5 px-3 font-semibold">Pensionsdel</th>
+                  <th class="py-1.5 px-3 font-semibold">Kapital</th>
+                  <th class="py-1.5 px-3 font-semibold">Uttagstid / Efter skatt (Netto)</th>
+                  <th class="py-1.5 px-3 font-semibold text-right">Brutto / Månad</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
                 <tr class="hover:bg-slate-50/60 transition-colors">
-                  <td class="py-3 px-4 flex items-center gap-2 font-semibold text-blue-900">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                  <td class="py-1.5 px-3 flex items-center gap-2 font-semibold text-blue-900">
+                    <span class="w-2 h-2 rounded-full bg-blue-600"></span>
                     Inkomstpension
                   </td>
-                  <td class="py-3 px-4" id="tableInkomstCap">1 500 000 kr</td>
-                  <td class="py-3 px-4 text-slate-500">Livsvarigt (delningstal)</td>
-                  <td class="py-3 px-4 text-right font-bold text-blue-950" id="tableInkomstMonthly">7 950 kr</td>
+                  <td class="py-1.5 px-3" id="tableInkomstCap">1 500 000 kr</td>
+                  <td class="py-1.5 px-3 text-slate-500">Livsvarigt (delningstal)</td>
+                  <td class="py-1.5 px-3 text-right font-bold text-blue-950" id="tableInkomstMonthly">7 950 kr</td>
                 </tr>
                 <tr class="hover:bg-slate-50/60 transition-colors">
-                  <td class="py-3 px-4 flex items-center gap-2 font-semibold text-amber-900">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  <td class="py-1.5 px-3 flex items-center gap-2 font-semibold text-amber-900">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                     Premiepension (PPM)
                   </td>
-                  <td class="py-3 px-4" id="tablePpmCap">450 000 kr</td>
-                  <td class="py-3 px-4 text-slate-500">Livsvarigt (fonder)</td>
-                  <td class="py-3 px-4 text-right font-bold text-amber-950" id="tablePpmMonthly">2 380 kr</td>
+                  <td class="py-1.5 px-3" id="tablePpmCap">450 000 kr</td>
+                  <td class="py-1.5 px-3 text-slate-500">Livsvarigt (fonder)</td>
+                  <td class="py-1.5 px-3 text-right font-bold text-amber-950" id="tablePpmMonthly">2 380 kr</td>
                 </tr>
                 <tr class="hover:bg-slate-50/60 transition-colors">
-                  <td class="py-3 px-4 flex items-center gap-2 font-semibold text-teal-900">
-                    <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+                  <td class="py-1.5 px-3 flex items-center gap-2 font-semibold text-teal-900">
+                    <span class="w-2 h-2 rounded-full bg-teal-600"></span>
                     Tjänstepension
                   </td>
-                  <td class="py-3 px-4" id="tableTjansteCap">1 050 000 kr</td>
-                  <td class="py-3 px-4 text-slate-500" id="tableTjansteDuration">10 år (120 månader)</td>
-                  <td class="py-3 px-4 text-right font-bold text-teal-900" id="tableTjansteMonthly">9 850 kr</td>
+                  <td class="py-1.5 px-3" id="tableTjansteCap">1 050 000 kr</td>
+                  <td class="py-1.5 px-3 text-slate-500" id="tableTjansteDuration">10 år (120 månader)</td>
+                  <td class="py-1.5 px-3 text-right font-bold text-teal-900" id="tableTjansteMonthly">9 850 kr</td>
                 </tr>
                 <tr class="bg-slate-50/80 font-bold text-slate-900 border-t-2 border-slate-200">
-                  <td class="py-3.5 px-4" colspan="3">
-                    Totalt per månad under tjänstepensionstiden (<span id="tableHeaderPeriod">år 1–10</span>):
+                  <td class="py-2 px-3 whitespace-nowrap">
+                    Totalt under TP-tiden (<span id="tableHeaderPeriod">år 1–10</span>):
                   </td>
-                  <td class="py-3.5 px-4 text-right text-base text-teal-700 font-extrabold" id="tableTotalPhase1">
+                  <td class="py-2 px-3 text-[11px] font-semibold" colspan="2" id="tableNetPhase1">
+                    Netto GBG: – • SINK 20 %: –
+                  </td>
+                  <td class="py-2 px-3 text-right text-sm text-teal-700 font-extrabold whitespace-nowrap" id="tableTotalPhase1">
                     20 180 kr/mån
                   </td>
                 </tr>
                 <tr class="bg-white font-medium text-slate-600">
-                  <td class="py-2.5 px-4 italic" colspan="3">
-                    Totalt per månad därefter (endast allmän pension):
+                  <td class="py-1.5 px-3 italic whitespace-nowrap">
+                    Totalt därefter (allmän pension):
                   </td>
-                  <td class="py-2.5 px-4 text-right font-bold text-slate-700" id="tableTotalPhase2">
+                  <td class="py-1.5 px-3 text-[11px] font-semibold" colspan="2" id="tableNetPhase2">
+                    Netto GBG: – • SINK 20 %: –
+                  </td>
+                  <td class="py-1.5 px-3 text-right font-bold text-slate-700 whitespace-nowrap" id="tableTotalPhase2">
                     10 330 kr/mån
                   </td>
                 </tr>
@@ -375,56 +407,98 @@
       </section>
     </div>
 
-    <!-- Explanatory / Educational Article Section -->
-    <section class="mt-12 bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80">
-      <div class="max-w-4xl mx-auto">
-        <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
-          <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Info & Help Modal -->
+    <dialog id="infoModal" class="bg-[#2c2c2c] text-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-300 w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-4 mb-5">
+        <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <svg class="w-6 h-6 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Att tänka på när du planerar uttag av pension
+          Om simulatorn – Syfte, förutsättningar & uttagsplanering
         </h3>
+        <button type="button" onclick="document.getElementById('infoModal').close()" class="text-slate-400 hover:text-slate-800 text-lg font-bold px-2 py-0.5 rounded-lg hover:bg-slate-100 cursor-pointer" title="Stäng">✕</button>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600 leading-relaxed">
-          <div class="space-y-3">
-            <h4 class="font-bold text-slate-800 text-base">Allmän pension kan inte tidsbegränsas</h4>
+      <div class="space-y-6 text-sm text-slate-600 leading-relaxed">
+        <!-- Purpose & Guesswork -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-blue-700 text-base">Syfte och intention med kalkylen</h4>
             <p>
-              I Sverige kan varken <strong class="text-slate-800">Inkomstpension</strong> eller <strong class="text-slate-800">Premiepension (PPM)</strong> tas ut på exempelvis 5, 10 eller 15 år. De är enligt lag alltid livsvariga utbetalningar och beräknas med ett <em>delningstal</em> baserat på din årskulls återstående medellivslängd.
+              Syftet med denna simulator är att ge en <strong class="text-slate-800">snabb visuell känsla</strong> för hur olika uttagsstrategier påverkar din månatliga pension – framför allt skillnaden mellan att ta ut tjänstepensionen under en koncentrerad period (<strong class="text-slate-800">Fas 1</strong>, t.ex. 5–15 år medan man är som mest aktiv) jämfört med vad som blir kvar när tjänstepensionen har tagit slut (<strong class="text-slate-800">Fas 2</strong>).
             </p>
             <p>
-              Det är därför enbart <strong class="text-teal-700">Tjänstepensionen</strong> och eventuellt privat pensionssparande som du kan styra tidsmässigt för att få mer pengar under dina första aktiva pensionärsår.
+              Verktyget är tänkt för att enkelt kunna resonera kring avvägningen mellan hög inkomst tidigt i pensionen, skatteeffekter kring 66-årsgränsen och livsvarig grundtrygghet.
             </p>
           </div>
 
-          <div class="space-y-3">
-            <h4 class="font-bold text-slate-800 text-base">Skatt och brytpunkt för statlig inkomstskatt</h4>
+          <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-amber-600 text-base">Bygger till stor del på gissningar</h4>
             <p>
-              Om du väljer att ta ut tjänstepensionen på kort tid (t.ex. 5 eller 10 år) stiger månadsinkomsten markant. Se upp så att din sammanlagda pension inte kliver över gränsen för statlig skatt (20 % extra skatt).
+              Hela beräkningen utgår från <strong class="text-slate-800">grova antaganden och kvalificerade gissningar</strong>:
+            </p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong class="text-slate-800">Slutkapital vid pension:</strong> Ingen vet på förhand exakt hur stort det samlade pensionskapitalet är den dag uttaget startar.</li>
+              <li><strong class="text-slate-800">Jämn real avkastning:</strong> Modellen antar en konstant årlig real avkastning (efter inflation), medan verkligheten består av börssvängningar och varierande inflation.</li>
+              <li><strong class="text-slate-800">Schabloniserad fördelning:</strong> Alla tjänstepensionsavtal och försäkringsbolag slås här ihop till <em>en</em> gemensam pott med samma uttagstid och ränta.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Model Assumptions & Rules -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div class="space-y-2.5">
+            <h4 class="font-bold text-slate-800 text-base">Beräkningsmodell & förskottsränta (1,6 %)</h4>
+            <p>
+              Alla siffror visas i <strong class="text-slate-800">dagens penningvärde</strong>:
+            </p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong class="text-slate-800">År 1 styrs av delningstalet:</strong> Vid start beräknas månadspensionen genom att dela kapitalet med årskullens <em>delningstal</em> (för livsvarigt uttag) eller som en annuitet med 1,6 % förskottsränta (för tidsbegränsad tjänstepension). Därför ändras inte år 1 när du drar i avkastningsreglaget.</li>
+              <li><strong class="text-slate-800">År 2 och framåt:</strong> Eftersom 1,6 % real tillväxt redan är "inbakad" från start, höjs pensionen år för år om du väljer en real avkastning <em>över</em> 1,6 %, och urholkas om avkastningen ligger <em>under</em> 1,6 % (t.ex. 0 % kontant).</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2.5">
+            <h4 class="font-bold text-slate-800 text-base">Allmän pension vs. Tjänstepension</h4>
+            <p>
+              I Sverige kan varken <strong class="text-slate-800">Inkomstpension</strong> eller <strong class="text-slate-800">Premiepension (PPM)</strong> tidsbegränsas till exempelvis 5, 10 eller 15 år. De betalas enligt lag alltid ut livsvarigt.
             </p>
             <p>
-              Från och med januari det år du fyller <strong class="text-slate-800">riktåldern (f.n. 66–67 år)</strong> får du dessutom ett väsentligt högre <em>förhöjt grundavdrag</em>, vilket gör att du betalar avsevärt lägre skatt på samma pensionsbelopp jämfört med om du går i pension tidigare.
+              Det är därför enbart <strong class="text-teal-700">Tjänstepensionen</strong> (och privat sparande) som du kan komprimera i tid för att höja inkomsten under dina första pensionärsår.
             </p>
           </div>
         </div>
 
-        <div class="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 flex items-start gap-3">
-          <svg class="w-5 h-5 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Tax Section -->
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <h4 class="font-bold text-slate-800 text-base">Skatt i diagrammet (Göteborg vs. SINK 20 %)</h4>
+          <p>
+            Linjerna i diagrammet jämför två olika skattescenarier på din totala bruttopension:
+          </p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong class="text-slate-800">Netto Göteborg (heldragen vit linje):</strong> Hämtas från Skatteverkets allmänna tabell 33 (kommun + region ~32,6 %, exkl. kyrkoavgift). Före det år du fyller 68 år beskattas pension enligt kolumn 6 (utan förhöjt grundavdrag). Från det år du fyller <strong class="text-slate-800">68 år</strong> används kolumn 2 (med förhöjt grundavdrag), vilket ger ett tydligt lyft i nettopensionen vid 68 år. Vid höga uttag på kort tid slår även statlig inkomstskatt (20 %) till ovanför skiktgränsen.</li>
+            <li><strong class="text-slate-800">Netto SINK 20 % (streckad lila linje):</strong> Visar en schablonskatt på 20 % (Särskild inkomstskatt för utomlands bosatta, förenklat utan fribelopp) som referens.</li>
+          </ul>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 flex items-start gap-3">
+          <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
           </svg>
           <p>
-            <em>Observera:</em> Detta är en pedagogisk simuleringsmodell. Faktiska utbetalningar från Pensionsmyndigheten och dina valda tjänstepensionsbolag beror på verklig fondutveckling, årliga delningstal, arvsvinster och försäkringsavgifter. Logga in på <strong class="text-slate-700">minpension.se</strong> för dina exakta avtal och intjänade pensionsrätter.
+            <em>Observera:</em> Detta är ett förenklat, pedagogiskt simuleringsverktyg och inte finansiell rådgivning. Faktiska utbetalningar beror på verklig börsutveckling, årliga omräkningar, arvsvinster, avgifter och respektive försäkringsbolags villkor. Logga in på <strong class="text-slate-700">minpension.se</strong> för prognoser baserade på dina faktiska avtal.
           </p>
         </div>
       </div>
-    </section>
-  </main>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto px-4">
-      Pensionssimulator • Beräknat med månatlig annuitet och svensk pensionsstruktur
-    </div>
-  </footer>
+      <div class="mt-6 pt-4 border-t border-slate-200 flex justify-end">
+        <button type="button" onclick="document.getElementById('infoModal').close()" class="px-5 py-2 rounded-lg text-sm font-bold text-white bg-[#1976d2] hover:bg-[#1e88e5] border border-[#1565c0] transition-colors cursor-pointer">
+          Stäng
+        </button>
+      </div>
+    </dialog>
+  </main>
 
   <!-- Application Logic -->
   <script>
@@ -567,9 +641,10 @@
                   const idx = tooltipItems[0].dataIndex;
                   const info = chartTaxInfo[idx];
                   if (!info) return '';
+                  const gbgPct = info.gross > 0 ? ((info.tax / info.gross) * 100).toFixed(1).replace('.', ',') : '0,0';
                   return [
                     ' Brutto: ' + formatKr(info.gross) + ' /mån',
-                    ' Skatt GBG: ' + formatKr(info.tax) + ' /mån',
+                    ' Skatt GBG ' + gbgPct + ' %: ' + formatKr(info.tax) + ' /mån',
                     ' Skatt SINK 20 %: ' + formatKr(info.gross * 0.2) + ' /mån',
                   ];
                 }
@@ -637,9 +712,9 @@
       // Update Period Description
       const descEl = document.getElementById('periodDescriptionText');
       if (isLifetimeTjanste) {
-        descEl.innerText = "Tjänstepensionen betalas ut livsvarigt. Inkomsten förblir därmed på samma stabila nivå hela pensionen.";
+        descEl.innerText = "Livsvarig utbetalning";
       } else {
-        descEl.innerText = `Tjänstepensionen betalas ut månad 1–${state.tjansteYears * 12}. Därefter upphör den och månadspensionen sjunker.`;
+        descEl.innerText = `Utbetalas månad 1–${state.tjansteYears * 12}`;
       }
 
       // Update Cards
@@ -664,7 +739,7 @@
         const diffKr = Math.max(0, totalPhase1 - totalPhase2);
         const diffPct = Math.round((diffKr / totalPhase1) * 100);
         cardDropContainer.innerHTML = `
-          <span class="text-slate-500">Minskning efter uttagstid:</span>
+          <span class="text-slate-500">Minskning:</span>
           <span class="font-bold text-rose-600">-${formatKr(diffKr)} (-${diffPct}%)</span>
         `;
       }
@@ -703,10 +778,37 @@
       }
 
       document.getElementById('tableTotalPhase1').innerText = `${formatKr(totalPhase1)}/mån`;
-      document.getElementById('tableTotalPhase2').innerText = `${formatKr(totalPhase2)}/mån`;
+      const phase2DisplayGross = isLifetimeTjanste ? totalPhase1 : totalPhase2;
+      document.getElementById('tableTotalPhase2').innerText = `${formatKr(phase2DisplayGross)}/mån`;
+
+      function formatNetSummaryHtml(gross, highlightPrimary) {
+        const rounded = Math.round(gross);
+        const taxUnder68 = monthlyTaxGbgCol(rounded, 5); // Kolumn 6: före året man fyller 68 år
+        const tax68Plus = monthlyTaxGbgCol(rounded, 1);  // Kolumn 2: fr.o.m. året man fyller 68 år
+        const netUnder68 = gross - taxUnder68;
+        const net68Plus = gross - tax68Plus;
+        const pctUnder68 = gross > 0 ? ((taxUnder68 / gross) * 100).toFixed(1).replace('.', ',') : '0,0';
+        const pct68Plus = gross > 0 ? ((tax68Plus / gross) * 100).toFixed(1).replace('.', ',') : '0,0';
+        const netSink = gross * 0.8;
+        const valCls = highlightPrimary ? 'text-teal-400' : 'text-slate-900';
+        return `
+          <span class="text-slate-600" title="Kolumn 6: Pension före året man fyller 68 år (utan förhöjt grundavdrag)">GBG &lt;68 (${pctUnder68}%): <strong class="text-[#b2ff59]">${formatKr(netUnder68)}</strong></span>
+          <span class="text-slate-400 mx-1">•</span>
+          <span class="text-slate-600" title="Kolumn 2: Pension fr.o.m. året man fyller 68 år (med förhöjt grundavdrag)">GBG 68+ (${pct68Plus}%): <strong class="${valCls}">${formatKr(net68Plus)}</strong></span>
+          <span class="text-slate-400 mx-1">•</span>
+          <span class="text-[#ce93d8]" title="SINK 20 % schablonskatt">SINK (20%): <strong>${formatKr(netSink)}</strong></span>
+        `;
+      }
+
+      document.getElementById('tableNetPhase1').innerHTML = formatNetSummaryHtml(totalPhase1, true);
+      document.getElementById('tableNetPhase2').innerHTML = formatNetSummaryHtml(phase2DisplayGross, false);
 
       // Update Chart Data
       updateChart(inkomstMonthly, ppmMonthly, tjansteMonthly, isLifetimeTjanste);
+
+      try {
+        localStorage.setItem('pensionssimulatorState', JSON.stringify(state));
+      } catch (e) {}
     }
 
     // --- Skatt (Göteborg) ---
@@ -714,12 +816,14 @@
     const GBG_TABLE = '30B33';
     let chartTaxInfo = [];
 
-    // Månadsskatt enligt tabell. Kolumn 2 (index 1) = pension 66+ år, kolumn 6 (index 5) = pension under 66 år.
-    function monthlyTaxGbg(income, age) {
+    // Månadsskatt enligt tabell:
+    // colIndex 1 (Kolumn 2) = pension fr.o.m. året man fyller 68 år (förhöjt grundavdrag)
+    // colIndex 5 (Kolumn 6) = pension före året man fyller 68 år (vanligt grundavdrag)
+    function monthlyTaxGbgCol(income, colIndex) {
       if (typeof SKATTETABELL_DATA === 'undefined' || income <= 0) return 0;
       const t = SKATTETABELL_DATA[GBG_TABLE];
       if (!t) return 0;
-      const col = t.cols[age >= 66 ? 1 : 5];
+      const col = t.cols[colIndex];
       const xs = t.x;
       const last = xs.length - 1;
       if (income > xs[last]) return income * (col[last] / xs[last]);
@@ -729,6 +833,10 @@
         if (xs[mid] < income) lo = mid + 1; else hi = mid;
       }
       return col[lo];
+    }
+
+    function monthlyTaxGbg(income, age) {
+      return monthlyTaxGbgCol(income, age >= 68 ? 1 : 5);
     }
 
     function updateChart(inkomstMonthly, ppmMonthly, tjansteMonthly, isLifetimeTjanste) {
@@ -785,11 +893,43 @@
       const returnLabel = document.getElementById('returnLabel');
       const ageSelect = document.getElementById('retireAge');
       const periodButtons = document.querySelectorAll('.payout-btn');
+      const capitalQuickButtons = document.querySelectorAll('.capital-quick-btn');
+      const distQuickButtons = document.querySelectorAll('.dist-quick-btn');
+      const ageQuickButtons = document.querySelectorAll('.age-quick-btn');
+      const returnQuickButtons = document.querySelectorAll('.return-quick-btn');
+
+      function updateDistQuickBtnStyles() {
+        distQuickButtons.forEach(btn => {
+          const isMatch = parseInt(btn.getAttribute('data-inkomst'), 10) === state.inkomstPct &&
+                          parseInt(btn.getAttribute('data-ppm'), 10) === state.ppmPct;
+          if (isMatch) {
+            btn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+            btn.classList.add('bg-teal-600', 'text-[#1a1a1a]', 'border-teal-600', 'font-semibold');
+          } else {
+            btn.classList.remove('bg-teal-600', 'text-[#1a1a1a]', 'border-teal-600', 'font-semibold');
+            btn.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+          }
+        });
+      }
+
+      function updateQuickBtnStyles(buttons, attr, currentVal) {
+        buttons.forEach(btn => {
+          const isMatch = Math.abs(parseFloat(btn.getAttribute(attr)) - currentVal) < 0.001;
+          if (isMatch) {
+            btn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+            btn.classList.add('bg-teal-600', 'text-[#1a1a1a]', 'border-teal-600', 'font-semibold');
+          } else {
+            btn.classList.remove('bg-teal-600', 'text-[#1a1a1a]', 'border-teal-600', 'font-semibold');
+            btn.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+          }
+        });
+      }
 
       // Sync capital slider and input
       totalRange.addEventListener('input', (e) => {
         state.totalCapital = parseInt(e.target.value, 10);
         totalInput.value = state.totalCapital.toLocaleString('sv-SE');
+        updateQuickBtnStyles(capitalQuickButtons, 'data-capital', state.totalCapital);
         updateCalculations();
       });
 
@@ -799,9 +939,21 @@
         if (val < 100000) val = 100000;
         if (val > 25000000) val = 25000000;
         state.totalCapital = val;
-        totalRange.value = Math.min(Math.max(val, 500000), 10000000);
+        totalRange.value = Math.min(Math.max(val, 500000), 20000000);
         totalInput.value = val.toLocaleString('sv-SE');
+        updateQuickBtnStyles(capitalQuickButtons, 'data-capital', state.totalCapital);
         updateCalculations();
+      });
+
+      capitalQuickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = parseInt(btn.getAttribute('data-capital'), 10);
+          state.totalCapital = val;
+          totalRange.value = val;
+          totalInput.value = val.toLocaleString('sv-SE');
+          updateQuickBtnStyles(capitalQuickButtons, 'data-capital', state.totalCapital);
+          updateCalculations();
+        });
       });
 
       // Distribution sliders auto-balance with Tjänstepension
@@ -819,14 +971,25 @@
         state.ppmPct = ppm;
         state.tjanstePct = tjanste;
 
+        updateDistQuickBtnStyles();
         updateCalculations();
       }
 
       inkomstRange.addEventListener('input', balanceSliders);
       ppmRange.addEventListener('input', balanceSliders);
 
-      // Default distribution (persisted)
+      distQuickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          inkomstRange.value = parseInt(btn.getAttribute('data-inkomst'), 10);
+          ppmRange.value = parseInt(btn.getAttribute('data-ppm'), 10);
+          balanceSliders();
+        });
+      });
+
+      // Default distribution & state persistence (localStorage)
       const DIST_KEY = 'pensionssimulatorDefaultDist';
+      const STATE_KEY = 'pensionssimulatorState';
+
       function getDefaultDist() {
         try {
           const d = JSON.parse(localStorage.getItem(DIST_KEY));
@@ -834,6 +997,62 @@
         } catch (e) {}
         return { inkomst: 50, ppm: 15 };
       }
+
+      function saveStateToStorage() {
+        try {
+          localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function syncUIFromState() {
+        totalRange.value = Math.min(Math.max(state.totalCapital, 500000), 20000000);
+        totalInput.value = state.totalCapital.toLocaleString('sv-SE');
+        inkomstRange.value = state.inkomstPct;
+        ppmRange.value = state.ppmPct;
+        ageSelect.value = state.retireAge;
+        const retPct = +(state.annualReturn * 100).toFixed(2);
+        returnRange.value = retPct;
+        returnLabel.innerText = `${retPct.toFixed(1)} %`;
+
+        periodButtons.forEach(b => {
+          const isActive = parseInt(b.getAttribute('data-years'), 10) === state.tjansteYears;
+          if (isActive) {
+            b.classList.remove('border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
+            b.classList.add('border-teal-600', 'bg-teal-600', 'text-[#1a1a1a]', 'shadow-sm', 'ring-2', 'ring-teal-600/20');
+          } else {
+            b.classList.remove('border-teal-600', 'bg-teal-600', 'text-[#1a1a1a]', 'shadow-sm', 'ring-2', 'ring-teal-600/20');
+            b.classList.add('border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
+          }
+        });
+
+        updateQuickBtnStyles(capitalQuickButtons, 'data-capital', state.totalCapital);
+        updateDistQuickBtnStyles();
+        updateQuickBtnStyles(ageQuickButtons, 'data-age', state.retireAge);
+        updateQuickBtnStyles(returnQuickButtons, 'data-return', retPct);
+      }
+
+      function loadStateFromStorage() {
+        const d = getDefaultDist();
+        state.inkomstPct = d.inkomst;
+        state.ppmPct = d.ppm;
+        state.tjanstePct = 100 - d.inkomst - d.ppm;
+        try {
+          const saved = JSON.parse(localStorage.getItem(STATE_KEY));
+          if (saved && typeof saved === 'object') {
+            if (Number.isFinite(saved.totalCapital)) state.totalCapital = saved.totalCapital;
+            if (Number.isFinite(saved.inkomstPct) && Number.isFinite(saved.ppmPct)) {
+              state.inkomstPct = saved.inkomstPct;
+              state.ppmPct = saved.ppmPct;
+              state.tjanstePct = 100 - saved.inkomstPct - saved.ppmPct;
+            }
+            if (Number.isFinite(saved.tjansteYears)) state.tjansteYears = saved.tjansteYears;
+            if (Number.isFinite(saved.retireAge)) state.retireAge = saved.retireAge;
+            if (Number.isFinite(saved.annualReturn)) state.annualReturn = saved.annualReturn;
+          }
+        } catch (e) {}
+        syncUIFromState();
+      }
+
       function updateResetLabel() {
         const d = getDefaultDist();
         resetBtn.innerText = `Återställ standard (${d.inkomst}/${d.ppm}/${100 - d.inkomst - d.ppm})`;
@@ -855,8 +1074,23 @@
         setTimeout(() => { saveBtn.innerText = 'Spara som standard'; }, 1500);
       });
 
+      const resetAllBtn = document.getElementById('resetAllBtn');
+      resetAllBtn.addEventListener('click', () => {
+        const d = getDefaultDist();
+        state.totalCapital = 3000000;
+        state.inkomstPct = d.inkomst;
+        state.ppmPct = d.ppm;
+        state.tjanstePct = 100 - d.inkomst - d.ppm;
+        state.tjansteYears = 10;
+        state.retireAge = 66;
+        state.annualReturn = 0.02;
+        localStorage.removeItem(STATE_KEY);
+        syncUIFromState();
+        updateCalculations();
+      });
+
       updateResetLabel();
-      applyDefaultDist();
+      loadStateFromStorage();
 
       // Payout Period Buttons
       periodButtons.forEach(btn => {
@@ -882,13 +1116,41 @@
         const val = parseFloat(e.target.value);
         state.annualReturn = val / 100;
         returnLabel.innerText = `${val.toFixed(1)} %`;
+        updateQuickBtnStyles(returnQuickButtons, 'data-return', val);
         updateCalculations();
+      });
+
+      returnQuickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = parseFloat(btn.getAttribute('data-return'));
+          returnRange.value = val;
+          state.annualReturn = val / 100;
+          returnLabel.innerText = `${val.toFixed(1)} %`;
+          updateQuickBtnStyles(returnQuickButtons, 'data-return', val);
+          updateCalculations();
+        });
       });
 
       // Retirement age
       ageSelect.addEventListener('change', (e) => {
         state.retireAge = parseInt(e.target.value, 10);
+        updateQuickBtnStyles(ageQuickButtons, 'data-age', state.retireAge);
         updateCalculations();
+      });
+
+      ageQuickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const age = parseInt(btn.getAttribute('data-age'), 10);
+          ageSelect.value = age;
+          state.retireAge = age;
+          updateQuickBtnStyles(ageQuickButtons, 'data-age', state.retireAge);
+          updateCalculations();
+        });
+      });
+
+      const infoModal = document.getElementById('infoModal');
+      infoModal.addEventListener('click', (e) => {
+        if (e.target === infoModal) infoModal.close();
       });
     }
 
