@@ -108,7 +108,10 @@
         <!-- 1. Total Capital -->
         <div class="space-y-1.5" title="Din gissning av hela pensionskapitalet när uttaget börjar, i dagens penningvärde.">
           <div class="flex justify-between items-center">
-            <label for="totalCapitalRange" class="text-xs font-semibold text-slate-700">Gissat totalt kapital vid uttag</label>
+            <div class="flex items-center gap-2">
+              <label for="totalCapitalRange" class="text-xs font-semibold text-slate-700">Gissat totalt kapital vid uttag</label>
+              <button type="button" onclick="openCapitalCalcModal()" class="px-2 py-0.5 rounded text-[11px] font-bold text-white bg-[#e65100] hover:bg-[#f57c00] border border-[#ef6c00] transition-colors cursor-pointer" title="Beräkna/gissa slutkapital utifrån nuvarande kapital, kvarvarande år och lön">🖩 Beräkna</button>
+            </div>
             <div class="flex items-center gap-1 font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg text-xs border border-slate-200">
               <input type="text" id="totalCapitalInput" class="w-20 text-right bg-transparent outline-none focus:ring-0 font-bold" value="3 000 000">
               <span class="text-slate-500 text-[11px]">kr</span>
@@ -219,13 +222,13 @@
             <div class="flex items-center justify-between gap-2">
               <label for="retireAge" class="text-xs font-semibold text-slate-700 whitespace-nowrap">Pensionsålder vid start</label>
               <select id="retireAge" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                <option value="63">63 år (Delningstal ~21.5)</option>
-                <option value="64">64 år (Delningstal ~20.8)</option>
-                <option value="65">65 år (Delningstal ~20.0)</option>
-                <option value="66" selected>66 år (Delningstal ~19.3)</option>
-                <option value="67">67 år (Delningstal ~18.5)</option>
-                <option value="68">68 år (Delningstal ~17.8)</option>
-                <option value="70">70 år (Delningstal ~16.4)</option>
+                <option value="63">63 år (Delningstal ~19.5)</option>
+                <option value="64">64 år (Delningstal ~18.8)</option>
+                <option value="65">65 år (Delningstal ~18.1)</option>
+                <option value="66" selected>66 år (Delningstal ~17.4)</option>
+                <option value="67">67 år (Delningstal ~16.7)</option>
+                <option value="68">68 år (Delningstal ~16.0)</option>
+                <option value="70">70 år (Delningstal ~14.6)</option>
               </select>
             </div>
             <div class="grid grid-cols-3 gap-1.5 text-[10px]">
@@ -498,6 +501,82 @@
         </button>
       </div>
     </dialog>
+
+    <!-- Capital Calculator Modal -->
+    <dialog id="capitalCalcModal" class="bg-[#2c2c2c] text-slate-800 rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-300 w-full max-w-lg">
+      <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-3 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Uppskatta framtida pensionskapital</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Beräknar slutkapital vid uttag utifrån dagens kapital, lön (ITP1 + allmän) och avkastning.</p>
+        </div>
+        <button type="button" onclick="document.getElementById('capitalCalcModal').close()" class="text-slate-400 hover:text-slate-800 text-lg font-bold px-2 py-0.5 rounded-lg hover:bg-slate-100 cursor-pointer" title="Stäng">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <label class="flex flex-col gap-1 text-slate-600" title="Ditt samlade pensionskapital idag (allmän + PPM + tjänstepension)">
+          <span class="font-semibold text-slate-700">Nuvarande totalt kapital (kr)</span>
+          <input type="number" id="capCalcCurrent" value="3000000" step="50000" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+
+        <label class="flex flex-col gap-1 text-slate-600" title="Din nuvarande månadslön före skatt (styr avsättning till allmän pension och ITP1)">
+          <span class="font-semibold text-slate-700">Nuvarande bruttolön (kr/mån)</span>
+          <input type="number" id="capCalcSalary" value="55000" step="1000" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+
+        <label class="flex flex-col gap-1 text-slate-600" title="Antal år kvar som du planerar att arbeta och tjäna in ny pension">
+          <span class="font-semibold text-slate-700">Kvarvarande år i arbete</span>
+          <input type="number" id="capCalcWorkYears" value="5" min="0" max="45" step="0.5" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+
+        <label class="flex flex-col gap-1 text-slate-600" title="Eventuella mellanår efter att du slutat arbeta men innan du börjar ta ut pension (kapitalet växer med avkastning utan nya insättningar)">
+          <span class="font-semibold text-slate-700">Mellanår utan arbete före uttag</span>
+          <input type="number" id="capCalcWaitYears" value="0" min="0" max="30" step="0.5" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+
+        <label class="flex flex-col gap-1 text-slate-600" title="Eventuell extra månatlig löneväxling till tjänstepension">
+          <span class="font-semibold text-slate-700">Löneväxling (kr/mån)</span>
+          <input type="number" id="capCalcLonevaxling" value="0" min="0" step="500" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+
+        <label class="flex flex-col gap-1 text-slate-600" title="Antagen årlig real avkastning under spartiden fram till uttag">
+          <span class="font-semibold text-slate-700">Årlig real avkastning (%)</span>
+          <input type="number" id="capCalcReturn" value="3.0" min="0" max="12" step="0.5" oninput="updateCapitalCalcPreview()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        </label>
+      </div>
+
+      <!-- Breakdown Preview -->
+      <div class="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+        <div class="flex justify-between text-slate-600">
+          <span>Nya pensionsavsättningar (Allmän + ITP1 + växl.):</span>
+          <span class="font-semibold text-slate-800" id="capCalcMonthlyContrib">0 kr/mån (0 kr/år)</span>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Nuvarande kapital:</span>
+          <span class="font-semibold text-slate-800" id="capCalcBaseSum">0 kr</span>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Totalt nya insättningar under arbetsåren:</span>
+          <span class="font-semibold text-blue-700" id="capCalcContribSum">+0 kr</span>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Avkastning (ränta-på-ränta fram till uttag):</span>
+          <span class="font-semibold text-emerald-600" id="capCalcGrowthSum">+0 kr</span>
+        </div>
+        <div class="pt-2 border-t border-slate-200 flex justify-between items-baseline">
+          <span class="font-bold text-slate-900 text-sm">Uppskattat kapital vid uttag:</span>
+          <span class="font-extrabold text-lg text-[#b2ff59]" id="capCalcTotalResult">0 kr</span>
+        </div>
+      </div>
+
+      <div class="mt-5 flex items-center justify-end gap-2">
+        <button type="button" onclick="document.getElementById('capitalCalcModal').close()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors cursor-pointer">
+          Avbryt
+        </button>
+        <button type="button" onclick="applyCapitalCalc()" class="px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#1976d2] hover:bg-[#1e88e5] border border-[#1565c0] transition-colors cursor-pointer">
+          Tillämpa på totalt kapital
+        </button>
+      </div>
+    </dialog>
   </main>
 
   <!-- Application Logic -->
@@ -513,15 +592,15 @@
       annualReturn: 0.02, // 2%
     };
 
-    // Delningstal mapping according to Swedish life expectancy standards
+    // Delningstal enligt Pensionsmyndighetens tabeller (inkl. 1,6 % förskottsränta)
     const delningstalTable = {
-      63: 21.5,
-      64: 20.8,
-      65: 20.0,
-      66: 19.3,
-      67: 18.5,
-      68: 17.8,
-      70: 16.4,
+      63: 19.5,
+      64: 18.8,
+      65: 18.1,
+      66: 17.4,
+      67: 16.7,
+      68: 16.0,
+      70: 14.6,
     };
 
     // Format numbers with Swedish locale space separators
@@ -549,7 +628,7 @@
     // Livsvarig utbetalning år 1: kapital / delningstal (delningstalet innehåller redan 1,6 % förskottsränta).
     // Förväntad avkastning påverkar INTE år 1.
     function calculateLifetimePayout(principal, age) {
-      const delningstal = delningstalTable[age] || 19.3;
+      const delningstal = delningstalTable[age] || 17.4;
       return (principal / delningstal) / 12;
     }
 
@@ -1152,6 +1231,141 @@
       infoModal.addEventListener('click', (e) => {
         if (e.target === infoModal) infoModal.close();
       });
+
+      const capCalcModal = document.getElementById('capitalCalcModal');
+      capCalcModal.addEventListener('click', (e) => {
+        if (e.target === capCalcModal) capCalcModal.close();
+      });
+    }
+
+    // --- Capital Calculator Logic ---
+    const CAP_CALC_KEY = 'pensionssimulatorCapCalc';
+
+    function openCapitalCalcModal() {
+      let loaded = false;
+      try {
+        const saved = JSON.parse(localStorage.getItem(CAP_CALC_KEY));
+        if (saved && typeof saved === 'object') {
+          if (saved.current !== undefined) document.getElementById('capCalcCurrent').value = saved.current;
+          if (saved.salary !== undefined) document.getElementById('capCalcSalary').value = saved.salary;
+          if (saved.workYears !== undefined) document.getElementById('capCalcWorkYears').value = saved.workYears;
+          if (saved.waitYears !== undefined) document.getElementById('capCalcWaitYears').value = saved.waitYears;
+          if (saved.lonevaxling !== undefined) document.getElementById('capCalcLonevaxling').value = saved.lonevaxling;
+          if (saved.ret !== undefined) document.getElementById('capCalcReturn').value = saved.ret;
+          loaded = true;
+        }
+      } catch (e) {}
+
+      if (!loaded) {
+        document.getElementById('capCalcCurrent').value = state.totalCapital;
+        try {
+          const fin = JSON.parse(localStorage.getItem('fin_settings'));
+          if (fin) {
+            if (fin.salary) document.getElementById('capCalcSalary').value = fin.salary;
+            if (fin.lonevaxling) document.getElementById('capCalcLonevaxling').value = fin.lonevaxling;
+          }
+        } catch (e) {}
+      }
+
+      updateCapitalCalcPreview();
+      document.getElementById('capitalCalcModal').showModal();
+    }
+
+    function computeCapitalCalc() {
+      const current = Math.max(0, parseFloat(document.getElementById('capCalcCurrent').value) || 0);
+      const salary = Math.max(0, parseFloat(document.getElementById('capCalcSalary').value) || 0);
+      const workYears = Math.max(0, parseFloat(document.getElementById('capCalcWorkYears').value) || 0);
+      const waitYears = Math.max(0, parseFloat(document.getElementById('capCalcWaitYears').value) || 0);
+      const lonevaxling = Math.max(0, parseFloat(document.getElementById('capCalcLonevaxling').value) || 0);
+      const retPct = Math.max(0, parseFloat(document.getElementById('capCalcReturn').value) || 0);
+      const r = retPct / 100;
+
+      // Samma regler som i Ekonomisk prognos (Allmän pension + ITP1 + löneväxling)
+      const yearlySalary = salary * 12;
+      const PENSION_INCOME_CEILING = 614934;
+      const yearlyAllman = Math.min(yearlySalary, PENSION_INCOME_CEILING) * 0.185;
+
+      const TJP_CEILING = 571500;
+      const tjpBottom = Math.min(yearlySalary, TJP_CEILING) * 0.045;
+      const tjpTop = Math.max(0, yearlySalary - TJP_CEILING) * 0.30;
+      const tjpFlex = yearlySalary * 0.017;
+      const yearlyTjp = tjpBottom + tjpTop + tjpFlex;
+
+      const yearlyLv = lonevaxling * 12;
+      const yearlyContrib = yearlyAllman + yearlyTjp + yearlyLv;
+      const monthlyContrib = yearlyContrib / 12;
+
+      const totalYears = workYears + waitYears;
+      const futureFromCurrent = current * Math.pow(1 + r, totalYears);
+
+      let fvContribWork = 0;
+      if (workYears > 0) {
+        if (r === 0) {
+          fvContribWork = yearlyContrib * workYears;
+        } else {
+          // Löpande insättningar under arbetsåren (räknat från mitten av respektive år)
+          fvContribWork = yearlyContrib * ((Math.pow(1 + r, workYears) - 1) / r) * Math.sqrt(1 + r);
+        }
+      }
+      const futureFromContrib = fvContribWork * Math.pow(1 + r, waitYears);
+
+      const totalNominalContrib = yearlyContrib * workYears;
+      const totalFuture = futureFromCurrent + futureFromContrib;
+      const totalGrowth = Math.max(0, totalFuture - current - totalNominalContrib);
+
+      return {
+        current,
+        salary,
+        workYears,
+        waitYears,
+        lonevaxling,
+        ret: retPct,
+        monthlyContrib,
+        yearlyContrib,
+        totalNominalContrib,
+        totalGrowth,
+        totalFuture: Math.round(totalFuture / 10000) * 10000
+      };
+    }
+
+    function updateCapitalCalcPreview() {
+      const res = computeCapitalCalc();
+      document.getElementById('capCalcMonthlyContrib').innerText = `${formatKr(res.monthlyContrib)}/mån (${formatKr(res.yearlyContrib)}/år)`;
+      document.getElementById('capCalcBaseSum').innerText = formatKr(res.current);
+      document.getElementById('capCalcContribSum').innerText = `+${formatKr(res.totalNominalContrib)}`;
+      document.getElementById('capCalcGrowthSum').innerText = `+${formatKr(res.totalGrowth)}`;
+      document.getElementById('capCalcTotalResult').innerText = formatKr(res.totalFuture);
+    }
+
+    function applyCapitalCalc() {
+      const res = computeCapitalCalc();
+      try {
+        localStorage.setItem(CAP_CALC_KEY, JSON.stringify({
+          current: res.current,
+          salary: res.salary,
+          workYears: res.workYears,
+          waitYears: res.waitYears,
+          lonevaxling: res.lonevaxling,
+          ret: res.ret
+        }));
+      } catch (e) {}
+
+      const val = Math.min(Math.max(res.totalFuture, 100000), 25000000);
+      state.totalCapital = val;
+      document.getElementById('totalCapitalRange').value = Math.min(Math.max(val, 500000), 20000000);
+      document.getElementById('totalCapitalInput').value = val.toLocaleString('sv-SE');
+      document.querySelectorAll('.capital-quick-btn').forEach(btn => {
+        const isMatch = Math.abs(parseFloat(btn.getAttribute('data-capital')) - val) < 0.001;
+        btn.classList.toggle('bg-teal-600', isMatch);
+        btn.classList.toggle('text-[#1a1a1a]', isMatch);
+        btn.classList.toggle('border-teal-600', isMatch);
+        btn.classList.toggle('font-semibold', isMatch);
+        btn.classList.toggle('bg-slate-100', !isMatch);
+        btn.classList.toggle('text-slate-600', !isMatch);
+        btn.classList.toggle('border-slate-200', !isMatch);
+      });
+      document.getElementById('capitalCalcModal').close();
+      updateCalculations();
     }
 
     // Initialize application on page load
