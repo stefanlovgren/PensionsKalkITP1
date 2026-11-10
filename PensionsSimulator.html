@@ -240,12 +240,28 @@
               <span id="retireAgeLabel" class="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">66 år (Delningstal ~17,4)</span>
             </div>
             <div class="grid grid-cols-6 gap-1 text-[10px]">
-              <button type="button" data-age="64" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">64 år<br><span class="opacity-75">(tidigast)</span></button>
-              <button type="button" data-age="65" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">65 år<br><span class="opacity-75">(vanligast)</span></button>
-              <button type="button" data-age="66" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">66 år<br><span class="opacity-75">(standard)</span></button>
-              <button type="button" data-age="67" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">67 år<br><span class="opacity-75">(riktålder)</span></button>
-              <button type="button" data-age="68" title="Från det år man fyller 68 år gäller förhöjt grundavdrag (lägre skatt på pension)" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">68 år<br><span class="opacity-75">(låg skatt)</span></button>
-              <button type="button" data-age="70" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight">70 år<br><span class="opacity-75">(sent uttag)</span></button>
+              <button type="button" data-age="64" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">64 år<br><span class="opacity-75">(tidigast)</span></button>
+              <button type="button" data-age="65" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">65 år<br><span class="opacity-75">(vanligast)</span></button>
+              <button type="button" data-age="66" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">66 år<br><span class="opacity-75">(standard)</span></button>
+              <button type="button" data-age="67" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">67 år<br><span class="opacity-75">(riktålder)</span></button>
+              <button type="button" data-age="68" title="Från det år man fyller 68 år gäller förhöjt grundavdrag (lägre skatt på pension)" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">68 år<br><span class="opacity-75">(låg skatt)</span></button>
+              <button type="button" data-age="70" class="age-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">70 år<br><span class="opacity-75">(sent uttag)</span></button>
+            </div>
+          </div>
+
+          <!-- Förtida uttag av tjänstepension (Alternativ B) -->
+          <div class="space-y-1 pt-1.5 border-t border-slate-100">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-semibold text-slate-700 whitespace-nowrap flex items-center gap-1" title="Ta ut tjänstepensionen före allmän pension startar">
+                <span>💼</span> Förtida uttag (Tjänstepension)
+              </span>
+              <span id="earlyTjpBadge" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Inget</span>
+            </div>
+            <div class="grid grid-cols-4 gap-1 text-[10px]">
+              <button type="button" onclick="setEarlyTjpAge(0)" data-early-tjp="0" class="early-tjp-btn py-0.5 px-1 text-center rounded bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold border transition-colors leading-tight cursor-pointer">Inget<br><span class="opacity-75">(samtidigt)</span></button>
+              <button type="button" onclick="setEarlyTjpAge(60)" data-early-tjp="60" class="early-tjp-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">Från 60 år<br><span class="opacity-75">(förtida)</span></button>
+              <button type="button" onclick="setEarlyTjpAge(62)" data-early-tjp="62" class="early-tjp-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">Från 62 år<br><span class="opacity-75">(förtida)</span></button>
+              <button type="button" onclick="setEarlyTjpAge(63)" data-early-tjp="63" class="early-tjp-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">Från 63 år<br><span class="opacity-75">(förtida)</span></button>
             </div>
           </div>
 
@@ -274,10 +290,10 @@
       <!-- RIGHT COLUMN: Results & Chart (7 cols) -->
       <section class="lg:col-span-7 space-y-3">
         
-        <!-- Combined Top Summary Row: Phase 1, Phase 2, and Key Metrics -->
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          <!-- Phase 1 Card (4 cols) -->
-          <div class="sm:col-span-4 bg-[#2c2c2c] border border-teal-500/40 text-white rounded-xl p-3 shadow-sm flex flex-col justify-between">
+        <!-- Combined Top Summary Row: Phase 1, Phase 2, (Phase 3), and Key Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3" id="topSummaryCardsRow">
+          <!-- Phase 1 Card (4 cols normal, 3 cols at 3 phases) -->
+          <div id="cardPhase1Container" class="sm:col-span-4 bg-[#2c2c2c] border border-teal-500/40 text-white rounded-xl p-3 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-400/20 text-teal-300 border border-teal-400/30">
@@ -285,18 +301,18 @@
                 </span>
                 <span class="text-[10px] text-slate-400">Före skatt</span>
               </div>
-              <div class="text-2xl font-extrabold tracking-tight text-white mt-1" id="cardMonthlyPhase1">
+              <div class="text-xl sm:text-2xl font-extrabold tracking-tight text-white mt-1" id="cardMonthlyPhase1">
                 20 180 kr
               </div>
             </div>
-            <div class="mt-2 pt-1.5 border-t border-slate-200 text-[11px] text-slate-400 flex items-center justify-between">
+            <div class="mt-2 pt-1.5 border-t border-slate-700 text-[11px] text-slate-400 flex items-center justify-between">
               <span>Inkl. TP:</span>
               <span class="text-teal-300 font-semibold" id="cardTjansteExtraLabel">+9 850 kr/mån</span>
             </div>
           </div>
 
-          <!-- Phase 2 Card (4 cols) -->
-          <div class="sm:col-span-4 bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex flex-col justify-between">
+          <!-- Phase 2 Card (4 cols normal, 3 cols at 3 phases) -->
+          <div id="cardPhase2Container" class="sm:col-span-4 bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="cardPhase2Badge">
@@ -304,7 +320,7 @@
                 </span>
                 <span class="text-[10px] text-slate-400">Före skatt</span>
               </div>
-              <div class="text-2xl font-extrabold tracking-tight text-slate-900 mt-1" id="cardMonthlyPhase2">
+              <div class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 mt-1" id="cardMonthlyPhase2">
                 10 330 kr
               </div>
             </div>
@@ -314,17 +330,36 @@
             </div>
           </div>
 
-          <!-- Metric badges stacked (4 cols) -->
-          <div class="sm:col-span-4 grid grid-cols-1 gap-1.5">
-            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+          <!-- Phase 3 Card (dynamically displayed when 3 phases, 3 cols) -->
+          <div id="cardPhase3Container" class="hidden sm:col-span-3 bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex flex-col justify-between" style="display: none;">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200" id="cardPhase3Badge">
+                  FAS 3: Från 80 år
+                </span>
+                <span class="text-[10px] text-slate-400">Före skatt</span>
+              </div>
+              <div class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 mt-1" id="cardMonthlyPhase3">
+                30 400 kr
+              </div>
+            </div>
+            <div class="mt-2 pt-1.5 border-t border-slate-100 text-[11px] flex items-center justify-between" id="cardPhase3SubContainer">
+              <span class="text-slate-500">Minskning (TP upphör):</span>
+              <span class="font-bold text-rose-600" id="cardPhase3Drop">-29 628 kr (-49%)</span>
+            </div>
+          </div>
+
+          <!-- Metric badges stacked (4 cols normal, 3 cols at 3 phases) -->
+          <div id="cardMetricsContainer" class="sm:col-span-4 grid grid-cols-1 gap-1.5">
+            <div class="bg-white px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
               <span class="text-[11px] font-medium text-slate-500">Utbetalt 20 år:</span>
               <span class="text-xs font-bold text-slate-900" id="metricTotal20y">3 660 000 kr</span>
             </div>
-            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+            <div class="bg-white px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
               <span class="text-[11px] font-medium text-slate-500">Avkastning 20 år:</span>
               <span class="text-xs font-bold text-emerald-600" id="metricReturnsEarned">+660 000 kr</span>
             </div>
-            <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
+            <div class="bg-white px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200/80 flex items-center justify-between">
               <span class="text-[11px] font-medium text-slate-500">Livsvarig bas:</span>
               <span class="text-xs font-bold text-blue-700" id="metricLifetimeBase">10 330 kr/mån</span>
             </div>
@@ -397,8 +432,8 @@
                   <td class="py-1.5 px-3 text-slate-500" id="tableTjansteDuration">10 år (120 månader)</td>
                   <td class="py-1.5 px-3 text-right font-bold text-teal-900" id="tableTjansteMonthly">9 850 kr</td>
                 </tr>
-                <tr class="bg-slate-50/80 font-bold text-slate-900 border-t-2 border-slate-200">
-                  <td class="py-2 px-3 whitespace-nowrap">
+                <tr class="bg-slate-50/80 font-bold text-slate-900 border-t-2 border-slate-200" id="tableRowPhase1">
+                  <td class="py-2 px-3 whitespace-nowrap" id="tableRowPhase1Label">
                     Totalt under TP-tiden (<span id="tableHeaderPeriod">år 1–10</span>):
                   </td>
                   <td class="py-2 px-3 text-[11px] font-semibold" colspan="2" id="tableNetPhase1">
@@ -408,8 +443,8 @@
                     20 180 kr/mån
                   </td>
                 </tr>
-                <tr class="bg-white font-medium text-slate-600">
-                  <td class="py-1.5 px-3 italic whitespace-nowrap">
+                <tr class="bg-white font-medium text-slate-600" id="tableRowPhase2">
+                  <td class="py-1.5 px-3 italic whitespace-nowrap" id="tableRowPhase2Label">
                     Totalt därefter (allmän pension):
                   </td>
                   <td class="py-1.5 px-3 text-[11px] font-semibold" colspan="2" id="tableNetPhase2">
@@ -417,6 +452,17 @@
                   </td>
                   <td class="py-1.5 px-3 text-right font-bold text-slate-700 whitespace-nowrap" id="tableTotalPhase2">
                     10 330 kr/mån
+                  </td>
+                </tr>
+                <tr class="bg-slate-50/50 font-medium text-slate-600 border-t border-slate-100" id="tableRowPhase3" style="display: none;">
+                  <td class="py-1.5 px-3 italic whitespace-nowrap" id="tableRowPhase3Label">
+                    Totalt Fas 3 (endast allmän pension):
+                  </td>
+                  <td class="py-1.5 px-3 text-[11px] font-semibold" colspan="2" id="tableNetPhase3">
+                    Netto GBG: – • SINK 20 %: –
+                  </td>
+                  <td class="py-1.5 px-3 text-right font-bold text-slate-700 whitespace-nowrap" id="tableTotalPhase3">
+                    – kr/mån
                   </td>
                 </tr>
               </tbody>
@@ -445,7 +491,7 @@
           <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200 space-y-2">
             <h4 class="font-bold text-blue-700 text-base">Syfte och intention med kalkylen</h4>
             <p>
-              Syftet med denna simulator är att ge en <strong class="text-slate-800">snabb visuell känsla</strong> för hur olika uttagsstrategier påverkar din månatliga pension – framför allt skillnaden mellan att ta ut tjänstepensionen under en koncentrerad period (<strong class="text-slate-800">Fas 1</strong>, t.ex. 5–15 år medan man är som mest aktiv) jämfört med vad som blir kvar när tjänstepensionen har tagit slut (<strong class="text-slate-800">Fas 2</strong>).
+              Syftet med denna simulator är att ge en <strong class="text-slate-800">snabb visuell känsla</strong> för hur olika uttagsstrategier påverkar din månatliga pension – framför allt skillnaden mellan att ta ut tjänstepensionen under en koncentrerad period (<strong class="text-slate-800">Fas 1</strong>, t.ex. 5–15 år medan man är som mest aktiv) jämfört med vad som blir kvar när tjänstepensionen har tagit slut (<strong class="text-slate-800">Fas 2</strong>). Vid förtida uttag av tjänstepension innan allmän pension påbörjas delas uttaget dynamiskt upp i <strong class="text-slate-800">tre faser</strong>: förtida tjänstepension (Fas 1), full pension med både allmän och tjänstepension (Fas 2), samt livsvarig bas efter att tjänstepensionen upphört (Fas 3).
             </p>
             <p>
               Verktyget är tänkt för att enkelt kunna resonera kring avvägningen mellan hög inkomst tidigt i pensionen, skatteeffekter kring 66-årsgränsen och livsvarig grundtrygghet.
@@ -676,7 +722,8 @@
               </div>
               <div class="pt-0.5">
                 <div class="text-[9px] text-slate-500 mb-0.5">Förval slutålder:</div>
-                <div class="grid grid-cols-6 gap-1 text-[10px]">
+                <div class="grid grid-cols-7 gap-1 text-[10px]">
+                  <button type="button" onclick="setCapCalcStopWork(60)" data-stop-age="60" title="60 år (tidigt avslut)" class="cap-stop-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">60</button>
                   <button type="button" onclick="setCapCalcStopWork(62)" data-stop-age="62" title="62 år (tidigt)" class="cap-stop-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">62</button>
                   <button type="button" onclick="setCapCalcStopWork(64)" data-stop-age="64" title="64 år" class="cap-stop-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">64</button>
                   <button type="button" onclick="setCapCalcStopWork(65)" data-stop-age="65" title="65 år (vanligast)" class="cap-stop-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">65</button>
@@ -712,6 +759,56 @@
                   <button type="button" onclick="setCapCalcRetireAge(67)" data-retire-age="67" title="67 år (riktålder)" class="cap-retire-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">67</button>
                   <button type="button" onclick="setCapCalcRetireAge(68)" data-retire-age="68" title="68 år (låg skatt / förhöjt grundavdrag)" class="cap-retire-btn py-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer">68</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mellanårs-strategi (visas enbart om waitYears > 0) -->
+          <div id="capCalcGapStrategyContainer" class="p-2 rounded-lg bg-white border border-slate-200 space-y-1.5" style="display: none;">
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="font-bold text-slate-900 flex items-center gap-1.5">
+                <span id="capCalcGapStrategyIcon">⏳</span>
+                <span id="capCalcGapStrategyTitle">Mellanåren: Vad lever du på?</span>
+              </span>
+              <span class="text-[10px] font-semibold text-teal-400" id="capCalcGapStrategyBadge">4 år</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+              <button type="button" onclick="setCapCalcGapMode('none')" id="capGapBtnNone" class="p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold">
+                <div class="font-bold flex items-center gap-1">
+                  <span>🏖️</span> Rena friår (sparpengar)
+                </div>
+                <div class="text-[9px] opacity-80 leading-tight mt-0.5">
+                  Inget pensionsuttag. Hela kapitalet växer orört fram till uttag vid <span class="gapRetireAgeText">64</span> år.
+                </div>
+              </button>
+
+              <button type="button" onclick="setCapCalcGapMode('tjp')" id="capGapBtnTjp" class="p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200">
+                <div class="font-bold text-slate-900 flex items-center gap-1">
+                  <span>💼</span> Ta ut tjänstepension
+                </div>
+                <div class="text-[9px] text-slate-500 leading-tight mt-0.5">
+                  Få månadsutbetalning från <span class="gapStopAgeText">60</span> år. Allmän pension växer till <span class="gapRetireAgeText">64</span> år.
+                </div>
+              </button>
+            </div>
+
+            <!-- Tjänstepension Payout Details (visas när gapMode === 'tjp') -->
+            <div id="capCalcGapTjpDetails" class="hidden pt-1 border-t border-slate-200 text-[10px] space-y-1">
+              <div class="flex flex-wrap items-center justify-between gap-1">
+                <span class="text-slate-500 font-medium">Uttagstid tjänstepension:</span>
+                <div class="grid grid-cols-3 gap-1">
+                  <button type="button" onclick="setCapCalcGapTjpPeriod('gap')" id="capGapPeriodGap" class="px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors cursor-pointer bg-teal-600 text-[#1a1a1a] border-teal-600">Mellanåren (<span class="gapYearsSpan">4</span> år)</button>
+                  <button type="button" onclick="setCapCalcGapTjpPeriod('5')" id="capGapPeriod5" class="px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200">5 år</button>
+                  <button type="button" onclick="setCapCalcGapTjpPeriod('10')" id="capGapPeriod10" class="px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200">10 år</button>
+                </div>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 border border-slate-200 flex items-center justify-between text-[11px]">
+                <span class="text-slate-600 flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-[#ab47bc]"></span>
+                  Utbetalning under mellanåren (<span class="gapRangeText">60–64 år</span>):
+                </span>
+                <span class="font-bold text-[#ce93d8]" id="capCalcGapTjpMonthly">0 kr/mån</span>
               </div>
             </div>
           </div>
@@ -804,6 +901,15 @@
             <span class="text-slate-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#ffd54f]"></span>Avkastning:</span>
             <span class="font-bold text-[#ffd54f] text-xs block mt-0.5" id="capCalcGrowthSum">+0 kr</span>
           </div>
+        </div>
+
+        <!-- Extra rad för uttag under mellanåren om aktiverad -->
+        <div id="capCalcGapPayoutRow" class="pt-1 border-t border-slate-200 flex justify-between text-[11px]" style="display: none;">
+          <span class="text-slate-600 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#ab47bc]"></span>
+            Utbetald tjänstepension under mellanåren:
+          </span>
+          <span class="font-bold text-[#ce93d8]" id="capCalcGapPayoutSum">0 kr</span>
         </div>
 
         <div class="pt-1.5 border-t border-slate-200 flex justify-between items-baseline">
@@ -1061,11 +1167,14 @@
       tjanstePct: 35,
       tjansteYears: 10, // 0 = Livsvarigt
       retireAge: 66,
+      earlyTjpAge: 0, // 0 = Inget förtida (samtidigt med allmän pension), annars 60, 62, 63 etc
       annualReturn: 0.02, // 2%
     };
 
     // Delningstal enligt Pensionsmyndighetens tabeller (inkl. 1,6 % förskottsränta)
     const delningstalTable = {
+      60: 21.8,
+      62: 20.3,
       63: 19.5,
       64: 18.8,
       65: 18.1,
@@ -1246,15 +1355,77 @@
       });
     }
 
+    function setEarlyTjpAge(age) {
+      if (age > 0 && age >= state.retireAge) {
+        state.earlyTjpAge = 0;
+      } else {
+        state.earlyTjpAge = age;
+        if (age > 0 && state.tjanstePct <= 0) {
+          state.inkomstPct = 50;
+          state.ppmPct = 15;
+          state.tjanstePct = 35;
+          const inkEl = document.getElementById('inkomstPct');
+          const ppmEl = document.getElementById('ppmPct');
+          if (inkEl) inkEl.value = 50;
+          if (ppmEl) ppmEl.value = 15;
+        }
+      }
+      syncEarlyTjpUI();
+      updateCalculations();
+      try {
+        localStorage.setItem('pensionssimulatorState', JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function syncEarlyTjpUI() {
+      const hasEarly = state.earlyTjpAge > 0 && state.earlyTjpAge < state.retireAge;
+      const badge = document.getElementById('earlyTjpBadge');
+      if (badge) {
+        if (hasEarly) {
+          const gap = state.retireAge - state.earlyTjpAge;
+          badge.innerText = `Från ${state.earlyTjpAge} år (${gap} år förtida)`;
+          badge.className = 'text-[10px] font-bold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200';
+        } else {
+          badge.innerText = 'Inget';
+          badge.className = 'text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200';
+        }
+      }
+      document.querySelectorAll('.early-tjp-btn').forEach(btn => {
+        const btnAge = parseInt(btn.getAttribute('data-early-tjp'), 10);
+        const isMatch = hasEarly ? (btnAge === state.earlyTjpAge) : (btnAge === 0);
+        btn.classList.toggle('bg-teal-600', isMatch);
+        btn.classList.toggle('text-[#1a1a1a]', isMatch);
+        btn.classList.toggle('border-teal-600', isMatch);
+        btn.classList.toggle('font-semibold', isMatch);
+        btn.classList.toggle('bg-slate-100', !isMatch);
+        btn.classList.toggle('text-slate-600', !isMatch);
+        btn.classList.toggle('border-slate-200', !isMatch);
+      });
+    }
+
     // Core calculations and UI Update
     function updateCalculations() {
+      // Återställ fördelning om tjänstepension råkat bli 0%
+      if (state.tjanstePct <= 0) {
+        state.inkomstPct = 50;
+        state.ppmPct = 15;
+        state.tjanstePct = 35;
+        const inkEl = document.getElementById('inkomstPct');
+        const ppmEl = document.getElementById('ppmPct');
+        if (inkEl) inkEl.value = 50;
+        if (ppmEl) ppmEl.value = 15;
+      }
+
       const cap = state.totalCapital;
       const inkomstCap = cap * (state.inkomstPct / 100);
       const ppmCap = cap * (state.ppmPct / 100);
       const tjansteCap = cap * (state.tjanstePct / 100);
 
-      // Calculations
-      // År 1-belopp (oberoende av förväntad avkastning)
+      const hasEarlyTjp = state.earlyTjpAge > 0 && state.earlyTjpAge < state.retireAge;
+      const earlyYears = hasEarlyTjp ? (state.retireAge - state.earlyTjpAge) : 0;
+      const tjpStartAge = hasEarlyTjp ? state.earlyTjpAge : state.retireAge;
+
+      // År 1-belopp för allmän pension (startar vid state.retireAge)
       const inkomstMonthly = calculateLifetimePayout(inkomstCap, state.retireAge);
       const ppmMonthly = calculateLifetimePayout(ppmCap, state.retireAge);
       const lifetimeBaseMonthly = inkomstMonthly + ppmMonthly;
@@ -1263,15 +1434,42 @@
       const isLifetimeTjanste = state.tjansteYears === 0;
 
       if (isLifetimeTjanste) {
-        tjansteMonthly = calculateLifetimePayout(tjansteCap, state.retireAge);
+        tjansteMonthly = calculateLifetimePayout(tjansteCap, tjpStartAge);
       } else {
         // Tidsbegränsad: annuitet med förskottsräntan som antagande
         tjansteMonthly = calculateAnnuity(tjansteCap, FORSKOTTSRANTA, state.tjansteYears);
       }
 
-      const totalPhase1 = lifetimeBaseMonthly + tjansteMonthly;
-      // Fas 2 startar efter tjansteYears års omräkningar
-      const totalPhase2 = lifetimeBaseMonthly * adjustmentFactor(state.annualReturn, state.tjansteYears);
+      let totalPhase1 = 0;
+      let totalPhase2 = 0;
+      let totalPhase3 = 0;
+
+      const hasThreePhases = hasEarlyTjp && !isLifetimeTjanste && (state.tjansteYears > earlyYears);
+      const tjpEndAge = hasEarlyTjp ? (state.earlyTjpAge + state.tjansteYears) : (state.retireAge + state.tjansteYears);
+
+      if (hasEarlyTjp) {
+        // Fas 1: Förtida period (earlyTjpAge fram till retireAge) - endast tjänstepension
+        totalPhase1 = tjansteMonthly;
+
+        // Fas 2: Från retireAge då allmän pension startar
+        const tjpContinuesAtRetire = isLifetimeTjanste || (state.tjansteYears > earlyYears);
+        if (tjpContinuesAtRetire) {
+          const fTjAtRetire = adjustmentFactor(state.annualReturn, earlyYears);
+          totalPhase2 = lifetimeBaseMonthly + (tjansteMonthly * fTjAtRetire);
+        } else {
+          totalPhase2 = lifetimeBaseMonthly;
+        }
+
+        // Fas 3: Då tjänstepension upphör (fr.o.m. tjpEndAge)
+        if (hasThreePhases) {
+          const allmanYearsAtPhase3 = tjpEndAge - state.retireAge;
+          const fAllmanAtPhase3 = adjustmentFactor(state.annualReturn, allmanYearsAtPhase3);
+          totalPhase3 = lifetimeBaseMonthly * fAllmanAtPhase3;
+        }
+      } else {
+        totalPhase1 = lifetimeBaseMonthly + tjansteMonthly;
+        totalPhase2 = lifetimeBaseMonthly * adjustmentFactor(state.annualReturn, state.tjansteYears);
+      }
 
       // Update Labels in Input Box
       document.getElementById('inkomstLabel').innerText = `${state.inkomstPct}% (${formatKr(inkomstCap)})`;
@@ -1282,36 +1480,126 @@
       // Update Period Description
       const descEl = document.getElementById('periodDescriptionText');
       if (isLifetimeTjanste) {
-        descEl.innerText = "Livsvarig utbetalning";
+        descEl.innerText = hasEarlyTjp ? `Livsvarig utbetalning (start ${tjpStartAge} år)` : "Livsvarig utbetalning";
       } else {
-        descEl.innerText = `Utbetalas månad 1–${state.tjansteYears * 12}`;
+        descEl.innerText = hasEarlyTjp
+          ? `Utbetalas ${tjpStartAge}–${tjpStartAge + state.tjansteYears} år (${state.tjansteYears * 12} månader)`
+          : `Utbetalas månad 1–${state.tjansteYears * 12}`;
+      }
+
+      // Layout management: 4 columns when 3 phases, else 3 columns
+      const cardPhase1Container = document.getElementById('cardPhase1Container');
+      const cardPhase2Container = document.getElementById('cardPhase2Container');
+      const cardPhase3Container = document.getElementById('cardPhase3Container');
+      const cardMetricsContainer = document.getElementById('cardMetricsContainer');
+
+      if (hasThreePhases) {
+        if (cardPhase1Container) {
+          cardPhase1Container.classList.remove('sm:col-span-4');
+          cardPhase1Container.classList.add('sm:col-span-3');
+        }
+        if (cardPhase2Container) {
+          cardPhase2Container.classList.remove('sm:col-span-4');
+          cardPhase2Container.classList.add('sm:col-span-3');
+        }
+        if (cardMetricsContainer) {
+          cardMetricsContainer.classList.remove('sm:col-span-4');
+          cardMetricsContainer.classList.add('sm:col-span-3');
+        }
+        if (cardPhase3Container) {
+          cardPhase3Container.style.display = '';
+          cardPhase3Container.classList.remove('hidden');
+        }
+      } else {
+        if (cardPhase1Container) {
+          cardPhase1Container.classList.remove('sm:col-span-3');
+          cardPhase1Container.classList.add('sm:col-span-4');
+        }
+        if (cardPhase2Container) {
+          cardPhase2Container.classList.remove('sm:col-span-3');
+          cardPhase2Container.classList.add('sm:col-span-4');
+        }
+        if (cardMetricsContainer) {
+          cardMetricsContainer.classList.remove('sm:col-span-3');
+          cardMetricsContainer.classList.add('sm:col-span-4');
+        }
+        if (cardPhase3Container) {
+          cardPhase3Container.style.display = 'none';
+          cardPhase3Container.classList.add('hidden');
+        }
       }
 
       // Update Cards
-      const phase1PeriodText = isLifetimeTjanste ? "Livsvarigt" : `År 1–${state.tjansteYears}`;
-      document.getElementById('cardPhase1PeriodLabel').innerText = phase1PeriodText;
-      document.getElementById('cardMonthlyPhase1').innerText = formatKr(totalPhase1);
-      document.getElementById('cardTjansteExtraLabel').innerText = `+${formatKr(tjansteMonthly)}/mån`;
-
       const cardPhase2Badge = document.getElementById('cardPhase2Badge');
       const cardDropContainer = document.getElementById('cardDropContainer');
       const cardMonthlyPhase2 = document.getElementById('cardMonthlyPhase2');
 
-      if (isLifetimeTjanste) {
-        cardPhase2Badge.innerText = "FAS 2: Ingen sänkning";
-        cardMonthlyPhase2.innerText = formatKr(totalPhase1);
-        cardDropContainer.innerHTML = `<span class="text-emerald-700 font-semibold">Jämn utbetalning hela livet</span>`;
+      if (hasEarlyTjp) {
+        document.getElementById('cardPhase1PeriodLabel').innerText = `Förtida ${state.earlyTjpAge}–${state.retireAge - 1} år (${earlyYears} år)`;
+        document.getElementById('cardMonthlyPhase1').innerText = formatKr(totalPhase1);
+        document.getElementById('cardTjansteExtraLabel').innerText = `Endast tjänstepension`;
+
+        if (hasThreePhases) {
+          const remYears = state.tjansteYears - earlyYears;
+          cardPhase2Badge.innerText = `FAS 2: ${state.retireAge}–${tjpEndAge - 1} år (Allmän + TP ${remYears} år)`;
+          cardMonthlyPhase2.innerText = formatKr(totalPhase2);
+          const diffKr21 = totalPhase2 - totalPhase1;
+          cardDropContainer.innerHTML = `<span class="text-slate-500">Ökning vid allmän pension:</span><span class="font-bold text-emerald-600">+${formatKr(diffKr21)}</span>`;
+
+          // Card 3
+          const cardPhase3Badge = document.getElementById('cardPhase3Badge');
+          const cardMonthlyPhase3 = document.getElementById('cardMonthlyPhase3');
+          const cardPhase3SubContainer = document.getElementById('cardPhase3SubContainer');
+          if (cardPhase3Badge) cardPhase3Badge.innerText = `FAS 3: Från ${tjpEndAge} år (Livsvarigt)`;
+          if (cardMonthlyPhase3) cardMonthlyPhase3.innerText = formatKr(totalPhase3);
+          if (cardPhase3SubContainer) {
+            const diffKr32 = totalPhase2 - totalPhase3;
+            const diffPct32 = Math.round((diffKr32 / totalPhase2) * 100);
+            cardPhase3SubContainer.innerHTML = `
+              <span class="text-slate-500">Minskning (TP upphör):</span>
+              <span class="font-bold text-rose-600">-${formatKr(diffKr32)} (-${diffPct32}%)</span>
+            `;
+          }
+        } else {
+          const tjpContinuesAtRetire = isLifetimeTjanste;
+          if (tjpContinuesAtRetire) {
+            cardPhase2Badge.innerText = `FAS 2: Från ${state.retireAge} år (Allmän + TP livsvarigt)`;
+            cardMonthlyPhase2.innerText = formatKr(totalPhase2);
+            const diffKr = totalPhase2 - totalPhase1;
+            cardDropContainer.innerHTML = `<span class="text-slate-500">Ökning vid allmän pension:</span><span class="font-bold text-emerald-600">+${formatKr(diffKr)}</span>`;
+          } else {
+            cardPhase2Badge.innerText = `FAS 2: Från ${state.retireAge} år (Allmän pension)`;
+            cardMonthlyPhase2.innerText = formatKr(totalPhase2);
+            const diffKr = totalPhase2 - totalPhase1;
+            if (diffKr >= 0) {
+              cardDropContainer.innerHTML = `<span class="text-slate-500">Ökning vid allmän pension:</span><span class="font-bold text-emerald-600">+${formatKr(diffKr)}</span>`;
+            } else {
+              cardDropContainer.innerHTML = `<span class="text-slate-500">Minskning (TP upphör):</span><span class="font-bold text-rose-600">-${formatKr(Math.abs(diffKr))}</span>`;
+            }
+          }
+        }
       } else {
-        const nextYear = state.tjansteYears + 1;
-        cardPhase2Badge.innerText = `FAS 2: Från år ${nextYear} (${state.retireAge + state.tjansteYears} år)`;
-        cardMonthlyPhase2.innerText = formatKr(totalPhase2);
-        
-        const diffKr = Math.max(0, totalPhase1 - totalPhase2);
-        const diffPct = Math.round((diffKr / totalPhase1) * 100);
-        cardDropContainer.innerHTML = `
-          <span class="text-slate-500">Minskning:</span>
-          <span class="font-bold text-rose-600">-${formatKr(diffKr)} (-${diffPct}%)</span>
-        `;
+        const phase1PeriodText = isLifetimeTjanste ? "Livsvarigt" : `År 1–${state.tjansteYears}`;
+        document.getElementById('cardPhase1PeriodLabel').innerText = phase1PeriodText;
+        document.getElementById('cardMonthlyPhase1').innerText = formatKr(totalPhase1);
+        document.getElementById('cardTjansteExtraLabel').innerText = `+${formatKr(tjansteMonthly)}/mån`;
+
+        if (isLifetimeTjanste) {
+          cardPhase2Badge.innerText = "FAS 2: Ingen sänkning";
+          cardMonthlyPhase2.innerText = formatKr(totalPhase1);
+          cardDropContainer.innerHTML = `<span class="text-emerald-700 font-semibold">Jämn utbetalning hela livet</span>`;
+        } else {
+          const nextYear = state.tjansteYears + 1;
+          cardPhase2Badge.innerText = `FAS 2: Från år ${nextYear} (${state.retireAge + state.tjansteYears} år)`;
+          cardMonthlyPhase2.innerText = formatKr(totalPhase2);
+          
+          const diffKr = Math.max(0, totalPhase1 - totalPhase2);
+          const diffPct = Math.round((diffKr / totalPhase1) * 100);
+          cardDropContainer.innerHTML = `
+            <span class="text-slate-500">Minskning:</span>
+            <span class="font-bold text-rose-600">-${formatKr(diffKr)} (-${diffPct}%)</span>
+          `;
+        }
       }
 
       // Metrics
@@ -1320,14 +1608,23 @@
       // Calculate 20-year total sum paid out
       const simHorizon = 20;
       let totalSumPaid20y = 0;
+      const startAge = hasEarlyTjp ? state.earlyTjpAge : state.retireAge;
       for (let i = 0; i < simHorizon; i++) {
-        const f = adjustmentFactor(state.annualReturn, i);
-        const tj = (isLifetimeTjanste || i < state.tjansteYears) ? tjansteMonthly : 0;
-        totalSumPaid20y += (lifetimeBaseMonthly + tj) * f * 12;
+        const curAge = startAge + i;
+        let ink = 0, ppm = 0;
+        if (curAge >= state.retireAge) {
+          const allmanIndex = curAge - state.retireAge;
+          const fAllman = adjustmentFactor(state.annualReturn, allmanIndex);
+          ink = inkomstMonthly * fAllman;
+          ppm = ppmMonthly * fAllman;
+        }
+        const isTjActive = isLifetimeTjanste || (i < state.tjansteYears);
+        const fTjp = adjustmentFactor(state.annualReturn, i);
+        const tj = isTjActive ? (tjansteMonthly * fTjp) : 0;
+        totalSumPaid20y += (ink + ppm + tj) * 12;
       }
       document.getElementById('metricTotal20y').innerText = formatKr(totalSumPaid20y);
       
-      // Rough generated returns over 20 years
       const returnDiff = Math.max(0, totalSumPaid20y - cap);
       document.getElementById('metricReturnsEarned').innerText = `+${formatKr(returnDiff)}`;
 
@@ -1339,17 +1636,23 @@
       document.getElementById('tableTjansteCap').innerText = formatKr(tjansteCap);
       document.getElementById('tableTjansteMonthly').innerText = formatKr(tjansteMonthly);
 
-      if (isLifetimeTjanste) {
-        document.getElementById('tableTjansteDuration').innerText = "Livsvarigt";
-        document.getElementById('tableHeaderPeriod').innerText = "hela pensionstiden";
+      if (hasEarlyTjp) {
+        document.getElementById('tableTjansteDuration').innerText = isLifetimeTjanste
+          ? `Livsvarigt (från ${state.earlyTjpAge} år)`
+          : `${state.tjansteYears} år (${state.earlyTjpAge}–${state.earlyTjpAge + state.tjansteYears} år)`;
+        const thp = document.getElementById('tableHeaderPeriod');
+        if (thp) thp.innerText = `förtida ${state.earlyTjpAge}–${state.retireAge - 1} år`;
       } else {
-        document.getElementById('tableTjansteDuration').innerText = `${state.tjansteYears} år (${state.tjansteYears * 12} månader)`;
-        document.getElementById('tableHeaderPeriod').innerText = `år 1–${state.tjansteYears}`;
+        if (isLifetimeTjanste) {
+          document.getElementById('tableTjansteDuration').innerText = "Livsvarigt";
+          const thp = document.getElementById('tableHeaderPeriod');
+          if (thp) thp.innerText = "hela pensionstiden";
+        } else {
+          document.getElementById('tableTjansteDuration').innerText = `${state.tjansteYears} år (${state.tjansteYears * 12} månader)`;
+          const thp = document.getElementById('tableHeaderPeriod');
+          if (thp) thp.innerText = `år 1–${state.tjansteYears}`;
+        }
       }
-
-      document.getElementById('tableTotalPhase1').innerText = `${formatKr(totalPhase1)}/mån`;
-      const phase2DisplayGross = isLifetimeTjanste ? totalPhase1 : totalPhase2;
-      document.getElementById('tableTotalPhase2').innerText = `${formatKr(phase2DisplayGross)}/mån`;
 
       function formatNetSummaryHtml(gross, highlightPrimary) {
         const rounded = Math.round(gross);
@@ -1370,11 +1673,53 @@
         `;
       }
 
-      document.getElementById('tableNetPhase1').innerHTML = formatNetSummaryHtml(totalPhase1, true);
-      document.getElementById('tableNetPhase2').innerHTML = formatNetSummaryHtml(phase2DisplayGross, false);
+      const tableRowPhase1Label = document.getElementById('tableRowPhase1Label');
+      const tableRowPhase2Label = document.getElementById('tableRowPhase2Label');
+      const tableRowPhase3 = document.getElementById('tableRowPhase3');
+      const tableRowPhase3Label = document.getElementById('tableRowPhase3Label');
+
+      if (hasThreePhases) {
+        const remYears = state.tjansteYears - earlyYears;
+        if (tableRowPhase1Label) tableRowPhase1Label.innerHTML = `Fas 1: Förtida TP (${state.earlyTjpAge}–${state.retireAge - 1} år):`;
+        if (tableRowPhase2Label) tableRowPhase2Label.innerHTML = `Fas 2: Allmän + TP (${state.retireAge}–${tjpEndAge - 1} år):`;
+        if (tableRowPhase3Label) tableRowPhase3Label.innerHTML = `Fas 3: Endast allmän pension (fr.o.m. ${tjpEndAge} år):`;
+
+        document.getElementById('tableTotalPhase1').innerText = `${formatKr(totalPhase1)}/mån`;
+        document.getElementById('tableTotalPhase2').innerText = `${formatKr(totalPhase2)}/mån`;
+        document.getElementById('tableTotalPhase3').innerText = `${formatKr(totalPhase3)}/mån`;
+
+        document.getElementById('tableNetPhase1').innerHTML = formatNetSummaryHtml(totalPhase1, true);
+        document.getElementById('tableNetPhase2').innerHTML = formatNetSummaryHtml(totalPhase2, false);
+        document.getElementById('tableNetPhase3').innerHTML = formatNetSummaryHtml(totalPhase3, false);
+
+        if (tableRowPhase3) tableRowPhase3.style.display = '';
+      } else {
+        if (tableRowPhase3) tableRowPhase3.style.display = 'none';
+
+        if (hasEarlyTjp) {
+          if (isLifetimeTjanste) {
+            if (tableRowPhase1Label) tableRowPhase1Label.innerHTML = `Fas 1: Förtida TP (${state.earlyTjpAge}–${state.retireAge - 1} år):`;
+            if (tableRowPhase2Label) tableRowPhase2Label.innerHTML = `Fas 2: Allmän + TP (livsvarigt fr.o.m. ${state.retireAge} år):`;
+          } else {
+            if (tableRowPhase1Label) tableRowPhase1Label.innerHTML = `Fas 1: Förtida TP (${state.earlyTjpAge}–${state.earlyTjpAge + state.tjansteYears - 1} år):`;
+            if (tableRowPhase2Label) tableRowPhase2Label.innerHTML = `Fas 2: Endast allmän pension (fr.o.m. ${state.retireAge} år):`;
+          }
+        } else {
+          if (tableRowPhase1Label) tableRowPhase1Label.innerHTML = `Totalt under TP-tiden (<span id="tableHeaderPeriod">${isLifetimeTjanste ? "hela pensionstiden" : `år 1–${state.tjansteYears}`}</span>):`;
+          if (tableRowPhase2Label) tableRowPhase2Label.innerHTML = `Totalt därefter (allmän pension):`;
+        }
+
+        document.getElementById('tableTotalPhase1').innerText = `${formatKr(totalPhase1)}/mån`;
+        const phase2DisplayGross = isLifetimeTjanste && !hasEarlyTjp ? totalPhase1 : totalPhase2;
+        document.getElementById('tableTotalPhase2').innerText = `${formatKr(phase2DisplayGross)}/mån`;
+
+        document.getElementById('tableNetPhase1').innerHTML = formatNetSummaryHtml(totalPhase1, true);
+        document.getElementById('tableNetPhase2').innerHTML = formatNetSummaryHtml(phase2DisplayGross, false);
+      }
 
       // Update Chart Data
       updateChart(inkomstMonthly, ppmMonthly, tjansteMonthly, isLifetimeTjanste);
+      syncEarlyTjpUI();
 
       try {
         localStorage.setItem('pensionssimulatorState', JSON.stringify(state));
@@ -1428,18 +1773,30 @@
       const stateTaxThresholdData = [];
       chartTaxInfo = [];
 
-      const startAge = state.retireAge;
-      const endAge = Math.max(startAge + 20, 85);
+      const hasEarlyTjp = state.earlyTjpAge > 0 && state.earlyTjpAge < state.retireAge;
+      const startAge = hasEarlyTjp ? state.earlyTjpAge : state.retireAge;
+      const endAge = Math.max(state.retireAge + 20, 85);
       const totalYears = endAge - startAge;
 
       for (let i = 0; i <= totalYears; i++) {
         const curAge = startAge + i;
         labels.push(`${curAge} år`);
 
-        const f = adjustmentFactor(state.annualReturn, i);
-        const ink = inkomstMonthly * f;
-        const ppm = ppmMonthly * f;
-        const tj = (isLifetimeTjanste || i < state.tjansteYears) ? tjansteMonthly * f : 0;
+        let ink = 0;
+        let ppm = 0;
+
+        if (curAge >= state.retireAge) {
+          const allmanIndex = curAge - state.retireAge;
+          const fAllman = adjustmentFactor(state.annualReturn, allmanIndex);
+          ink = inkomstMonthly * fAllman;
+          ppm = ppmMonthly * fAllman;
+        }
+
+        const tjYearIndex = i; // Tjänstepension löper från startAge
+        const isTjActive = isLifetimeTjanste || (tjYearIndex < state.tjansteYears);
+        const fTj = adjustmentFactor(state.annualReturn, tjYearIndex);
+        const tj = isTjActive ? (tjansteMonthly * fTj) : 0;
+
         const gross = ink + ppm + tj;
         const tax = monthlyTaxGbg(Math.round(gross), curAge);
         const stateTaxLimit = stateTaxMonthlyThreshold(curAge);
@@ -1477,7 +1834,12 @@
 
       function updateAgeLabel() {
         const dt = (delningstalTable[state.retireAge] || 17.4).toFixed(1).replace('.', ',');
-        ageLabel.innerText = `${state.retireAge} år (Delningstal ~${dt})`;
+        const hasEarly = state.earlyTjpAge > 0 && state.earlyTjpAge < state.retireAge;
+        if (hasEarly) {
+          ageLabel.innerText = `${state.retireAge} år (Allmän pension, Delningstal ~${dt})`;
+        } else {
+          ageLabel.innerText = `${state.retireAge} år (Delningstal ~${dt})`;
+        }
       }
       const capitalQuickButtons = document.querySelectorAll('.capital-quick-btn');
       const distQuickButtons = document.querySelectorAll('.dist-quick-btn');
@@ -1615,6 +1977,7 @@
         updateDistQuickBtnStyles();
         updateQuickBtnStyles(ageQuickButtons, 'data-age', state.retireAge);
         updateQuickBtnStyles(returnQuickButtons, 'data-return', retPct);
+        syncEarlyTjpUI();
       }
 
       function loadStateFromStorage() {
@@ -1627,12 +1990,20 @@
           if (saved && typeof saved === 'object') {
             if (Number.isFinite(saved.totalCapital)) state.totalCapital = saved.totalCapital;
             if (Number.isFinite(saved.inkomstPct) && Number.isFinite(saved.ppmPct)) {
-              state.inkomstPct = saved.inkomstPct;
-              state.ppmPct = saved.ppmPct;
-              state.tjanstePct = 100 - saved.inkomstPct - saved.ppmPct;
+              let tjp = 100 - saved.inkomstPct - saved.ppmPct;
+              if (tjp <= 0) {
+                state.inkomstPct = d.inkomst || 50;
+                state.ppmPct = d.ppm || 15;
+                state.tjanstePct = 100 - state.inkomstPct - state.ppmPct;
+              } else {
+                state.inkomstPct = saved.inkomstPct;
+                state.ppmPct = saved.ppmPct;
+                state.tjanstePct = tjp;
+              }
             }
             if (Number.isFinite(saved.tjansteYears)) state.tjansteYears = saved.tjansteYears;
             if (Number.isFinite(saved.retireAge)) state.retireAge = saved.retireAge;
+            if (Number.isFinite(saved.earlyTjpAge)) state.earlyTjpAge = saved.earlyTjpAge;
             if (Number.isFinite(saved.annualReturn)) state.annualReturn = saved.annualReturn;
           }
         } catch (e) {}
@@ -1669,6 +2040,7 @@
         state.tjanstePct = 100 - d.inkomst - d.ppm;
         state.tjansteYears = 10;
         state.retireAge = 66;
+        state.earlyTjpAge = 0;
         state.annualReturn = 0.02;
         localStorage.removeItem(STATE_KEY);
         syncUIFromState();
@@ -1722,8 +2094,12 @@
         btn.addEventListener('click', () => {
           const age = parseInt(btn.getAttribute('data-age'), 10);
           state.retireAge = age;
+          if (state.earlyTjpAge >= state.retireAge) {
+            state.earlyTjpAge = 0;
+          }
           updateAgeLabel();
           updateQuickBtnStyles(ageQuickButtons, 'data-age', state.retireAge);
+          syncEarlyTjpUI();
           updateCalculations();
         });
       });
@@ -1741,6 +2117,9 @@
 
     // --- Capital Calculator Logic ---
     const CAP_CALC_KEY = 'pensionssimulatorCapCalc';
+    let capCalcGapMode = 'none'; // 'none' (sparpengar/friår) eller 'tjp' (ta ut tjänstepension)
+    let capCalcGapTjpPeriod = 'gap'; // 'gap' (mellanåren), '5', '10'
+
     const CAP_CALC_DEFAULTS = {
       current: 2000000,
       salary: 45000,
@@ -1749,8 +2128,20 @@
       ageRetire: 66,
       lonevaxling: 0,
       wageGrowth: 0.0,
-      ret: 3.5
+      ret: 3.5,
+      gapMode: 'none',
+      gapTjpPeriod: 'gap'
     };
+
+    function setCapCalcGapMode(mode) {
+      capCalcGapMode = mode;
+      updateCapitalCalcPreview();
+    }
+
+    function setCapCalcGapTjpPeriod(period) {
+      capCalcGapTjpPeriod = String(period);
+      updateCapitalCalcPreview();
+    }
 
     function resetCapitalCalcDefaults() {
       document.getElementById('capCalcCurrent').value = CAP_CALC_DEFAULTS.current;
@@ -1761,6 +2152,8 @@
       document.getElementById('capCalcLonevaxling').value = CAP_CALC_DEFAULTS.lonevaxling;
       document.getElementById('capCalcWageGrowth').value = CAP_CALC_DEFAULTS.wageGrowth;
       document.getElementById('capCalcReturn').value = CAP_CALC_DEFAULTS.ret;
+      capCalcGapMode = CAP_CALC_DEFAULTS.gapMode;
+      capCalcGapTjpPeriod = CAP_CALC_DEFAULTS.gapTjpPeriod;
       try {
         localStorage.removeItem(CAP_CALC_KEY);
       } catch (e) {}
@@ -1792,6 +2185,8 @@
           if (saved.lonevaxling !== undefined) document.getElementById('capCalcLonevaxling').value = saved.lonevaxling;
           if (saved.wageGrowth !== undefined) document.getElementById('capCalcWageGrowth').value = saved.wageGrowth;
           if (saved.ret !== undefined) document.getElementById('capCalcReturn').value = saved.ret;
+          if (saved.gapMode !== undefined) capCalcGapMode = saved.gapMode;
+          if (saved.gapTjpPeriod !== undefined) capCalcGapTjpPeriod = String(saved.gapTjpPeriod);
           loaded = true;
         }
       } catch (e) {}
@@ -1805,6 +2200,8 @@
         document.getElementById('capCalcLonevaxling').value = CAP_CALC_DEFAULTS.lonevaxling;
         document.getElementById('capCalcWageGrowth').value = CAP_CALC_DEFAULTS.wageGrowth;
         document.getElementById('capCalcReturn').value = CAP_CALC_DEFAULTS.ret;
+        capCalcGapMode = CAP_CALC_DEFAULTS.gapMode;
+        capCalcGapTjpPeriod = CAP_CALC_DEFAULTS.gapTjpPeriod;
       }
 
       updateCapitalCalcPreview();
@@ -1923,33 +2320,78 @@
       const yearlyTjp = tjpBottom + tjpTop + tjpFlex;
 
       const yearlyLv = lonevaxling * 12;
-      const yearlyContrib0 = yearlyAllman + yearlyTjp + yearlyLv;
+      const yearlyTjpTotal = yearlyTjp + yearlyLv;
+      const yearlyContrib0 = yearlyAllman + yearlyTjpTotal;
       const monthlyContrib0 = yearlyContrib0 / 12;
       const monthlyContribEnd = monthlyContrib0 * Math.pow(1 + g, Math.max(0, workYears - 1));
 
       const totalYears = workYears + waitYears;
-      const capAtStopWorkFromCurrent = current * Math.pow(1 + r, workYears);
-      const futureFromCurrent = current * Math.pow(1 + r, totalYears);
 
-      let fvContribWork = 0;
+      // Fördelning av startkapital mellan Allmän pension och Tjänstepension
+      const sumDist = (state.inkomstPct || 50) + (state.ppmPct || 15) + (state.tjanstePct || 35);
+      const tjpRatio = sumDist > 0 ? ((state.tjanstePct || 35) / sumDist) : 0.35;
+      const currentTjp = current * tjpRatio;
+      const currentAllman = current - currentTjp;
+
+      function calcFvContrib(amount) {
+        if (workYears <= 0) return 0;
+        if (g === 0 && r === 0) return amount * workYears;
+        if (Math.abs(r - g) < 0.0001) {
+          return amount * Math.sqrt(1 + r) * workYears * Math.pow(1 + r, Math.max(0, workYears - 1));
+        }
+        return amount * Math.sqrt(1 + r) * ((Math.pow(1 + r, workYears) - Math.pow(1 + g, workYears)) / (r - g));
+      }
+
+      const fvContribAllman = calcFvContrib(yearlyAllman);
+      const fvContribTjp = calcFvContrib(yearlyTjpTotal);
+
       let totalNominalContrib = 0;
       if (workYears > 0) {
-        if (g === 0 && r === 0) {
-          fvContribWork = yearlyContrib0 * workYears;
-          totalNominalContrib = yearlyContrib0 * workYears;
-        } else if (Math.abs(r - g) < 0.0001) {
-          fvContribWork = yearlyContrib0 * Math.sqrt(1 + r) * workYears * Math.pow(1 + r, Math.max(0, workYears - 1));
-          totalNominalContrib = g === 0 ? (yearlyContrib0 * workYears) : yearlyContrib0 * ((Math.pow(1 + g, workYears) - 1) / g);
+        totalNominalContrib = g === 0 ? (yearlyContrib0 * workYears) : yearlyContrib0 * ((Math.pow(1 + g, workYears) - 1) / g);
+      }
+
+      const capAllmanAtStop = currentAllman * Math.pow(1 + r, workYears) + fvContribAllman;
+      const capTjpAtStop = currentTjp * Math.pow(1 + r, workYears) + fvContribTjp;
+      const capAtStopWork = capAllmanAtStop + capTjpAtStop;
+
+      // Mellanår (waitYears): Rena friår eller uttag av tjänstepension
+      let allmanAtRetire = capAllmanAtStop * Math.pow(1 + r, waitYears);
+      let tjpAtRetire = 0;
+      let tjpMonthlyDuringGap = 0;
+      let totalTjpPaidDuringGap = 0;
+      let payoutDurationYears = 0;
+      let remYears = 0;
+
+      if (waitYears <= 0 || capCalcGapMode === 'none') {
+        // Rena friår / sparpengar: Tjänstepension växer orörd fram till pensionsuttag
+        tjpAtRetire = capTjpAtStop * Math.pow(1 + r, waitYears);
+      } else {
+        // Ta ut tjänstepension under mellanåren
+        if (capCalcGapTjpPeriod === '5') payoutDurationYears = 5;
+        else if (capCalcGapTjpPeriod === '10') payoutDurationYears = 10;
+        else payoutDurationYears = waitYears; // 'gap' (exakt mellanåren)
+
+        tjpMonthlyDuringGap = calculateAnnuity(capTjpAtStop, r, payoutDurationYears);
+        const yearsPaidInGap = Math.min(waitYears, payoutDurationYears);
+        totalTjpPaidDuringGap = tjpMonthlyDuringGap * 12 * yearsPaidInGap;
+
+        remYears = Math.max(0, payoutDurationYears - waitYears);
+        if (remYears <= 0) {
+          tjpAtRetire = 0;
         } else {
-          fvContribWork = yearlyContrib0 * Math.sqrt(1 + r) * ((Math.pow(1 + r, workYears) - Math.pow(1 + g, workYears)) / (r - g));
-          totalNominalContrib = g === 0 ? (yearlyContrib0 * workYears) : yearlyContrib0 * ((Math.pow(1 + g, workYears) - 1) / g);
+          // Kvarvarande pensionskapital vid pensionsålder = nuvärde av resterande månadspensioner
+          const remMonths = remYears * 12;
+          const mRate = r / 12;
+          if (mRate > 0) {
+            tjpAtRetire = (tjpMonthlyDuringGap * (1 - Math.pow(1 + mRate, -remMonths))) / mRate;
+          } else {
+            tjpAtRetire = tjpMonthlyDuringGap * remMonths;
+          }
         }
       }
-      const capAtStopWork = capAtStopWorkFromCurrent + fvContribWork;
-      const futureFromContrib = fvContribWork * Math.pow(1 + r, waitYears);
 
-      const totalFuture = futureFromCurrent + futureFromContrib;
-      const totalGrowth = Math.max(0, totalFuture - current - totalNominalContrib);
+      const totalFuture = allmanAtRetire + tjpAtRetire;
+      const totalGrowth = Math.max(0, (totalFuture + totalTjpPaidDuringGap) - current - totalNominalContrib);
 
       return {
         current,
@@ -1968,6 +2410,14 @@
         yearlyContrib: yearlyContrib0,
         totalNominalContrib,
         totalGrowth,
+        capAllmanAtStop,
+        capTjpAtStop,
+        allmanAtRetire,
+        tjpAtRetire,
+        tjpMonthlyDuringGap: Math.round(tjpMonthlyDuringGap),
+        totalTjpPaidDuringGap: Math.round(totalTjpPaidDuringGap),
+        payoutDurationYears,
+        remYears,
         capAtStopWork: Math.round(capAtStopWork / 10000) * 10000,
         totalFuture: Math.round(totalFuture / 10000) * 10000
       };
@@ -2004,12 +2454,78 @@
       document.getElementById('capCalcGrowthSum').innerText = `+${formatKr(res.totalGrowth)}`;
       document.getElementById('capCalcTotalResult').innerText = formatKr(res.totalFuture);
 
+      // Mellanårs-strategi (om waitYears > 0)
+      const gapContainer = document.getElementById('capCalcGapStrategyContainer');
+      const gapPayoutRow = document.getElementById('capCalcGapPayoutRow');
+      const gapTjpDetails = document.getElementById('capCalcGapTjpDetails');
+      const gapBtnNone = document.getElementById('capGapBtnNone');
+      const gapBtnTjp = document.getElementById('capGapBtnTjp');
+
+      if (res.waitYears > 0) {
+        if (gapContainer) gapContainer.style.display = 'block';
+        document.querySelectorAll('.gapRetireAgeText').forEach(el => el.innerText = String(res.ageRetire).replace('.', ','));
+        document.querySelectorAll('.gapStopAgeText').forEach(el => el.innerText = String(res.ageStopWork).replace('.', ','));
+        document.querySelectorAll('.gapYearsSpan').forEach(el => el.innerText = String(res.waitYears).replace('.', ','));
+        document.querySelectorAll('.gapRangeText').forEach(el => el.innerText = `${String(res.ageStopWork).replace('.', ',')}–${String(res.ageRetire).replace('.', ',')} år`);
+        const badgeEl = document.getElementById('capCalcGapStrategyBadge');
+        if (badgeEl) badgeEl.innerText = `${formatYearsSv(res.waitYears)} mellanår`;
+
+        if (capCalcGapMode === 'none') {
+          if (gapBtnNone) {
+            gapBtnNone.className = 'p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold';
+          }
+          if (gapBtnTjp) {
+            gapBtnTjp.className = 'p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200';
+          }
+          if (gapTjpDetails) gapTjpDetails.classList.add('hidden');
+          if (gapPayoutRow) gapPayoutRow.style.display = 'none';
+        } else {
+          // capCalcGapMode === 'tjp'
+          if (gapBtnNone) {
+            gapBtnNone.className = 'p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200';
+          }
+          if (gapBtnTjp) {
+            gapBtnTjp.className = 'p-1.5 text-left rounded-lg border transition-colors cursor-pointer bg-[#7e57c2] text-white border-[#7e57c2] font-semibold';
+          }
+          if (gapTjpDetails) gapTjpDetails.classList.remove('hidden');
+
+          const pGap = document.getElementById('capGapPeriodGap');
+          const p5 = document.getElementById('capGapPeriod5');
+          const p10 = document.getElementById('capGapPeriod10');
+          const activePeriodClass = 'px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors cursor-pointer bg-[#7e57c2] text-white border-[#7e57c2]';
+          const inactivePeriodClass = 'px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors cursor-pointer bg-slate-100 text-slate-700 border-slate-200';
+
+          if (pGap) pGap.className = (capCalcGapTjpPeriod === 'gap') ? activePeriodClass : inactivePeriodClass;
+          if (p5) p5.className = (capCalcGapTjpPeriod === '5') ? activePeriodClass : inactivePeriodClass;
+          if (p10) p10.className = (capCalcGapTjpPeriod === '10') ? activePeriodClass : inactivePeriodClass;
+
+          const monthlyEl = document.getElementById('capCalcGapTjpMonthly');
+          if (monthlyEl) monthlyEl.innerText = `${formatKr(res.tjpMonthlyDuringGap)}/mån`;
+
+          if (gapPayoutRow) {
+            gapPayoutRow.style.display = 'flex';
+            const payoutSumEl = document.getElementById('capCalcGapPayoutSum');
+            if (payoutSumEl) payoutSumEl.innerText = formatKr(res.totalTjpPaidDuringGap);
+          }
+        }
+      } else {
+        if (gapContainer) gapContainer.style.display = 'none';
+        if (gapPayoutRow) gapPayoutRow.style.display = 'none';
+      }
+
       // Update Timeline Badges & Labels
       document.getElementById('capCalcTotalYearsBadge').innerText = `Totalt ${formatYearsSv(res.totalYears)} kvar till uttag`;
       document.getElementById('capCalcWorkYearsBadge').innerText = `💼 ${formatYearsSv(res.workYears)} i arbete`;
-      document.getElementById('capCalcWaitYearsBadge').innerText = res.waitYears > 0
-        ? `🏖️ ${formatYearsSv(res.waitYears)} friår utan lön`
-        : `Direkt vid arbetsslut`;
+      const waitYearsBadge = document.getElementById('capCalcWaitYearsBadge');
+      if (res.waitYears > 0) {
+        if (capCalcGapMode === 'tjp') {
+          waitYearsBadge.innerText = `💼 ${formatYearsSv(res.waitYears)} tjp-uttag (${formatKr(res.tjpMonthlyDuringGap)}/mån)`;
+        } else {
+          waitYearsBadge.innerText = `🏖️ ${formatYearsSv(res.waitYears)} friår utan lön`;
+        }
+      } else {
+        waitYearsBadge.innerText = `Direkt vid arbetsslut`;
+      }
 
       document.getElementById('capTimelineStartLabel').innerText = `Idag (${String(res.ageNow).replace('.', ',')} år)`;
       document.getElementById('capTimelineStartCap').innerText = formatMkrShort(res.current);
@@ -2053,7 +2569,15 @@
         if (res.waitYears > 0) {
           waitBar.style.display = 'flex';
           waitBar.style.width = `${Math.max(15, waitPct)}%`;
-          waitBarText.innerText = `🏖️ Friår ${formatYearsSv(res.waitYears)} (${String(res.ageStopWork).replace('.', ',')}→${String(res.ageRetire).replace('.', ',')} år)`;
+          if (capCalcGapMode === 'tjp') {
+            waitBar.classList.remove('bg-[#ef6c00]');
+            waitBar.classList.add('bg-[#7e57c2]');
+            waitBarText.innerText = `💼 Tjp-uttag ${formatYearsSv(res.waitYears)} (${String(res.ageStopWork).replace('.', ',')}→${String(res.ageRetire).replace('.', ',')} år): ${formatKr(res.tjpMonthlyDuringGap)}/mån`;
+          } else {
+            waitBar.classList.remove('bg-[#7e57c2]');
+            waitBar.classList.add('bg-[#ef6c00]');
+            waitBarText.innerText = `🏖️ Friår ${formatYearsSv(res.waitYears)} (${String(res.ageStopWork).replace('.', ',')}→${String(res.ageRetire).replace('.', ',')} år)`;
+          }
           waitBar.classList.toggle('rounded-l', res.workYears <= 0);
         } else {
           waitBar.style.display = 'none';
@@ -2123,7 +2647,9 @@
           waitYears: res.waitYears,
           lonevaxling: res.lonevaxling,
           wageGrowth: res.wageGrowth,
-          ret: res.ret
+          ret: res.ret,
+          gapMode: capCalcGapMode,
+          gapTjpPeriod: capCalcGapTjpPeriod
         }));
       } catch (e) {}
 
@@ -2131,25 +2657,81 @@
       const roundedRetire = Math.round(res.ageRetire);
       if (delningstalTable[roundedRetire]) {
         state.retireAge = roundedRetire;
-        const ageLabel = document.getElementById('retireAgeLabel');
-        if (ageLabel) {
-          const dt = (delningstalTable[state.retireAge] || 17.4).toFixed(1).replace('.', ',');
-          ageLabel.innerText = `${state.retireAge} år (Delningstal ~${dt})`;
-        }
-        document.querySelectorAll('.age-quick-btn').forEach(btn => {
-          const isMatch = parseInt(btn.getAttribute('data-age'), 10) === state.retireAge;
-          btn.classList.toggle('bg-teal-600', isMatch);
-          btn.classList.toggle('text-[#1a1a1a]', isMatch);
-          btn.classList.toggle('border-teal-600', isMatch);
-          btn.classList.toggle('font-semibold', isMatch);
-          btn.classList.toggle('bg-slate-100', !isMatch);
-          btn.classList.toggle('text-slate-600', !isMatch);
-          btn.classList.toggle('border-slate-200', !isMatch);
-        });
       }
 
-      const val = Math.min(Math.max(res.totalFuture, 100000), 25000000);
+      let val = 0;
+      if (capCalcGapMode === 'tjp' && res.waitYears > 0) {
+        // Tjänstepension startar i förtid vid arbetsslut (t.ex. 60 år)
+        state.earlyTjpAge = Math.round(res.ageStopWork);
+        val = Math.min(Math.max(res.capAtStopWork, 100000), 25000000);
+        if (capCalcGapTjpPeriod === '5') state.tjansteYears = 5;
+        else if (capCalcGapTjpPeriod === '10') state.tjansteYears = 10;
+        else state.tjansteYears = Math.round(res.waitYears);
+
+        // Beräkna kapitalfördelningen vid arbetsslut
+        if (res.capAtStopWork > 0 && res.capTjpAtStop > 0) {
+          const tjpPct = Math.min(90, Math.max(10, Math.round((res.capTjpAtStop / res.capAtStopWork) * 100)));
+          const allmanPct = 100 - tjpPct;
+          const oldAllmanSum = (state.inkomstPct || 50) + (state.ppmPct || 15);
+          const inkomstRatio = oldAllmanSum > 0 ? (state.inkomstPct / oldAllmanSum) : (50 / 65);
+          state.inkomstPct = Math.round(allmanPct * inkomstRatio);
+          state.ppmPct = allmanPct - state.inkomstPct;
+          state.tjanstePct = tjpPct;
+        } else {
+          state.inkomstPct = 50;
+          state.ppmPct = 15;
+          state.tjanstePct = 35;
+        }
+      } else {
+        // Rena friår: Tjänstepension och allmän pension startar samtidigt vid retireAge
+        state.earlyTjpAge = 0;
+        val = Math.min(Math.max(res.totalFuture, 100000), 25000000);
+        if (state.tjanstePct <= 0) {
+          state.inkomstPct = 50;
+          state.ppmPct = 15;
+          state.tjanstePct = 35;
+        }
+      }
       state.totalCapital = val;
+
+      const inkomstEl = document.getElementById('inkomstPct');
+      const ppmEl = document.getElementById('ppmPct');
+      if (inkomstEl) inkomstEl.value = state.inkomstPct;
+      if (ppmEl) ppmEl.value = state.ppmPct;
+
+      document.querySelectorAll('.dist-quick-btn').forEach(btn => {
+        const isMatch = parseInt(btn.getAttribute('data-inkomst'), 10) === state.inkomstPct &&
+                        parseInt(btn.getAttribute('data-ppm'), 10) === state.ppmPct;
+        btn.classList.toggle('border-teal-600', isMatch);
+        btn.classList.toggle('bg-teal-600', isMatch);
+        btn.classList.toggle('text-[#1a1a1a]', isMatch);
+        btn.classList.toggle('border-slate-200', !isMatch);
+        btn.classList.toggle('text-slate-700', !isMatch);
+      });
+
+      document.querySelectorAll('.payout-btn').forEach(b => {
+        const isActive = parseInt(b.getAttribute('data-years'), 10) === state.tjansteYears;
+        b.classList.toggle('border-teal-600', isActive);
+        b.classList.toggle('bg-teal-600', isActive);
+        b.classList.toggle('text-[#1a1a1a]', isActive);
+        b.classList.toggle('shadow-sm', isActive);
+        b.classList.toggle('ring-2', isActive);
+        b.classList.toggle('ring-teal-600/20', isActive);
+        b.classList.toggle('border-slate-200', !isActive);
+        b.classList.toggle('text-slate-700', !isActive);
+      });
+
+      document.querySelectorAll('.age-quick-btn').forEach(btn => {
+        const isMatch = parseInt(btn.getAttribute('data-age'), 10) === state.retireAge;
+        btn.classList.toggle('bg-teal-600', isMatch);
+        btn.classList.toggle('text-[#1a1a1a]', isMatch);
+        btn.classList.toggle('border-teal-600', isMatch);
+        btn.classList.toggle('font-semibold', isMatch);
+        btn.classList.toggle('bg-slate-100', !isMatch);
+        btn.classList.toggle('text-slate-600', !isMatch);
+        btn.classList.toggle('border-slate-200', !isMatch);
+      });
+
       document.getElementById('totalCapitalRange').value = Math.min(Math.max(val, 500000), 20000000);
       document.getElementById('totalCapitalInput').value = val.toLocaleString('sv-SE');
       document.querySelectorAll('.capital-quick-btn').forEach(btn => {
@@ -2162,6 +2744,7 @@
         btn.classList.toggle('text-slate-600', !isMatch);
         btn.classList.toggle('border-slate-200', !isMatch);
       });
+      syncEarlyTjpUI();
       document.getElementById('capitalCalcModal').close();
       updateCalculations();
     }
