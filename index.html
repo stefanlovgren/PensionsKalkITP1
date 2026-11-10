@@ -1,56 +1,582 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <title>PensionsKalkITP1 - Översikt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PensionsKalkITP1 – Översikt</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 40px; line-height: 1.6; }
-        .container { max-width: 100%; margin: auto; background: #2c2c2c; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #444; box-sizing: border-box; }
-        h1 { color: #4fc3f7; border-bottom: 1px solid #555; padding-bottom: 10px; margin-top: 0; }
-        p { font-size: 1.1em; color: #ccc; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin-bottom: 20px; background: #333; padding: 15px; border-radius: 6px; border-left: 4px solid #4fc3f7; }
-        a { color: #b2ff59; text-decoration: none; font-size: 1.2em; font-weight: bold; }
-        a:hover { text-decoration: underline; color: #81c784; }
-        .description { font-size: 0.95em; color: #bbb; display: block; margin-top: 5px; }
+        :root {
+            --bg-body: #161616;
+            --bg-card: #242424;
+            --bg-card-hover: #2a2a2a;
+            --border-card: #383838;
+            --border-card-hover: #505050;
+            --text-main: #f0f0f0;
+            --text-muted: #a0a0a0;
+            --text-dim: #707070;
+            --accent-teal: #26a69a;
+            --accent-blue: #42a5f5;
+            --accent-purple: #ab47bc;
+            --accent-amber: #ffa726;
+            --accent-green: #66bb6a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 30px 20px 60px;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 30px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-card);
+        }
+
+        .header-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 .logo-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00897b, #00acc1);
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            max-width: 700px;
+        }
+
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1f2b26;
+            border: 1px solid #2e473b;
+            color: #a5d6a7;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* Filter Pills */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .filter-btn {
+            background: #252525;
+            border: 1px solid var(--border-card);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-btn:hover {
+            background: #303030;
+            color: #ffffff;
+            border-color: #555555;
+        }
+
+        .filter-btn.active {
+            background: var(--accent-teal);
+            border-color: var(--accent-teal);
+            color: #121212;
+            font-weight: 700;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 20px 14px 40px;
+            }
+        }
+
+        /* Single Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-card-hover);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+        }
+
+        .card.featured {
+            border-color: rgba(38, 166, 154, 0.55);
+            background: linear-gradient(180deg, #252e2c 0%, #222222 100%);
+        }
+
+        .card.featured:hover {
+            border-color: var(--accent-teal);
+            box-shadow: 0 10px 28px rgba(0, 150, 136, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #303030;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            border: 1px solid #404040;
+        }
+
+        .card.featured .card-icon {
+            background: rgba(38, 166, 154, 0.18);
+            border-color: rgba(38, 166, 154, 0.4);
+        }
+
+        .card-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-primary {
+            background: rgba(38, 166, 154, 0.2);
+            color: #80cbc4;
+            border: 1px solid rgba(38, 166, 154, 0.4);
+        }
+
+        .badge-blue {
+            background: rgba(66, 165, 245, 0.18);
+            color: #90caf9;
+            border: 1px solid rgba(66, 165, 245, 0.35);
+        }
+
+        .badge-purple {
+            background: rgba(171, 71, 188, 0.18);
+            color: #ce93d8;
+            border: 1px solid rgba(171, 71, 188, 0.35);
+        }
+
+        .badge-amber {
+            background: rgba(255, 167, 38, 0.18);
+            color: #ffcc80;
+            border: 1px solid rgba(255, 167, 38, 0.35);
+        }
+
+        .badge-star {
+            background: #ffd54f;
+            color: #1a1a1a;
+            font-weight: 800;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.35;
+            transition: color 0.15s ease;
+        }
+
+        .card:hover .card-title {
+            color: var(--accent-teal);
+        }
+
+        .card-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            background: #1c1c1c;
+            padding: 2px 7px;
+            border-radius: 4px;
+            border: 1px solid #303030;
+        }
+
+        .card-footer {
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+        }
+
+        .card-footer .arrow {
+            transition: transform 0.18s ease;
+        }
+
+        .card:hover .card-footer .arrow {
+            transform: translateX(4px);
+        }
+
+        /* Footer info */
+        footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-card);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: underline;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PensionsKalkITP1 -- TechSverige - IT-avtalet</h1>
-        <p>Beräkningar av olika aspekter gällande svensk pension.</p>
-        
-        <h2>Tillgängliga verktyg</h2>
-        <ul>
-            <li>
-                <a href="FinancialProjection.html">Ekonomisk Prognos</a>
-                <span class="description">Visualisera din ekonomiska tidslinje fram till din valda pensionsålder. Projicerar ackumulerad inkomst, nettokostnader för uppehälle, avgångsvederlagets täckning och tillväxten av dina pensioner över viktiga milstolpar i livet.</span>
-            </li>
-            <li>
-                <a href="Lonevaxling.html">Kalkylator för Löneväxling</a>
-                <span class="description">Beräkna den förväntade skattevinsten vid löneväxling. Jämför att ta ut lönen idag med att spara den till pensionen med arbetsgivarens tillägg.</span>
-            </li>
-            <li>
-                <a href="PensionAllocation.html">Fördelning av Pensionsavsättningar</a>
-                <span class="description">Se exakt vart dina pensionspengar tar vägen. Bryter ner din månatliga och årliga finansiering i Allmän Pension, Premiepension (PPM), Tjänstepension (ITP1) och Löneväxling.</span>
-            </li>
-            <li>
-                <a href="HouseholdBudget.html">Hushållsbudget</a>
-                <span class="description">Få överblick över hushållets månadsekonomi. Dela upp utgifter i egna kategorier med underposter, ange nettoinkomster och följ saldot i realtid. Budgeten sparas lokalt och du kan växla mellan flera sparade varianter eller utgå från en färdig mall.</span>
-            </li>
-            <li>
-                <a href="SkatteAvdragEffekt.html">Interaktiv Skatte- & Avdragskalkylator</a>
-                <span class="description">Visuell jämförelse av grundavdrag och jobbskatteavdrag (2026). Visar effektiv skatt och skattelättnader beroende på ålder och inkomst.</span>
-            </li>
-            <li>
-                <a href="SkattetabellVisualizer.html">Skattetabell Visualizer</a>
-                <span class="description">Interaktiv visualisering av Skatteverkets allmänna tabeller. Visar skatt i kronor eller procent över olika inkomstnivåer och skattetabeller.</span>
-            </li>
-            <li>
-                <a href="PensionsSimulator.html">Pensionssimulator – Uttagsplanerare</a>
-                <span class="description">Simulera månadspension från inkomstpension, PPM och tjänstepension i dagens penningvärde. Välj uttagstid, uttagsålder, real avkastning och kapitaluppräkning fram till uttag.</span>
-            </li>
-        </ul>
+        <!-- Header -->
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>
+                        PensionsKalkITP1
+                        <span class="logo-badge">IT-avtalet</span>
+                    </h1>
+                    <p class="subtitle">
+                        Samling av interaktiva kalkylatorer och simuleringsverktyg för svensk pension, skatteeffekter och privatekonomi med särskilt fokus på ITP1 och löneväxling.
+                    </p>
+                </div>
+                <div class="info-pill" title="Inga data skickas till någon server. Allt sparas enbart i din egen webbläsare via localStorage.">
+                    <span>🔒</span> 100 % lokalt i webbläsaren
+                </div>
+            </div>
+        </header>
+
+        <!-- Filter tabs -->
+        <nav class="filter-bar" aria-label="Verktygskategorier">
+            <button type="button" class="filter-btn active" data-category="all">Alla verktyg (7)</button>
+            <button type="button" class="filter-btn" data-category="uttag">Pensionsuttag & Prognos (2)</button>
+            <button type="button" class="filter-btn" data-category="itp1">ITP1 & Löneväxling (2)</button>
+            <button type="button" class="filter-btn" data-category="skatt">Skatt & Tabeller (2)</button>
+            <button type="button" class="filter-btn" data-category="budget">Budget (1)</button>
+        </nav>
+
+        <!-- Cards Grid -->
+        <main class="cards-grid" id="cardsGrid">
+
+            <!-- 1. Pensionssimulator -->
+            <a href="PensionsSimulator.html" class="card featured" data-category="uttag">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <div class="card-badges">
+                            <span class="badge badge-star">⭐ Huvudverktyg</span>
+                            <span class="badge badge-primary">Uttag</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Pensionssimulator – Uttagsplanerare</h2>
+                    <p class="card-desc">
+                        Simulera din framtida månadspension före och efter skatt i dagens penningvärde. Stöd för 5–20 år vs livsvarigt, tre uttagsfaser, förtida uttag av tjänstepension, delningstal och direkt import/export.
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">minPension.se-bas</span>
+                        <span class="tag">ITP1</span>
+                        <span class="tag">3 faser</span>
+                        <span class="tag">Skattetabell 33 & SINK</span>
+                        <span class="tag">Kapitaluppskattning</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna simulatorn</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 2. Ekonomisk Prognos -->
+            <a href="FinancialProjection.html" class="card" data-category="uttag">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">📈</div>
+                        <div class="card-badges">
+                            <span class="badge badge-blue">Tidslinje</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Ekonomisk Prognos till 70</h2>
+                    <p class="card-desc">
+                        Visualisera hela din ekonomiska tidslinje fram till pensionen. Beräknar inkomst, nettokostnader för uppehälle, avgångsvederlagets räckvidd och pensionskapitalets ackumulering över milstolpar i livet.
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">Tidslinje</span>
+                        <span class="tag">Milstolpar</span>
+                        <span class="tag">Avgångsvederlag</span>
+                        <span class="tag">Levnadskostnad</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna prognosen</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 3. Fördelning av Pensionsavsättningar -->
+            <a href="PensionAllocation.html" class="card" data-category="itp1">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">💼</div>
+                        <div class="card-badges">
+                            <span class="badge badge-blue">Avsättningar</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Fördelning av Pensionsavsättningar</h2>
+                    <p class="card-desc">
+                        Se exakt vart dina pensionspengar tar vägen varje månad och år. Bryter ner finansieringen i Inkomstpension, Premiepension (PPM), Tjänstepension (ITP1 Bas, Topp, Flex) och löneväxling utifrån din lön.
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">ITP1 Bas (4,5 %)</span>
+                        <span class="tag">ITP1 Topp (30 %)</span>
+                        <span class="tag">PPM</span>
+                        <span class="tag">Kompensation</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna fördelningskalkylen</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 4. Kalkylator för Löneväxling -->
+            <a href="Lonevaxling.html" class="card" data-category="itp1">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">⚖️</div>
+                        <div class="card-badges">
+                            <span class="badge badge-purple">Löneväxling</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Kalkylator för Löneväxling</h2>
+                    <p class="card-desc">
+                        Beräkna den förväntade skattevinsten när du löneväxlar. Jämför "netto i handen idag" mot framtida pensionsnetto inklusive arbetsgivarens tillägg (~5,8 %) och kontroll mot brytgränser för allmän pension.
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">Skattevinst</span>
+                        <span class="tag">Arbetsgivartillägg</span>
+                        <span class="tag">Tak-kontroll (8,07 IBB)</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna löneväxlingskalkylatorn</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 5. Interaktiv Skatte- & Avdragskalkylator -->
+            <a href="SkatteAvdragEffekt.html" class="card" data-category="skatt">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">🏛️</div>
+                        <div class="card-badges">
+                            <span class="badge badge-amber">Skatt 2026</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Skatte- & Avdragskalkylator</h2>
+                    <p class="card-desc">
+                        Visuell jämförelse av grundavdrag och jobbskatteavdrag (2026). Visar effektiv skatt, marginalskatt och skattelättnader beroende på ålder (förhöjt grundavdrag före vs efter 66/68 år).
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">Grundavdrag</span>
+                        <span class="tag">Jobbskatteavdrag</span>
+                        <span class="tag">Åldersgränser 66/68 år</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna skattekalkylatorn</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 6. Skattetabell Visualizer -->
+            <a href="SkattetabellVisualizer.html" class="card" data-category="skatt">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">📉</div>
+                        <div class="card-badges">
+                            <span class="badge badge-amber">Skattetabell</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Skattetabell Visualizer</h2>
+                    <p class="card-desc">
+                        Interaktiv visualisering av Skatteverkets allmänna tabeller (tabell 29–42). Jämför skatt i kronor eller procent över alla inkomstnivåer och kolumner (lön, pension, förtida uttag).
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">Tabell 29–42</span>
+                        <span class="tag">Kolumn 1–6</span>
+                        <span class="tag">Skattetabell 33 (Gbg)</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna tabellverktyget</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 7. Hushållsbudget -->
+            <a href="HouseholdBudget.html" class="card" data-category="budget">
+                <div>
+                    <div class="card-header">
+                        <div class="card-icon">🏠</div>
+                        <div class="card-badges">
+                            <span class="badge badge-primary">Budget</span>
+                        </div>
+                    </div>
+                    <h2 class="card-title">Hushållsbudget</h2>
+                    <p class="card-desc">
+                        Få full överblick över hushållets månadsekonomi. Dela upp utgifter i egna kategorier med underposter, ange nettoinkomster och följ saldot i realtid med stöd för flera sparade budgetvarianter.
+                    </p>
+                </div>
+                <div>
+                    <div class="card-tags">
+                        <span class="tag">Månadsekonomi</span>
+                        <span class="tag">Kategorier</span>
+                        <span class="tag">Färdiga mallar</span>
+                        <span class="tag">Export / Import</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>Öppna hushållsbudgeten</span>
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+            </a>
+
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                PensionsKalkITP1 • Beräkningar och approximationer i dagens penningvärde • All data lagras lokalt i din webbläsare
+            </p>
+        </footer>
     </div>
+
+    <!-- Quick filter script -->
+    <script>
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const cat = btn.getAttribute('data-category');
+                cards.forEach(card => {
+                    if (cat === 'all' || card.getAttribute('data-category') === cat) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
