@@ -63,7 +63,7 @@
     <div class="container">
         <a href="index.html" class="nav-link">← Tillbaka till översikten</a>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 id="mainTitle">Ekonomisk prognos till 70</h2>
+            <h2 id="mainTitle">Ekonomisk prognos & tidslinje</h2>
             <div>
                 <button class="btn-primary" onclick="calculate()">Beräkna & Spara</button>
                 <button type="button" class="btn-danger" onclick="clearAll()">Rensa allt</button>
@@ -1014,7 +1014,7 @@
             
             document.querySelector('#resultTable tbody').innerHTML = '';
             document.getElementById('th-remaining-cost').innerText = 'Återstående kostnad till mål (Netto)';
-            document.getElementById('mainTitle').innerText = 'Ekonomisk prognos till 70';
+            document.getElementById('mainTitle').innerText = 'Ekonomisk prognos & tidslinje';
         }
 
         // Auto-load on startup
