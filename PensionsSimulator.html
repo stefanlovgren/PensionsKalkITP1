@@ -80,7 +80,15 @@
           <p class="page-subtitle">Utbetalning före & efter skatt (5–20 år vs livsvarigt) i dagens penningvärde</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" onclick="exportSimulatorData()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#2e7d32] hover:bg-[#388e3c] border border-[#1b5e20] transition-colors shadow-sm cursor-pointer" title="Ladda ner alla inställningar och beräkningar som en JSON-fil (backup)">
+          💾 Exportera
+        </button>
+        <button type="button" onclick="triggerImportSimulatorData()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#455a64] hover:bg-[#546e7a] border border-[#37474f] transition-colors shadow-sm cursor-pointer" title="Läs in tidigare sparad JSON-fil">
+          📂 Importera
+        </button>
+        <input type="file" id="importSimulatorFileInput" style="display: none;" accept=".json" onchange="importSimulatorDataFile(event)">
+
         <button type="button" onclick="openCompareModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#6a1b9a] hover:bg-[#7b1fa2] border border-[#4a148c] transition-colors shadow-sm cursor-pointer" title="Öppna en komplett jämförelserapport för alla uttagstider och pensionsåldrar">
           📊 Jämförelserapport
         </button>
@@ -114,9 +122,19 @@
             <h2 class="text-sm font-bold text-slate-900">1. Dina förutsättningar</h2>
             <p class="text-[11px] text-slate-500">Valen sparas automatiskt lokalt.</p>
           </div>
-          <button id="resetAllBtn" type="button" class="text-xs text-teal-600 hover:text-teal-700 font-medium underline whitespace-nowrap">
-            Återställ allt
-          </button>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" onclick="exportSimulatorData()" class="text-slate-500 hover:text-emerald-700 font-medium underline cursor-pointer" title="Exportera inställningar som JSON">
+              Exportera
+            </button>
+            <span class="text-slate-300">|</span>
+            <button type="button" onclick="triggerImportSimulatorData()" class="text-slate-500 hover:text-blue-700 font-medium underline cursor-pointer" title="Importera från JSON">
+              Importera
+            </button>
+            <span class="text-slate-300">|</span>
+            <button id="resetAllBtn" type="button" class="text-teal-600 hover:text-teal-700 font-medium underline whitespace-nowrap cursor-pointer">
+              Återställ allt
+            </button>
+          </div>
         </div>
 
         <!-- 1. Total Capital -->
@@ -130,6 +148,10 @@
               <input type="text" id="totalCapitalInput" class="w-20 text-right bg-transparent outline-none focus:ring-0 font-bold" value="3 000 000">
               <span class="text-slate-500 text-[11px]">kr</span>
             </div>
+          </div>
+          <div class="text-[10px] text-slate-500 flex items-center gap-1">
+            <span>💡</span>
+            <span>Baserat på totalbeloppet på <strong class="text-slate-700">minPension.se</strong> (allmän pension + PPM + tjänstepension) med <strong class="text-slate-700">ITP1</strong> som grund.</span>
           </div>
           <input type="range" id="totalCapitalRange" min="500000" max="20000000" step="100000" value="3000000"
             class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer block">
@@ -504,7 +526,7 @@
               Hela beräkningen utgår från <strong class="text-slate-800">grova antaganden och kvalificerade gissningar</strong>:
             </p>
             <ul class="list-disc pl-5 space-y-1">
-              <li><strong class="text-slate-800">Slutkapital vid pension:</strong> Ingen vet på förhand exakt hur stort det samlade pensionskapitalet är den dag uttaget startar.</li>
+              <li><strong class="text-slate-800">Slutkapital vid pension:</strong> Utgår från det totala pensionsbeloppet på <strong class="text-slate-700">minPension.se</strong> (allmän pension, PPM och tjänstepension) med <strong class="text-slate-700">ITP1</strong> som grund för tjänstepensionsdelen.</li>
               <li><strong class="text-slate-800">Jämn real avkastning:</strong> Modellen antar en konstant årlig real avkastning (efter inflation), medan verkligheten består av börssvängningar och varierande inflation.</li>
               <li><strong class="text-slate-800">Schabloniserad fördelning:</strong> Alla tjänstepensionsavtal och försäkringsbolag slås här ihop till <em>en</em> gemensam pott med samma uttagstid och ränta.</li>
             </ul>
@@ -631,7 +653,7 @@
       <div class="flex items-start justify-between gap-3 border-b border-slate-200 pb-2 mb-2.5">
         <div>
           <h3 class="text-sm font-bold text-slate-900 leading-tight">Uppskatta framtida pensionskapital</h3>
-          <p class="text-[11px] text-slate-500 mt-0.5">Beräknar slutkapital vid uttag utifrån dagens kapital, lön (ITP1 + allmän), ålderstidslinje och avkastning.</p>
+          <p class="text-[11px] text-slate-500 mt-0.5">Beräknar slutkapital vid uttag med totalbeloppet från <strong class="text-slate-700">minPension.se</strong> och <strong class="text-slate-700">ITP1</strong> som grund.</p>
         </div>
         <button type="button" onclick="document.getElementById('capitalCalcModal').close()" class="text-slate-400 hover:text-slate-800 text-base font-bold px-1.5 py-0.5 rounded-lg hover:bg-slate-100 cursor-pointer" title="Stäng">✕</button>
       </div>
@@ -650,9 +672,9 @@
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label for="capCalcCurrent" class="font-semibold text-slate-700 block text-[11px]" title="Ditt samlade pensionskapital idag (allmän + PPM + tjänstepension)">Totalt kapital (kr)</label>
+                <label for="capCalcCurrent" class="font-semibold text-slate-700 block text-[11px]" title="Ditt samlade pensionskapital idag (allmän + PPM + tjänstepension på minPension.se)">Totalt kapital (kr)</label>
                 <input type="number" id="capCalcCurrent" value="2000000" step="50000" oninput="updateCapitalCalcPreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500 mt-0.5">
-                <span class="text-[9px] text-slate-400 mt-0.5 block leading-tight">Allmän + PPM + tjänstepens.</span>
+                <span class="text-[9px] text-slate-400 mt-0.5 block leading-tight">Totalbelopp från minPension.se (allmän + PPM + ITP1)</span>
               </div>
               <div>
                 <label for="capCalcAgeNow" class="font-semibold text-slate-700 block text-[11px]" title="Din nuvarande ålder idag">Ålder idag (år)</label>
@@ -1153,6 +1175,72 @@
         <button type="button" onclick="document.getElementById('compareModal').close()" class="px-5 py-2 rounded-lg text-xs font-bold text-white bg-[#1976d2] hover:bg-[#1e88e5] border border-[#1565c0] transition-colors cursor-pointer">
           Stäng rapport
         </button>
+      </div>
+    </dialog>
+
+    <!-- Export & Import Modal (JSON) -->
+    <dialog id="dataModal" class="bg-[#2c2c2c] text-slate-800 rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-300 w-full max-w-2xl max-h-[92vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-200 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-base">
+            💾
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 leading-tight">Exportera & Importera data</h3>
+            <p class="text-xs text-slate-500">Spara säkerhetskopia av alla inställningar eller återställ tidigare data.</p>
+          </div>
+        </div>
+        <button type="button" onclick="document.getElementById('dataModal').close()" class="text-slate-400 hover:text-slate-800 text-base font-bold px-1.5 py-0.5 rounded-lg hover:bg-slate-100 cursor-pointer" title="Stäng">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <!-- Filer -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-2.5">
+            <div>
+              <span class="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                <span>📥</span> Ladda ner JSON-fil
+              </span>
+              <p class="text-[11px] text-slate-500 mt-1">Laddar ner en fullständig backup av kapital, åldrar, fördelning, uttagstider och uppskattningskalkylatorn som fil.</p>
+            </div>
+            <button type="button" onclick="exportSimulatorData()" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 border border-emerald-800 transition-colors shadow-sm cursor-pointer">
+              💾 Exportera till fil (.json)
+            </button>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-2.5">
+            <div>
+              <span class="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                <span>📤</span> Läs in sparad JSON-fil
+              </span>
+              <p class="text-[11px] text-slate-500 mt-1">Välj en tidigare sparad JSON-fil från datorn. Alla fält, reglage, diagram och beräkningar uppdateras omedelbart.</p>
+            </div>
+            <button type="button" onclick="triggerImportSimulatorData()" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold text-white bg-slate-700 hover:bg-slate-800 border border-slate-800 transition-colors shadow-sm cursor-pointer">
+              📂 Välj fil att importera...
+            </button>
+          </div>
+        </div>
+
+        <!-- Direkt text/klippbord -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+              <span>📋</span> Visa / Redigera JSON direkt
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="refreshDataModalJson()" class="text-[11px] text-teal-700 hover:underline cursor-pointer font-medium">Uppdatera text</button>
+              <span class="text-slate-300">•</span>
+              <button type="button" onclick="copyDataModalJson()" class="text-[11px] text-teal-700 hover:underline cursor-pointer font-medium" id="copyJsonBtn">Kopiera till urklipp</button>
+            </div>
+          </div>
+          <textarea id="dataModalTextarea" rows="7" class="w-full font-mono text-[11px] bg-white border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500" placeholder="Klistra in JSON här..."></textarea>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+            <span class="text-[10px] text-slate-400">Tips: Du kan även klistra in en hel backup härifrån en annan webbläsare eller enhet.</span>
+            <button type="button" onclick="importFromDataModalTextarea()" class="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 border border-teal-800 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+              Tillämpa JSON från textrutan
+            </button>
+          </div>
+        </div>
       </div>
     </dialog>
   </main>
@@ -3643,6 +3731,261 @@
       renderCompareCharts();
     }
 
+    // --- Export & Import Data Logic ---
+    function showToast(text, isError = false) {
+      const toast = document.getElementById('simToast');
+      const toastText = document.getElementById('simToastText');
+      const toastIcon = document.getElementById('simToastIcon');
+      if (!toast || !toastText) {
+        if (isError) alert(text);
+        return;
+      }
+      toastText.innerText = text;
+      toastIcon.innerText = isError ? '⚠️' : '✓';
+      toast.className = `fixed bottom-5 right-5 z-50 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border transition-opacity duration-300 pointer-events-none ${isError ? 'bg-rose-900 border-rose-700' : 'bg-emerald-900 border-emerald-700'} opacity-100`;
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.className = toast.className.replace('opacity-100', 'opacity-0');
+      }, 3500);
+    }
+
+    function getSimulatorExportData() {
+      const capSaved = (function() {
+        try {
+          const s = JSON.parse(localStorage.getItem('pensionssimulatorCapCalc'));
+          if (s && typeof s === 'object') return s;
+        } catch (e) {}
+        const curEl = document.getElementById('capCalcCurrent');
+        if (curEl) {
+          return {
+            current: parseFloat(curEl.value) || 2000000,
+            salary: parseFloat(document.getElementById('capCalcSalary')?.value) || 45000,
+            ageNow: parseFloat(document.getElementById('capCalcAgeNow')?.value) || 55,
+            ageStopWork: parseFloat(document.getElementById('capCalcAgeStopWork')?.value) || 65,
+            ageRetire: parseFloat(document.getElementById('capCalcAgeRetire')?.value) || 66,
+            lonevaxling: parseFloat(document.getElementById('capCalcLonevaxling')?.value) || 0,
+            wageGrowth: parseFloat(document.getElementById('capCalcWageGrowth')?.value) || 0,
+            ret: parseFloat(document.getElementById('capCalcReturn')?.value) || 3.5,
+            gapMode: capCalcGapMode || 'none',
+            gapTjpPeriod: capCalcGapTjpPeriod || 'gap'
+          };
+        }
+        return (typeof CAP_CALC_DEFAULTS !== 'undefined') ? CAP_CALC_DEFAULTS : {};
+      })();
+
+      const distSaved = (function() {
+        try {
+          const d = JSON.parse(localStorage.getItem('pensionssimulatorDefaultDist'));
+          if (d && typeof d === 'object') return d;
+        } catch (e) {}
+        return { inkomst: 50, ppm: 15 };
+      })();
+
+      return {
+        appName: "Pensionssimulator",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        state: {
+          totalCapital: state.totalCapital,
+          inkomstPct: state.inkomstPct,
+          ppmPct: state.ppmPct,
+          tjanstePct: state.tjanstePct,
+          tjansteYears: state.tjansteYears,
+          retireAge: state.retireAge,
+          earlyTjpAge: state.earlyTjpAge,
+          annualReturn: state.annualReturn
+        },
+        defaultDist: distSaved,
+        capitalCalc: capSaved
+      };
+    }
+
+    function exportSimulatorData() {
+      try {
+        const data = getSimulatorExportData();
+        const jsonStr = JSON.stringify(data, null, 2);
+        const dataUri = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const filename = `pensionssimulator_data_${dateStr}.json`;
+
+        const a = document.createElement('a');
+        a.setAttribute('href', dataUri);
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        showToast(`Exporterat till ${filename}`);
+      } catch (err) {
+        console.error(err);
+        showToast("Kunde inte exportera data.", true);
+      }
+    }
+
+    function triggerImportSimulatorData() {
+      const fileInput = document.getElementById('importSimulatorFileInput');
+      if (fileInput) {
+        fileInput.value = '';
+        fileInput.click();
+      }
+    }
+
+    function importSimulatorDataFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          applyImportedSimulatorData(parsed);
+          showToast(`Data importerad från ${file.name}!`);
+        } catch (err) {
+          console.error(err);
+          showToast("Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.", true);
+          alert("Kunde inte läsa filen. Se till att det är en giltig JSON-fil.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function applyImportedSimulatorData(data) {
+      if (!data || typeof data !== 'object') {
+        throw new Error('Ogiltigt dataformat');
+      }
+
+      // 1. State
+      const s = data.state || data.pensionssimulatorState || (data.totalCapital !== undefined ? data : null);
+      if (s && typeof s === 'object') {
+        if (Number.isFinite(Number(s.totalCapital))) state.totalCapital = Number(s.totalCapital);
+        if (Number.isFinite(Number(s.inkomstPct)) && Number.isFinite(Number(s.ppmPct))) {
+          let tjp = Number(s.tjanstePct);
+          if (!Number.isFinite(tjp)) tjp = 100 - Number(s.inkomstPct) - Number(s.ppmPct);
+          if (tjp <= 0) {
+            state.inkomstPct = 50;
+            state.ppmPct = 15;
+            state.tjanstePct = 35;
+          } else {
+            state.inkomstPct = Number(s.inkomstPct);
+            state.ppmPct = Number(s.ppmPct);
+            state.tjanstePct = tjp;
+          }
+        }
+        if (Number.isFinite(Number(s.tjansteYears))) state.tjansteYears = Number(s.tjansteYears);
+        if (Number.isFinite(Number(s.retireAge))) state.retireAge = Number(s.retireAge);
+        if (Number.isFinite(Number(s.earlyTjpAge))) state.earlyTjpAge = Number(s.earlyTjpAge);
+        if (Number.isFinite(Number(s.annualReturn))) state.annualReturn = Number(s.annualReturn);
+
+        localStorage.setItem('pensionssimulatorState', JSON.stringify(state));
+      }
+
+      // 2. Default distribution
+      const dist = data.defaultDist || data.pensionssimulatorDefaultDist;
+      if (dist && typeof dist === 'object' && Number.isFinite(Number(dist.inkomst)) && Number.isFinite(Number(dist.ppm))) {
+        localStorage.setItem('pensionssimulatorDefaultDist', JSON.stringify({
+          inkomst: Number(dist.inkomst),
+          ppm: Number(dist.ppm)
+        }));
+      }
+
+      // 3. Capital Calculator
+      const c = data.capitalCalc || data.pensionssimulatorCapCalc || data.capCalc;
+      if (c && typeof c === 'object') {
+        localStorage.setItem('pensionssimulatorCapCalc', JSON.stringify(c));
+        if (c.current !== undefined && document.getElementById('capCalcCurrent')) {
+          document.getElementById('capCalcCurrent').value = c.current;
+        }
+        if (c.salary !== undefined && document.getElementById('capCalcSalary')) {
+          document.getElementById('capCalcSalary').value = c.salary;
+        }
+        if (c.ageNow !== undefined && document.getElementById('capCalcAgeNow')) {
+          document.getElementById('capCalcAgeNow').value = c.ageNow;
+        }
+        if (c.ageStopWork !== undefined && document.getElementById('capCalcAgeStopWork')) {
+          document.getElementById('capCalcAgeStopWork').value = c.ageStopWork;
+        }
+        if (c.ageRetire !== undefined && document.getElementById('capCalcAgeRetire')) {
+          document.getElementById('capCalcAgeRetire').value = c.ageRetire;
+        }
+        if (c.lonevaxling !== undefined && document.getElementById('capCalcLonevaxling')) {
+          document.getElementById('capCalcLonevaxling').value = c.lonevaxling;
+        }
+        if (c.wageGrowth !== undefined && document.getElementById('capCalcWageGrowth')) {
+          document.getElementById('capCalcWageGrowth').value = c.wageGrowth;
+        }
+        if (c.ret !== undefined && document.getElementById('capCalcReturn')) {
+          document.getElementById('capCalcReturn').value = c.ret;
+        }
+        if (c.gapMode !== undefined) capCalcGapMode = c.gapMode;
+        if (c.gapTjpPeriod !== undefined) capCalcGapTjpPeriod = String(c.gapTjpPeriod);
+
+        if (typeof updateCapitalCalcPreview === 'function') {
+          updateCapitalCalcPreview();
+        }
+      }
+
+      // 4. Update UI
+      if (typeof syncUIFromState === 'function') syncUIFromState();
+      if (typeof updateResetLabel === 'function') updateResetLabel();
+      if (typeof updateCalculations === 'function') updateCalculations();
+    }
+
+    function openDataModal() {
+      refreshDataModalJson();
+      const modal = document.getElementById('dataModal');
+      if (modal) modal.showModal();
+    }
+
+    function refreshDataModalJson() {
+      const data = getSimulatorExportData();
+      const textarea = document.getElementById('dataModalTextarea');
+      if (textarea) textarea.value = JSON.stringify(data, null, 2);
+    }
+
+    function copyDataModalJson() {
+      const textarea = document.getElementById('dataModalTextarea');
+      if (!textarea) return;
+      textarea.select();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(() => {
+          handleCopiedBtn();
+        }).catch(() => {
+          document.execCommand('copy');
+          handleCopiedBtn();
+        });
+      } else {
+        document.execCommand('copy');
+        handleCopiedBtn();
+      }
+    }
+
+    function handleCopiedBtn() {
+      const btn = document.getElementById('copyJsonBtn');
+      if (btn) {
+        const orig = btn.innerText;
+        btn.innerText = 'Kopierat! ✓';
+        setTimeout(() => { btn.innerText = orig; }, 1800);
+      }
+      showToast('Kopierat till urklipp!');
+    }
+
+    function importFromDataModalTextarea() {
+      const textarea = document.getElementById('dataModalTextarea');
+      if (!textarea || !textarea.value.trim()) {
+        showToast('Klistra in JSON först.', true);
+        return;
+      }
+      try {
+        const parsed = JSON.parse(textarea.value.trim());
+        applyImportedSimulatorData(parsed);
+        showToast('Data importerad från text!');
+        document.getElementById('dataModal').close();
+      } catch (e) {
+        showToast('Ogiltig JSON-syntax. Kontrollera texten.', true);
+        alert('Ogiltig JSON-syntax. Kontrollera texten och försök igen.');
+      }
+    }
+
     // Initialize application on page load
     window.onload = function() {
       initChart();
@@ -3650,5 +3993,11 @@
       updateCalculations();
     };
   </script>
+
+  <!-- Floating Toast Notification -->
+  <div id="simToast" class="fixed bottom-5 right-5 z-50 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border transition-opacity duration-300 pointer-events-none opacity-0 flex items-center gap-2 bg-emerald-900 border-emerald-700">
+    <span id="simToastIcon">✓</span>
+    <span id="simToastText">Inställningar sparade</span>
+  </div>
 </body>
 </html>
