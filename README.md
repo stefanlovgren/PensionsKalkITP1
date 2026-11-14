@@ -44,8 +44,8 @@ Interaktiv visualisering av Skatteverkets allmänna skattetabeller.
 * **Hur man använder:** Välj skattetabell (29–42), inkomstintervall och vilka kolumner (1–6, t.ex. lön, pension under/över 66 år) som ska jämföras, samt om grafen ska visa skatt i procent eller kronor.
 * **Resultat:** Jämför skatteuttaget visuellt över olika inkomstnivåer och ålderskategorier direkt mot Skatteverkets tabellvärden.
 
-### 7. Pensionssimulator – Uttagsplanerare (`PensionsSimulator.html`)
-Simulera din framtida månadspension från inkomstpension, premiepension (PPM) och tjänstepension (ITP) i dagens penningvärde.
+### 7. Pensionssimulator (ITP 1) – Uttagsplanerare (`PensionsSimulator.html`)
+Simulera din framtida månadspension från allmän pension (inkomstpension & PPM) och premiebestämd tjänstepension (ITP 1 / ITPK) i dagens penningvärde.
 * **Hur man använder:** Ställ in totalt kapital vid uttag (eller använd **🖩 Beräkna** för att uppskatta framtida slutkapital utifrån nuvarande kapital, lön, löneväxling, kvarvarande arbetsår och avkastning), fördelning mellan pensionsdelarna, pensionsålder vid start (med Pensionsmyndighetens delningstal) samt årlig real avkastning och uttagstid för tjänstepensionen.
 * **Resultat:** Visar månadspension brutto och netto efter skatt (Göteborg tabell 33 före/efter 68 år samt SINK 20 %) över fyra uttagsfaser med interaktiv graf och tabell i dagens köpkraft.
 
