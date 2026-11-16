@@ -148,7 +148,7 @@
               <button type="button" onclick="openCapitalCalcModal()" class="px-2 py-0.5 rounded text-[11px] font-bold text-white bg-[#e65100] hover:bg-[#f57c00] border border-[#ef6c00] transition-colors cursor-pointer" title="Beräkna/gissa slutkapital utifrån nuvarande kapital, kvarvarande år och lön">🖩 Beräkna</button>
             </div>
             <div class="flex items-center gap-1 font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg text-xs border border-slate-200">
-              <input type="text" id="totalCapitalInput" class="w-20 text-right bg-transparent outline-none focus:ring-0 font-bold" value="3 000 000">
+              <input type="text" id="totalCapitalInput" class="w-20 text-right bg-transparent outline-none focus:ring-0 font-bold" value="6 000 000">
               <span class="text-slate-500 text-[11px]">kr</span>
             </div>
           </div>
@@ -156,17 +156,49 @@
             <span>💡</span>
             <span>Baserat på totalbeloppet på <strong class="text-slate-700">minPension.se</strong> (allmän pension + PPM + tjänstepension) med <strong class="text-slate-700">ITP1</strong> som grund.</span>
           </div>
-          <input type="range" id="totalCapitalRange" min="500000" max="20000000" step="100000" value="3000000"
+          <input type="range" id="totalCapitalRange" min="500000" max="20000000" step="100000" value="6000000"
             class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer block">
           <div class="grid grid-cols-8 gap-1 text-[10px] text-slate-400 font-medium">
             <button type="button" data-capital="1000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">1 Mkr</button>
-            <button type="button" data-capital="3000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">3 Mkr</button>
-            <button type="button" data-capital="6000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">6 Mkr</button>
-            <button type="button" data-capital="10000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">10 Mkr</button>
-            <button type="button" data-capital="12500000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">12,5 Mkr</button>
+            <button type="button" data-capital="2500000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">2,5 Mkr</button>
+            <button type="button" data-capital="4000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">4 Mkr</button>
+            <button type="button" data-capital="6000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold transition-colors">6 Mkr</button>
+            <button type="button" data-capital="9000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">9 Mkr</button>
+            <button type="button" data-capital="12000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">12 Mkr</button>
             <button type="button" data-capital="15000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">15 Mkr</button>
-            <button type="button" data-capital="17500000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">17,5 Mkr</button>
             <button type="button" data-capital="20000000" class="capital-quick-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors">20 Mkr</button>
+          </div>
+
+          <!-- Befolkningsreferens / Skala för svenskt pensionskapital vid ~65 år -->
+          <div class="space-y-1 pt-1.5 border-t border-slate-200/60" title="Uppskattad fördelning av samlat totalt pensionskapital vid ~65 år (baserat på minPension, SCB och ITP 1-modeller)">
+            <div class="flex items-center justify-between text-[10px]">
+              <span class="text-slate-400 font-medium flex items-center gap-1">
+                <span>👥</span> Befolknings- &amp; yrkesnivå vid 65 år:
+              </span>
+              <span id="capitalPercentileBadge" class="font-bold text-teal-400 bg-teal-500/10 px-1.5 py-0.5 rounded border border-teal-500/20 text-[9.5px]">
+                Typisk tjänsteman / ITP 1 (5 – 9 Mkr, normal till god lön)
+              </span>
+            </div>
+            <div class="relative w-full py-0.5">
+              <!-- Flerfärgad stapel proportionell mot reglagets 0,5–20 Mkr -->
+              <div class="w-full h-1.5 rounded-full overflow-hidden flex bg-slate-200">
+                <div class="h-full bg-slate-400" style="width: 10.26%;" title="Låg pension / deltid / garantipension: &lt; 2,5 Mkr"></div>
+                <div class="h-full bg-blue-500" style="width: 12.82%;" title="Medelsvensk / arbetare: 2,5 – 5 Mkr (median alla yrken ~3,5–4 Mkr)"></div>
+                <div class="h-full bg-teal-500" style="width: 20.51%;" title="Typisk tjänsteman / ITP 1: 5 – 9 Mkr (normal till god lön)"></div>
+                <div class="h-full bg-amber-500" style="width: 25.64%;" title="Hög lön (30% ITP 1 över 7,5 IBB) &amp; löneväxling: 9 – 14 Mkr"></div>
+                <div class="h-full bg-rose-500" style="width: 30.77%;" title="Senior chef / specialist &amp; mångårig löneväxling: 14 – 20 Mkr"></div>
+              </div>
+              <!-- Dynamisk markör som pekar på nuvarande kapital – exakt vertikal synk med reglaget -->
+              <div id="capitalPercentilePin" class="absolute top-0 w-2 h-2.5 bg-white border border-slate-900 rounded-sm shadow-sm transition-all duration-100 pointer-events-none -translate-x-1/2" style="left: 28.21%;" title="Nuvarande valt kapital"></div>
+            </div>
+            <!-- Exakt positionerade etiketter i synk med reglage och knappar -->
+            <div class="relative w-full h-3.5 text-[8.5px] text-slate-500 font-mono mt-0.5">
+              <span class="absolute left-0">&lt;2,5M</span>
+              <span class="absolute left-[23.08%] -translate-x-1/2" title="Median för arbetare och alla yrken samlat (~3,5–4 Mkr)">~4M (arbetare)</span>
+              <span class="absolute left-[43.59%] -translate-x-1/2" title="Typisk ITP 1-tjänstemannanivå">~8M (ITP 1)</span>
+              <span class="absolute left-[69.23%] -translate-x-1/2" title="Hög lön &amp; löneväxling">14M (löneväxling)</span>
+              <span class="absolute right-0 text-right" title="Toppnivå upp till 20 Mkr">20M</span>
+            </div>
           </div>
         </div>
 
@@ -276,11 +308,13 @@
               </span>
               <span id="deathAgeBadge" class="text-[10px] font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">85 år (snitt)</span>
             </div>
-            <div class="grid grid-cols-4 gap-1 text-[10px]">
-              <button type="button" onclick="setDeathAge(80)" data-death-age="80" class="death-age-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">80 år<br><span class="opacity-75">(tidig)</span></button>
-              <button type="button" onclick="setDeathAge(85)" data-death-age="85" class="death-age-btn py-0.5 px-1 text-center rounded bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold border transition-colors leading-tight cursor-pointer">85 år<br><span class="opacity-75">(snitt)</span></button>
-              <button type="button" onclick="setDeathAge(90)" data-death-age="90" class="death-age-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">90 år<br><span class="opacity-75">(långt liv)</span></button>
-              <button type="button" onclick="setDeathAge(95)" data-death-age="95" class="death-age-btn py-0.5 px-1 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">95 år<br><span class="opacity-75">(mycket långt)</span></button>
+            <div class="grid grid-cols-6 gap-1 text-[10px]">
+              <button type="button" onclick="setDeathAge(75)" data-death-age="75" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">75 år<br><span class="opacity-75">(kort)</span></button>
+              <button type="button" onclick="setDeathAge(80)" data-death-age="80" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">80 år<br><span class="opacity-75">(tidig)</span></button>
+              <button type="button" onclick="setDeathAge(85)" data-death-age="85" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-teal-600 text-[#1a1a1a] border-teal-600 font-semibold border transition-colors leading-tight cursor-pointer">85 år<br><span class="opacity-75">(snitt)</span></button>
+              <button type="button" onclick="setDeathAge(90)" data-death-age="90" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">90 år<br><span class="opacity-75">(långt)</span></button>
+              <button type="button" onclick="setDeathAge(95)" data-death-age="95" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">95 år<br><span class="opacity-75">(mycket långt)</span></button>
+              <button type="button" onclick="setDeathAge(100)" data-death-age="100" class="death-age-btn py-0.5 px-0.5 text-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors leading-tight cursor-pointer">100 år<br><span class="opacity-75">(extremt)</span></button>
             </div>
           </div>
 
@@ -1367,14 +1401,14 @@
   <script>
     // State definition
     const state = {
-      totalCapital: 3000000,
+      totalCapital: 6000000,
       inkomstPct: 50,
       ppmPct: 15,
       tjanstePct: 35,
       tjansteYears: 10, // 0 = Livsvarigt
       retireAge: 66,
       earlyTjpAge: 0, // 0 = Inget förtida (samtidigt med allmän pension), annars 60, 62, 63 etc
-      deathAge: 85, // Planerad livslängd / dödsålder (80, 85, 90, 95)
+      deathAge: 85, // Planerad livslängd / dödsålder (75, 80, 85, 90, 95, 100)
       inkomstGrowth: 0.016, // 1.6% (reallöneutveckling norm)
       annualReturn: 0.02, // 2% (real fondavkastning PPM & Tjänstepension)
     };
@@ -1623,6 +1657,9 @@
     }
 
     function setDeathAge(age) {
+      if (age <= state.retireAge) {
+        age = Math.min(100, state.retireAge + 5);
+      }
       state.deathAge = age;
       syncDeathAgeUI();
       try {
@@ -1635,7 +1672,14 @@
       const dAge = state.deathAge || 85;
       const badge = document.getElementById('deathAgeBadge');
       if (badge) {
-        badge.innerText = dAge === 85 ? '85 år (snitt)' : `${dAge} år`;
+        let label = `${dAge} år`;
+        if (dAge === 85) label += ' (snitt)';
+        else if (dAge === 75) label += ' (kort)';
+        else if (dAge === 80) label += ' (tidig)';
+        else if (dAge === 90) label += ' (långt)';
+        else if (dAge === 95) label += ' (mycket långt)';
+        else if (dAge === 100) label += ' (extremt)';
+        badge.innerText = label;
       }
       document.querySelectorAll('.death-age-btn').forEach(btn => {
         const btnAge = parseInt(btn.getAttribute('data-death-age'), 10);
@@ -1648,6 +1692,42 @@
         btn.classList.toggle('text-slate-600', !isMatch);
         btn.classList.toggle('border-slate-200', !isMatch);
       });
+    }
+
+    // Uppdatera referensindikator för pensionskapital mot befolkning & yrken (~65 år)
+    function updateCapitalPercentileUI(cap) {
+      const badge = document.getElementById('capitalPercentileBadge');
+      const pin = document.getElementById('capitalPercentilePin');
+      if (!badge || !pin) return;
+
+      let text = '';
+      let badgeClass = '';
+
+      if (cap < 2500000) {
+        text = 'Låg pension / deltid / garantipension (< 2,5 Mkr)';
+        badgeClass = 'font-bold text-slate-400 bg-slate-500/10 px-1.5 py-0.5 rounded border border-slate-500/20 text-[9.5px]';
+      } else if (cap < 5000000) {
+        text = 'Medelsvensk / arbetare (2,5 – 5 Mkr, median alla yrken ~3,5–4 Mkr)';
+        badgeClass = 'font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 text-[9.5px]';
+      } else if (cap < 9000000) {
+        text = 'Typisk tjänsteman / ITP 1 (5 – 9 Mkr, normal till god lön)';
+        badgeClass = 'font-bold text-teal-400 bg-teal-500/10 px-1.5 py-0.5 rounded border border-teal-500/20 text-[9.5px]';
+      } else if (cap < 14000000) {
+        text = 'Hög lön (30 % ITP 1 över 7,5 IBB) & löneväxling (9 – 14 Mkr)';
+        badgeClass = 'font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 text-[9.5px]';
+      } else {
+        text = 'Toppskikt / senior chef & mångårig löneväxling (14 – 20 Mkr)';
+        badgeClass = 'font-bold text-[#ff8a65] bg-[#ff8a65]/20 px-1.5 py-0.5 rounded border border-[#ff8a65]/40 text-[9.5px]';
+      }
+
+      // Synka markören exakt 1:1 mot reglagets skala (500 000 till 20 000 000 kr)
+      const minCap = 500000;
+      const maxCap = 20000000;
+      const pinPct = Math.max(0.5, Math.min(99.5, ((cap - minCap) / (maxCap - minCap)) * 100));
+
+      badge.className = badgeClass;
+      badge.innerText = text;
+      pin.style.left = `${pinPct.toFixed(2)}%`;
     }
 
     // Core calculations and UI Update
@@ -1664,6 +1744,7 @@
       }
 
       const cap = state.totalCapital;
+      updateCapitalPercentileUI(cap);
       const inkomstCap = cap * (state.inkomstPct / 100);
       const ppmCap = cap * (state.ppmPct / 100);
       const tjansteCap = cap * (state.tjanstePct / 100);
@@ -2165,7 +2246,7 @@
         : state.retireAge;
       const startAge = Math.min(state.retireAge, tjpStartAge);
       const deathAge = Math.max(state.retireAge + 1, state.deathAge || 85);
-      const endAge = Math.max(deathAge, 85);
+      const endAge = deathAge;
       const totalYears = endAge - startAge;
 
       for (let i = 0; i <= totalYears; i++) {
